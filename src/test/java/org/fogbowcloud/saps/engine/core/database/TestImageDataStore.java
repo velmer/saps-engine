@@ -31,13 +31,12 @@ public class TestImageDataStore {
 		
 		this.imageStore = new JDBCImageDataStore(properties);
 		
-		this.taskDefault = new ImageTask("task-default", "LT5", "region-53", new Date(), "link-default",
-				ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0,
+		this.taskDefault = new ImageTask("task-default", "LT5", "region-53", new Date(),
+				"link-default", ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0,
 				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, new Timestamp(
-						new java.util.Date().getTime()), new Timestamp(
-						new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
+				new Timestamp(new java.util.Date().getTime()),
+				new Timestamp(new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
 	}
 	
 	@Test
@@ -51,13 +50,13 @@ public class TestImageDataStore {
 		Assert.assertTrue(imageTaskList.size() == 0);		
 		
 		ImageTask taskOne = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.CREATED, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE", new Timestamp(
-						new java.util.Date().getTime()), new Timestamp(
-						new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
+				ImageTaskState.CREATED, "NE", 0, "NE", "NE", "NE", "NE",
+				new Timestamp(new java.util.Date().getTime()),
+				new Timestamp(new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
 		ImageTask taskTwo = new ImageTask("task-id-2", "LT5", "region-53", date, "link1",
-				ImageTaskState.CREATED, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE", new Timestamp(
-						new java.util.Date().getTime()), new Timestamp(
-						new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
+				ImageTaskState.CREATED, "NE", 0, "NE", "NE", "NE", "NE",
+				new Timestamp(new java.util.Date().getTime()),
+				new Timestamp(new java.util.Date().getTime()), ImageTask.AVAILABLE, "");
     
 		this.imageStore.addImageTask(taskOne);
 		this.imageStore.addImageTask(taskTwo);
@@ -105,7 +104,6 @@ public class TestImageDataStore {
 		JDBCImageDataStore imageStore = new JDBCImageDataStore(properties);
 		ImageTask task = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
 				ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA, new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), "available", "");

@@ -90,16 +90,13 @@ public class TestRegionResource {
 		List<ImageTask> images = new ArrayList<ImageTask>();
 		images.add(new ImageTask("task-id-1", "LT5", "215066", date, "link1",
 				ImageTaskState.ARCHIVED, federationMember, 0, "NE", "NE", "pre_processing", "NE",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", ""));
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", ""));
 		images.add(new ImageTask("task-id-2", "LT5", "215067", date, "link1",
 				ImageTaskState.ARCHIVED, federationMember, 0, "NE", "NE", "pre_processing", "NE",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", ""));
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", ""));
 		images.add(new ImageTask("task-id-3", "LT5", "215066", date, "link1",
 				ImageTaskState.ARCHIVED, federationMember, 0, "NE", "NE", "pre_processing", "NE",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", ""));
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", ""));
 
 		HashMap<String, Integer> expectedFrequency = new HashMap<String, Integer>();
 		expectedFrequency.put("215066", 2);
@@ -109,7 +106,7 @@ public class TestRegionResource {
 		imageDB.addImageTask(images.get(1));
 		imageDB.addImageTask(images.get(2));
 
-		HttpGet get = new HttpGet("http://localhost:8000/imagesProcessedByRegion");
+		HttpGet get = new HttpGet("http://localhost:8000/regions/details");
 		get.addHeader(UserResource.REQUEST_ATTR_USER_EMAIL, "testuser");
 		get.addHeader(UserResource.REQUEST_ATTR_USERPASS, "testuser");
 		HttpClient client = HttpClients.createMinimal();
@@ -117,6 +114,8 @@ public class TestRegionResource {
 		HttpResponse response = client.execute(get);
 		String responseStr = EntityUtils.toString(response.getEntity(),
 				String.valueOf(Charsets.UTF_8));
+		
+		System.out.println(responseStr);
 
 		JSONArray responseJson = new JSONArray(responseStr);
 

@@ -167,7 +167,7 @@ public class TestSapsTaskMonitor {
 	public void testProcMonImageTaskRunning() throws SQLException {
 		Date date = new Date();
 		ImageTask imageTask = new ImageTask("task-id", "LT5", "region-53", date, "NE",
-				ImageTaskState.READY, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.READY, "NE", 0, "NE", "NE", "NE", "NE",
 				new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), "NE",
 				"NE");
 		TaskProcess fakeTaskProcess = mock(TaskProcess.class);
@@ -187,7 +187,7 @@ public class TestSapsTaskMonitor {
 	public void testProcMonImageTaskFinished() throws SQLException {
 		Date date = new Date();
 		ImageTask imageTask = new ImageTask("task-id", "LT5", "region-53", date, "NE",
-				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE",
 				new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), "NE",
 				"NE");
 		TaskProcess fakeTaskProcess = mock(TaskProcess.class);
@@ -207,7 +207,7 @@ public class TestSapsTaskMonitor {
 	public void testProcMonImageTaskFailed() throws SQLException {
 		Date date = new Date();
 		ImageTask imageTask = new ImageTask("task-id", "LT5", "region-53", date, "NE",
-				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE",
 				new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), "NE",
 				"NE");
 		TaskProcess fakeTaskProcess = mock(TaskProcess.class);
@@ -227,7 +227,7 @@ public class TestSapsTaskMonitor {
 	public void testProcMonImageTaskReady() throws SQLException {
 		Date date = new Date();
 		ImageTask imageTask = new ImageTask("task-id", "LT5", "region-53", date, "NE",
-				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.RUNNING, "NE", 0, "NE", "NE", "NE", "NE",
 				new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), "NE",
 				"NE");
 		TaskProcess fakeTaskProcess = mock(TaskProcess.class);
@@ -282,7 +282,6 @@ public class TestSapsTaskMonitor {
 		// ImageTask set
 		ImageTask imageTask = new ImageTask("task-id", "LT5", "region-53", new Date(), "link1",
 				ImageTaskState.RUNNING, ImageTask.NON_EXISTENT_DATA, 0, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA, new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), "available", "");

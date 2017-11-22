@@ -34,8 +34,6 @@ public class ImageTask implements Serializable {
 	private String inputGatheringTag;
 	private String inputPreprocessingTag;
 	private String algorithmExecutionTag;
-	private String archiverVersion;
-	private String blowoutVersion;
 	private Timestamp creationTime;
 	private Timestamp updateTime;
 	private String status;
@@ -44,8 +42,8 @@ public class ImageTask implements Serializable {
 	public ImageTask(String taskId, String dataset, String region, Date imageDate,
 			String downloadLink, ImageTaskState state, String federationMember, int priority,
 			String stationId, String inputGatheringTag, String inputPreprocessingTag,
-			String algorithmExecutionTag, String archiverVersion, String blowoutVersion,
-			Timestamp creationTime, Timestamp updateTime, String status, String error) {
+			String algorithmExecutionTag, Timestamp creationTime, Timestamp updateTime,
+			String status, String error) {
 		this.taskId = taskId;
 		this.dataset = dataset;
 		this.region = region;
@@ -58,8 +56,6 @@ public class ImageTask implements Serializable {
 		this.inputGatheringTag = inputGatheringTag;
 		this.inputPreprocessingTag = inputPreprocessingTag;
 		this.algorithmExecutionTag = algorithmExecutionTag;
-		this.archiverVersion = archiverVersion;
-		this.blowoutVersion = blowoutVersion;
 		this.creationTime = creationTime;
 		this.updateTime = updateTime;
 		this.status = status;
@@ -162,22 +158,6 @@ public class ImageTask implements Serializable {
 		this.algorithmExecutionTag = algorithmExecutionTag;
 	}
 
-	public String getArchiverVersion() {
-		return archiverVersion;
-	}
-
-	public void setArchiverVersion(String archiverVersion) {
-		this.archiverVersion = archiverVersion;
-	}
-
-	public String getBlowoutVersion() {
-		return blowoutVersion;
-	}
-
-	public void setBlowoutVersion(String blowoutVersion) {
-		this.blowoutVersion = blowoutVersion;
-	}
-
 	public Timestamp getCreationTime() {
 		return creationTime;
 	}
@@ -241,8 +221,6 @@ public class ImageTask implements Serializable {
 		json.put("inputGatheringTag", inputGatheringTag);
 		json.put("inputPreprocessingTag", inputPreprocessingTag);
 		json.put("algorithmExecutionTag", algorithmExecutionTag);
-		json.put("archiverVersion", archiverVersion);
-		json.put("blowoutVersion", blowoutVersion);
 		json.put("creationTime", creationTime);
 		json.put("updateTime", updateTime);
 		json.put("status", status);
@@ -259,10 +237,9 @@ public class ImageTask implements Serializable {
 				+ ", federationMember='" + federationMember + '\'' + ", priority=" + priority
 				+ ", stationId='" + stationId + '\'' + ", inputGatheringTag='" + inputGatheringTag
 				+ '\'' + ", inputPreprocessingTag='" + inputPreprocessingTag + '\''
-				+ ", algorithmExecutionTag='" + algorithmExecutionTag + '\'' + ", archiverVersion='"
-				+ archiverVersion + '\'' + ", blowoutVersion='" + blowoutVersion + '\''
-				+ ", creationTime=" + creationTime + ", updateTime=" + updateTime + ", status='"
-				+ status + '\'' + ", error='" + error + '\'' + '}';
+				+ ", algorithmExecutionTag='" + algorithmExecutionTag + '\'' + ", creationTime="
+				+ creationTime + ", updateTime=" + updateTime + ", status='" + status + '\''
+				+ ", error='" + error + '\'' + '}';
 	}
 
 	@Override
@@ -319,12 +296,6 @@ public class ImageTask implements Serializable {
 				? !algorithmExecutionTag.equals(imageTask.algorithmExecutionTag)
 				: imageTask.algorithmExecutionTag != null)
 			return false;
-		if (archiverVersion != null ? !archiverVersion.equals(imageTask.archiverVersion)
-				: imageTask.archiverVersion != null)
-			return false;
-		if (blowoutVersion != null ? !blowoutVersion.equals(imageTask.blowoutVersion)
-				: imageTask.blowoutVersion != null)
-			return false;
 		if (creationTime != null ? !creationTime.equals(imageTask.creationTime)
 				: imageTask.creationTime != null)
 			return false;
@@ -352,8 +323,6 @@ public class ImageTask implements Serializable {
 				+ (inputPreprocessingTag != null ? inputPreprocessingTag.hashCode() : 0);
 		result = 31 * result
 				+ (algorithmExecutionTag != null ? algorithmExecutionTag.hashCode() : 0);
-		result = 31 * result + (archiverVersion != null ? archiverVersion.hashCode() : 0);
-		result = 31 * result + (blowoutVersion != null ? blowoutVersion.hashCode() : 0);
 		result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
 		result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
 		result = 31 * result + (status != null ? status.hashCode() : 0);

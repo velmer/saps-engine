@@ -34,7 +34,6 @@ public class Archiver {
 	private ConcurrentMap<String, ImageTask> pendingTaskArchiveMap;
 	private FTPIntegrationImpl ftpImpl;
 	private ArchiverHelper archiverHelper;
-	private String archiverVersion;
 
 	private String ftpServerIP;
 	private String ftpServerPort;
@@ -88,10 +87,6 @@ public class Archiver {
 
 	public void exec() throws Exception {
 		try {
-			if (!versionFileExists()) {
-				System.exit(1);
-			}
-
 			while (true) {
 				cleanUnfinishedArchivedData(properties);
 				List<ImageTask> tasksToArchive = tasksToArchive();
@@ -110,17 +105,6 @@ public class Archiver {
 		}
 
 		pendingTaskArchiveDB.close();
-	}
-
-	protected boolean versionFileExists() {
-		this.archiverVersion = getArchiverVersion();
-
-		if (archiverVersion == null || archiverVersion.isEmpty()) {
-			LOGGER.error("Archiver version file does not exist...Restart Archiver infrastructure");
-			return false;
-		}
-
-		return true;
 	}
 
 	protected void cleanUnfinishedArchivedData(Properties properties) throws Exception {
@@ -210,6 +194,7 @@ public class Archiver {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List<ImageTask> tasksToArchive() {
 		try {
 			return imageStore.getIn(ImageTaskState.FINISHED);
@@ -296,7 +281,6 @@ public class Archiver {
 		String stationId = archiverHelper.getStationId(imageTask, properties);
 
 		imageTask.setStationId(stationId);
-		imageTask.setArchiverVersion(archiverVersion);
 
 		try {
 			LOGGER.info("Updating task data in DB");
@@ -899,22 +883,6 @@ public class Archiver {
 		return properties.getProperty(SapsPropertiesConstants.LOCAL_INPUT_OUTPUT_PATH)
 				+ File.separator + imageTask.getTaskId() + File.separator + "metadata"
 				+ File.separator + "saps.provn";
-	}
-
-	protected String getArchiverVersion() {
-		String sebalEngineDirPath = System.getProperty("user.dir");
-		File sebalEngineDir = new File(sebalEngineDirPath);
-
-		if (sebalEngineDir.exists() && sebalEngineDir.isDirectory()) {
-			for (File file : sebalEngineDir.listFiles()) {
-				if (file.getName().startsWith("saps-engine.version.")) {
-					String[] sebalEngineVersionFileSplit = file.getName().split("\\.");
-					return sebalEngineVersionFileSplit[2];
-				}
-			}
-		}
-
-		return "";
 	}
 
 	public String getFtpServerIP() {

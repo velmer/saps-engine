@@ -41,8 +41,7 @@ public class TestPreProcessorImpl {
 
 		this.imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
 				ImageTaskState.CREATED, federationMember, 0, "NE", "NE", "Default", "NE",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", "");
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		this.preProcessor = Mockito.spy(new PreProcessorImpl(this.properties, this.imageStore));
 	}

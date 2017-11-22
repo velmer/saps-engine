@@ -1,6 +1,5 @@
 package org.fogbowcloud.saps.engine.scheduler.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -48,9 +47,6 @@ public class SapsController extends BlowoutController {
 		try {
 			if (!checkProperties(properties)) {
 				throw new SapsException("Error on validate the file");
-			} else if (getBlowoutVersion(properties).isEmpty()
-					|| getBlowoutVersion(properties) == null) {
-				throw new SapsException("Error while reading blowout version file");
 			}
 		} catch (Exception e) {
 			throw new SapsException("Error while initializing Sebal Controller.", e);
@@ -148,8 +144,10 @@ public class SapsController extends BlowoutController {
 					Map<String, String> nfsConfig = imageStore
 							.getFederationNFSConfig(imageTask.getFederationMember());
 
+					@SuppressWarnings("rawtypes")
 					Iterator it = nfsConfig.entrySet().iterator();
 					while (it.hasNext()) {
+						@SuppressWarnings("rawtypes")
 						Map.Entry pair = (Map.Entry) it.next();
 						nfsServerIP = pair.getKey().toString();
 						nfsServerPort = pair.getValue().toString();
@@ -168,7 +166,6 @@ public class SapsController extends BlowoutController {
 							workerDockerInfo.getDockerTag());
 
 					imageTask.setState(ImageTaskState.READY);
-					imageTask.setBlowoutVersion(getBlowoutVersion(properties));
 					addTask(taskImpl);
 
 					imageStore.updateImageTask(imageTask);
@@ -219,22 +216,6 @@ public class SapsController extends BlowoutController {
 				+ federationMember + "\"";
 		tempSpec.addRequirement(SapsPropertiesConstants.SPEC_FOGBOW_REQUIREMENTS, newRequirements);
 		tempSpec.addRequirement(SapsPropertiesConstants.SPEC_REQUEST_TYPE, requestType);
-	}
-
-	private static String getBlowoutVersion(Properties properties) {
-		String blowoutDirPath = properties.getProperty(SapsPropertiesConstants.BLOWOUT_DIR_PATH);
-		File blowoutDir = new File(blowoutDirPath);
-
-		if (blowoutDir.exists() && blowoutDir.isDirectory()) {
-			for (File file : blowoutDir.listFiles()) {
-				if (file.getName().startsWith(SapsPropertiesConstants.BLOWOUT_VERSION_PREFIX)) {
-					String[] blowoutVersionFileSplit = file.getName().split("\\.");
-					return blowoutVersionFileSplit[2];
-				}
-			}
-		}
-
-		return null;
 	}
 
 	private static Specification getWorkerSpecFromFile(Properties properties) {

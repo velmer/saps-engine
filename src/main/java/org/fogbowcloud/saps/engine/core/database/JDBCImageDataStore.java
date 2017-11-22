@@ -42,8 +42,6 @@ public class JDBCImageDataStore implements ImageDataStore {
 	private static final String INPUT_GATHERING_TAG = "input_gathering_tag";
 	private static final String INPUT_PREPROCESSING_TAG = "input_preprocessing_tag";
 	private static final String ALGORITHM_EXECUTION_TAG = "algorithm_execution_tag";
-	private static final String ARCHIVER_VERSION_COL = "archiver_version";
-	private static final String BLOWOUT_VERSION_COL = "blowout_version";
 	private static final String CREATION_TIME_COL = "ctime";
 	private static final String UPDATED_TIME_COL = "utime";
 	private static final String IMAGE_STATUS_COL = "status";
@@ -78,7 +76,7 @@ public class JDBCImageDataStore implements ImageDataStore {
 
 	// Insert queries
 	private static final String INSERT_FULL_IMAGE_TASK_SQL = "INSERT INTO " + IMAGE_TABLE_NAME
-			+ " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private Map<String, Connection> lockedImages = new ConcurrentHashMap<>();
 	private BasicDataSource connectionPool;
@@ -133,10 +131,9 @@ public class JDBCImageDataStore implements ImageDataStore {
 					+ " VARCHAR(255), " + PRIORITY_COL + " INTEGER, " + STATION_ID_COL
 					+ " VARCHAR(255), " + INPUT_GATHERING_TAG + " VARCHAR(100), "
 					+ INPUT_PREPROCESSING_TAG + " VARCHAR(100), " + ALGORITHM_EXECUTION_TAG
-					+ " VARCHAR(100), " + ARCHIVER_VERSION_COL + " VARCHAR(255), "
-					+ BLOWOUT_VERSION_COL + " VARCHAR(255), " + CREATION_TIME_COL + " TIMESTAMP, "
-					+ UPDATED_TIME_COL + " TIMESTAMP, " + IMAGE_STATUS_COL + " VARCHAR(255), "
-					+ ERROR_MSG_COL + " VARCHAR(255)" + ")");
+					+ " VARCHAR(100), " + CREATION_TIME_COL + " TIMESTAMP, " + UPDATED_TIME_COL
+					+ " TIMESTAMP, " + IMAGE_STATUS_COL + " VARCHAR(255), " + ERROR_MSG_COL
+					+ " VARCHAR(255)" + ")");
 
 			statement.execute("CREATE TABLE IF NOT EXISTS " + STATES_TABLE_NAME + "(" + TASK_ID_COL
 					+ " VARCHAR(255), " + STATE_COL + " VARCHAR(100), " + UPDATED_TIME_COL
@@ -242,9 +239,9 @@ public class JDBCImageDataStore implements ImageDataStore {
 			String algorithmExecution) throws SQLException {
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		ImageTask task = new ImageTask(taskId, dataset, region, date, downloadLink,
-				ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, priority, ImageTask.NON_EXISTENT_DATA,
-				inputGathering, inputPreprocessing, algorithmExecution, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, now, now, ImageTask.AVAILABLE, ImageTask.NON_EXISTENT_DATA);
+				ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, priority,
+				ImageTask.NON_EXISTENT_DATA, inputGathering, inputPreprocessing, algorithmExecution,
+				now, now, ImageTask.AVAILABLE, ImageTask.NON_EXISTENT_DATA);
 		addImageTask(task);
 		return task;
 	}
@@ -289,12 +286,10 @@ public class JDBCImageDataStore implements ImageDataStore {
 			insertStatement.setString(10, imageTask.getInputGatheringTag());
 			insertStatement.setString(11, imageTask.getInputPreprocessingTag());
 			insertStatement.setString(12, imageTask.getAlgorithmExecutionTag());
-			insertStatement.setString(13, imageTask.getArchiverVersion());
-			insertStatement.setString(14, imageTask.getBlowoutVersion());
-			insertStatement.setTimestamp(15, imageTask.getCreationTime());
-			insertStatement.setTimestamp(16, imageTask.getUpdateTime());
-			insertStatement.setString(17, imageTask.getStatus());
-			insertStatement.setString(18, imageTask.getError());
+			insertStatement.setTimestamp(13, imageTask.getCreationTime());
+			insertStatement.setTimestamp(14, imageTask.getUpdateTime());
+			insertStatement.setString(15, imageTask.getStatus());
+			insertStatement.setString(16, imageTask.getError());
 			insertStatement.setQueryTimeout(300);
 
 			insertStatement.execute();
@@ -858,9 +853,8 @@ public class JDBCImageDataStore implements ImageDataStore {
 	private static final String UPDATE_IMAGEDATA_SQL = "UPDATE " + IMAGE_TABLE_NAME + " SET "
 			+ DOWNLOAD_LINK_COL + " = ?, " + STATE_COL + " = ?, " + FEDERATION_MEMBER_COL + " = ?, "
 			+ PRIORITY_COL + " = ?, " + STATION_ID_COL + " = ?, " + ALGORITHM_EXECUTION_TAG
-			+ " = ?, " + ARCHIVER_VERSION_COL + " = ?, " + BLOWOUT_VERSION_COL + " = ?, "
-			+ UPDATED_TIME_COL + " = now(), " + IMAGE_STATUS_COL + " = ?, " + ERROR_MSG_COL
-			+ " = ? " + "WHERE " + TASK_ID_COL + " = ?";
+			+ " = ?, " + UPDATED_TIME_COL + " = now(), " + IMAGE_STATUS_COL + " = ?, "
+			+ ERROR_MSG_COL + " = ? " + "WHERE " + TASK_ID_COL + " = ?";
 
 	@Override
 	public void updateImageTask(ImageTask imagetask) throws SQLException {
@@ -882,11 +876,9 @@ public class JDBCImageDataStore implements ImageDataStore {
 			updateStatement.setInt(4, imagetask.getPriority());
 			updateStatement.setString(5, imagetask.getStationId());
 			updateStatement.setString(6, imagetask.getAlgorithmExecutionTag());
-			updateStatement.setString(7, imagetask.getArchiverVersion());
-			updateStatement.setString(8, imagetask.getBlowoutVersion());
-			updateStatement.setString(9, imagetask.getStatus());
-			updateStatement.setString(10, imagetask.getError());
-			updateStatement.setString(11, imagetask.getTaskId());
+			updateStatement.setString(7, imagetask.getStatus());
+			updateStatement.setString(8, imagetask.getError());
+			updateStatement.setString(9, imagetask.getTaskId());
 			updateStatement.setQueryTimeout(300);
 
 			updateStatement.execute();
@@ -1311,7 +1303,6 @@ public class JDBCImageDataStore implements ImageDataStore {
 					rs.getString(FEDERATION_MEMBER_COL), rs.getInt(PRIORITY_COL),
 					rs.getString(STATION_ID_COL), rs.getString(INPUT_GATHERING_TAG),
 					rs.getString(INPUT_PREPROCESSING_TAG), rs.getString(ALGORITHM_EXECUTION_TAG),
-					rs.getString(ARCHIVER_VERSION_COL), rs.getString(BLOWOUT_VERSION_COL),
 					rs.getTimestamp(CREATION_TIME_COL), rs.getTimestamp(UPDATED_TIME_COL),
 					rs.getString(IMAGE_STATUS_COL), rs.getString(ERROR_MSG_COL)));
 		}
@@ -1609,23 +1600,15 @@ public class JDBCImageDataStore implements ImageDataStore {
 		}
 	}
 
-	private final String PROCESSED_IMAGES_QUERY = "SELECT * FROM " +
-			IMAGE_TABLE_NAME + " WHERE " +
-			STATE_COL + " = ? AND " +
-			REGION_COL + " = ? AND " +
-			IMAGE_DATE_COL + " BETWEEN ? AND ? AND " +
-			INPUT_PREPROCESSING_TAG + " = ? AND " +
-			INPUT_GATHERING_TAG + " = ? AND " +
-			ALGORITHM_EXECUTION_TAG + " = ?";
+	private final String PROCESSED_IMAGES_QUERY = "SELECT * FROM " + IMAGE_TABLE_NAME + " WHERE "
+			+ STATE_COL + " = ? AND " + REGION_COL + " = ? AND " + IMAGE_DATE_COL
+			+ " BETWEEN ? AND ? AND " + INPUT_PREPROCESSING_TAG + " = ? AND " + INPUT_GATHERING_TAG
+			+ " = ? AND " + ALGORITHM_EXECUTION_TAG + " = ?";
 
 	@Override
-	public List<ImageTask> getProcessedImages(
-			String region,
-			Date initDate,
-			Date endDate,
-			String inputGathering,
-			String inputPreprocessing,
-			String algorithmExecution) throws SQLException {
+	public List<ImageTask> getProcessedImages(String region, Date initDate, Date endDate,
+			String inputGathering, String inputPreprocessing, String algorithmExecution)
+			throws SQLException {
 		PreparedStatement queryStatement = null;
 		Connection connection = null;
 

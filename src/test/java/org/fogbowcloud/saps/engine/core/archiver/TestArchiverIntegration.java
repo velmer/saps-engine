@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -59,7 +58,7 @@ public class TestArchiverIntegration {
 		Date date = new Date();
 
 		ImageTask imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		doReturn(archiverVolumeInputPath).when(archiverHelper).getLocalTaskInputPath(imageTask,
@@ -100,10 +99,10 @@ public class TestArchiverIntegration {
 		Date date = mock(Date.class);
 
 		ImageTask imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 		ImageTask imageTask2 = new ImageTask("task-id-2", "LT5", "region-53", date, "link2",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		doReturn(sapsExportPath).when(archiverHelper).getRemoteTaskOutputPath(imageTask,
@@ -136,6 +135,7 @@ public class TestArchiverIntegration {
 		// remove task from pending map/DB
 
 		// setup
+		@SuppressWarnings("unchecked")
 		ConcurrentMap<String, ImageTask> pendingTaskArchiveMap = mock(ConcurrentMap.class);
 		FTPIntegrationImpl ftpImpl = mock(FTPIntegrationImpl.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
@@ -148,10 +148,10 @@ public class TestArchiverIntegration {
 		Date date = new Date();
 
 		ImageTask imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 		ImageTask imageTask2 = new ImageTask("task-id-2", "LT5", "region-53", date, "link2",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		Archiver archiver = new Archiver(properties, imageStore, swiftAPIClient, ftpImpl,
@@ -190,6 +190,7 @@ public class TestArchiverIntegration {
 		// for posterity
 
 		// setup
+		@SuppressWarnings("unchecked")
 		ConcurrentMap<String, ImageTask> pendingTaskArchiveMap = mock(ConcurrentMap.class);
 		FTPIntegrationImpl ftpImpl = mock(FTPIntegrationImpl.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
@@ -202,10 +203,10 @@ public class TestArchiverIntegration {
 		Date date = new Date();
 
 		ImageTask imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 		ImageTask imageTask2 = new ImageTask("task-id-2", "LT5", "region-53", date, "link2",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		Archiver archiver = new Archiver(properties, imageStore, swiftAPIClient, ftpImpl,
@@ -256,7 +257,7 @@ public class TestArchiverIntegration {
 		Date date = mock(Date.class);
 
 		ImageTask imageTask = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.ARCHIVING, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.ARCHIVING, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		doReturn(sapsInputExportPath).when(archiverHelper).getRemoteTaskInputPath(imageTask,
@@ -277,33 +278,6 @@ public class TestArchiverIntegration {
 
 		// expect
 		Assert.assertEquals(ImageTaskState.ARCHIVING, imageTask.getState());
-	}
-
-	@Test
-	public void testGetArchiverVersion() throws SQLException, IOException, InterruptedException {
-		// setup
-		Properties properties = mock(Properties.class);
-		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
-		FTPIntegrationImpl ftpImpl = mock(FTPIntegrationImpl.class);
-		ArchiverHelper archiverHelper = mock(ArchiverHelper.class);
-		SwiftAPIClient swiftAPIClient = mock(SwiftAPIClient.class);
-
-		PrintWriter writer = new PrintWriter(
-				"saps-engine.version.0c26f092e976389c593953a1ad8ddaadb5c2ab2a", "UTF-8");
-		writer.println("0c26f092e976389c593953a1ad8ddaadb5c2ab2a");
-		writer.close();
-
-		Archiver archiver = new Archiver(properties, imageStore, swiftAPIClient, ftpImpl,
-				archiverHelper);
-
-		// exercise
-		String versionReturn = archiver.getArchiverVersion();
-
-		// expect
-		Assert.assertEquals("0c26f092e976389c593953a1ad8ddaadb5c2ab2a", versionReturn);
-
-		File file = new File("saps-engine.version.0c26f092e976389c593953a1ad8ddaadb5c2ab2a");
-		file.delete();
 	}
 
 	@Test

@@ -70,13 +70,13 @@ public class TestInputDownloaderIntegration {
 		// mock
 		this.inputDownloaderDefault = Mockito.spy(new InputDownloader(properties, imageStore,
 				inputDownloaderIP, inputDownloaderPort, nfsPort, federationMember));
-		
+
 		java.util.Date date = new java.util.Date();
 		this.imageTaskDefault = new ImageTask("default-task-id-1", "LT5", "region-53", date,
 				"link1", ImageTaskState.CREATED, FEDERATION_MEMBER_DEFAULT, 0,
 				ImageTask.NON_EXISTENT_DATA, "Default", "Default", "Default",
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, 
-				new Timestamp(date.getTime()), new Timestamp(date.getTime()), ImageTask.AVAILABLE, "");
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), ImageTask.AVAILABLE,
+				"");
 		
 		this.properties = mock(Properties.class);
 	}
@@ -122,8 +122,7 @@ public class TestInputDownloaderIntegration {
 		List<ImageTask> imageList = new ArrayList<ImageTask>();
 		ImageTask taskOne = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
 				ImageTaskState.CREATED, federationMember, 0, "NE", "Default", "Default", "Default",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", "");
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		imageList.add(taskOne);
 
@@ -186,11 +185,11 @@ public class TestInputDownloaderIntegration {
 
 		List<ImageTask> imageList = new ArrayList<ImageTask>();
 		ImageTask taskOne = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 		taskOne.setStatus(ImageTask.PURGED);
 		ImageTask taskTwo = new ImageTask("task-id-2", "LT5", "region-53", date, "link2",
-				ImageTaskState.FINISHED, federationMember, 1, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.FINISHED, federationMember, 1, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		imageList.add(taskOne);
@@ -224,10 +223,10 @@ public class TestInputDownloaderIntegration {
 
 		List<ImageTask> imageList = new ArrayList<ImageTask>();
 		ImageTask taskOne = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.ARCHIVED, federationMember1, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.ARCHIVED, federationMember1, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 		ImageTask taskTwo = new ImageTask("task-id-2", "LT5", "region-53", date, "link2",
-				ImageTaskState.ARCHIVED, federationMember2, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.ARCHIVED, federationMember2, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		imageList.add(taskOne);
@@ -261,7 +260,7 @@ public class TestInputDownloaderIntegration {
 		Date date = new Date(10000854);
 
 		ImageTask task = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.CREATED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.CREATED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), "available", "");
 
@@ -290,8 +289,7 @@ public class TestInputDownloaderIntegration {
 
 		ImageTask task = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
 				ImageTaskState.CREATED, federationMember, 0, "NE", "Default", "Default", "Default",
-				"NE", "NE", new Timestamp(date.getTime()), new Timestamp(date.getTime()),
-				"available", "");
+				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		imageStore.addImageTask(task);
 
@@ -339,7 +337,7 @@ public class TestInputDownloaderIntegration {
 		Date date = new Date(10000854);
 
 		ImageTask task = new ImageTask("task-id-1", "LT5", "region-53", date, "link1",
-				ImageTaskState.CREATED, federationMember, 0, "NE", "NE", "NE", "NE", "NE", "NE",
+				ImageTaskState.CREATED, federationMember, 0, "NE", "NE", "NE", "NE",
 				new Timestamp(date.getTime()), new Timestamp(date.getTime()), "available", "");
 
 		imageStore.addImageTask(task);

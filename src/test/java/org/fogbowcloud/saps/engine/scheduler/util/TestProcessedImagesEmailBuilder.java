@@ -144,7 +144,7 @@ public class TestProcessedImagesEmailBuilder {
             emailBuilder.generateTaskEmailJson(properties, "FAIL_TASK");
             Assert.fail("Should throw exception");
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Do nothing
         }
     }
 
@@ -201,53 +201,37 @@ public class TestProcessedImagesEmailBuilder {
         return application;
     }
 
-    private Properties getProperties() {
-        Properties properties = new Properties();
-        properties.setProperty(SapsPropertiesConstants.SWIFT_AUTH_URL, "https://cloud.lsd.ufcg.edu.br:5000");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_PROJECT_ID, "3324431f606d4a74a060cf78c16fcb21");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_USER_ID, "3e57892203271c195f5d473fc84f484b8062103275ce6ad6e7bcd1baedf70d5c");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_PASSWORD, "nc3SRPS2");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_HOST, "cloud.lsd.ufcg.edu.br:8080");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_PATH, "/swift/v1");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_CONTAINER, "lsd_deploy");
-        properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_KEY, "qnjcKtALnbqHkOM0f0J9I8TWzANCI7Qj8");
-        properties.setProperty(
-                SapsPropertiesConstants.NO_REPLY_EMAIL, "sebal.no.reply@gmail.com"
-        );
-        properties.setProperty(
-                SapsPropertiesConstants.NO_REPLY_PASS, "noREsebal16"
-        );
-        return properties;
-    }
+	private Properties getProperties() {
+		Properties properties = new Properties();
+		properties.setProperty(SapsPropertiesConstants.SWIFT_AUTH_URL,
+				"https://cloud.lsd.ufcg.edu.br:5000");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_PROJECT_ID,
+				"3324431f606d4a74a060cf78c16fcb21");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_USER_ID,
+				"3e57892203271c195f5d473fc84f484b8062103275ce6ad6e7bcd1baedf70d5c");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_PASSWORD, "nc3SRPS2");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_HOST,
+				"cloud.lsd.ufcg.edu.br:8080");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_PATH, "/swift/v1");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_CONTAINER, "lsd_deploy");
+		properties.setProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_KEY,
+				"qnjcKtALnbqHkOM0f0J9I8TWzANCI7Qj8");
+		properties.setProperty(SapsPropertiesConstants.NO_REPLY_EMAIL, "sebal.no.reply@gmail.com");
+		properties.setProperty(SapsPropertiesConstants.NO_REPLY_PASS, "noREsebal16");
+		return properties;
+	}
 
-    private List<String> getImageIdList() {
-        List<String> imageIds = new ArrayList<>();
-        imageIds.add(IMAGE_TASK_ID);
-        return imageIds;
-    }
+	private List<String> getImageIdList() {
+		List<String> imageIds = new ArrayList<>();
+		imageIds.add(IMAGE_TASK_ID);
+		return imageIds;
+	}
 
-    private ImageTask getImageTask() {
-        return new ImageTask(
-                IMAGE_TASK_ID,
-                "landsat-7",
-                "263_065",
-                new Date(),
-                "NA",
-                ImageTaskState.ARCHIVED,
-                "NA",
-                0,
-                "NA",
-                "Default",
-                "Default",
-                "Default",
-                "NA",
-                "NA",
-                new Timestamp(System.nanoTime()),
-                new Timestamp(System.nanoTime()),
-                "NA",
-                "NA"
-        );
-    }
+	private ImageTask getImageTask() {
+		return new ImageTask(IMAGE_TASK_ID, "landsat-7", "263_065", new Date(), "NA",
+				ImageTaskState.ARCHIVED, "NA", 0, "NA", "Default", "Default", "Default",
+				new Timestamp(System.nanoTime()), new Timestamp(System.nanoTime()), "NA", "NA");
+	}
 
     private ProcessedImagesEmailBuilder getProcessedImagesEmailBuilder(Properties properties, List<String> imageIds, DatabaseApplication application) {
         return Mockito.spy(

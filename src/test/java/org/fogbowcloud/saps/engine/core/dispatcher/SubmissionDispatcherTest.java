@@ -142,22 +142,22 @@ public class SubmissionDispatcherTest {
 
 		ImageTask imageTaskOne = new ImageTask(taskOne.getId(), "landsat_5", "region-53", date,
 				ImageTask.NON_EXISTENT_DATA, ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA);
 		ImageTask imageTaskTwo = new ImageTask(taskTwo.getId(), "landsat_5", "region-53", date,
 				ImageTask.NON_EXISTENT_DATA, ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA);
 		ImageTask imageTaskThree = new ImageTask(taskThree.getId(), "landsat_5", "region-53", date,
 				ImageTask.NON_EXISTENT_DATA, ImageTaskState.CREATED, ImageTask.NON_EXISTENT_DATA, 0,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
-				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
+				ImageTask.NON_EXISTENT_DATA, ImageTask.NON_EXISTENT_DATA,
 				new Timestamp(new java.util.Date().getTime()),
 				new Timestamp(new java.util.Date().getTime()), ImageTask.NON_EXISTENT_DATA,
 				ImageTask.NON_EXISTENT_DATA);
