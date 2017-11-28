@@ -43,8 +43,7 @@ public class PreProcessorImpl implements PreProcessor {
 
 			String hostPath = this.getHostPath(imageTask);
 
-			String containerPath = this.properties
-					.getProperty(SapsPropertiesConstants.SAPS_CONTAINER_LINKED_PATH);
+			String containerPath = getContainerPath();
 
 			this.createPreProcessingHostPath(hostPath);
 
@@ -59,7 +58,10 @@ public class PreProcessorImpl implements PreProcessor {
 			LOGGER.error(
 					"Failed in the preprocessing of Image Task [" + imageTask.getTaskId() + "]", e);
 		}
+	}
 
+	protected String getContainerPath() {
+		return this.properties.getProperty(SapsPropertiesConstants.SAPS_CONTAINER_LINKED_PATH);
 	}
 
 	@Override
@@ -115,7 +117,7 @@ public class PreProcessorImpl implements PreProcessor {
 		return containerId;
 	}
 
-	private void createPreProcessingHostPath(String hostPath) throws Exception {
+	protected void createPreProcessingHostPath(String hostPath) throws Exception {
 		File file = new File(hostPath);
 		if (!file.exists()) {
 			LOGGER.info("Creating directory [" + hostPath + "]");

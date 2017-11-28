@@ -18,7 +18,9 @@ import org.fogbowcloud.saps.engine.util.ExecutionScriptTag;
 import org.fogbowcloud.saps.engine.util.ExecutionScriptTagUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 public class TestPreProcessorImpl {
@@ -28,6 +30,9 @@ public class TestPreProcessorImpl {
 	private PreProcessorImpl preProcessor;
 	private ImageDataStore imageStore;
 	private ImageTask imageTask;
+	
+	@Rule
+    public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,21 +52,28 @@ public class TestPreProcessorImpl {
 		this.preProcessor = Mockito.spy(new PreProcessorImpl(this.properties, this.imageStore));
 	}
 
-	@Test(expected=Exception.class)
 	public void testPreProcessImage() throws Exception {
+		String hostPath = "fake-host-path";
+		String containerPath = "fake-container-path";
+
 		ExecutionScriptTag execScriptTag = new ExecutionScriptTag(
 				this.imageTask.getInputPreprocessingTag(), "fogbow/preprocessor", "preprocessor",
 				ExecutionScriptTagUtil.PRE_PROCESSING);
 
+		Mockito.doReturn(execScriptTag).when(this.preProcessor).getContainerImageTags(imageTask);
 		Mockito.doNothing().when(this.preProcessor).getDockerImage(execScriptTag);
 
+		Mockito.doReturn(hostPath).when(this.preProcessor).getHostPath(imageTask);
+		Mockito.doReturn(containerPath).when(this.preProcessor).getContainerPath();
+
+		Mockito.doNothing().when(this.preProcessor).createPreProcessingHostPath(hostPath);
+
 		String containerId = "fake-container-id";
-		Mockito.doReturn(containerId).when(this.preProcessor).raiseContainer(
-				Mockito.<ExecutionScriptTag>any(), Mockito.<ImageTask>any(), Mockito.anyString(),
-				Mockito.anyString());
+		Mockito.doReturn(containerId).when(this.preProcessor).raiseContainer(execScriptTag,
+				imageTask, hostPath, containerPath);
 		
-		Mockito.doThrow(new Exception()).when(this.preProcessor).executeContainer(
-				"fake-container-id", "/home/ubuntu/run.sh", Mockito.<ImageTask>any());
+		thrown.expect(Exception.class);
+
 		this.preProcessor.preProcessImage(this.imageTask);
 	}
 
