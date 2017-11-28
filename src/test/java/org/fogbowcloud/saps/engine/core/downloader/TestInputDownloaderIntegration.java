@@ -1,10 +1,10 @@
 package org.fogbowcloud.saps.engine.core.downloader;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.io.FileUtils;
 import org.fogbowcloud.saps.engine.core.database.ImageDataStore;
 import org.fogbowcloud.saps.engine.core.database.JDBCImageDataStore;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
@@ -91,7 +90,7 @@ public class TestInputDownloaderIntegration {
 		for (String pendingTask : pendingTasks) {
 			File pendingImageDBFile = new File(pendingTask);
 			if (pendingImageDBFile.exists()) {
-				FileUtils.deleteQuietly(pendingImageDBFile);
+				pendingImageDBFile.delete();
 			}
 		}
 	}
@@ -99,6 +98,7 @@ public class TestInputDownloaderIntegration {
 	@Test
 	public void testStepOverImageWhenDownloadFails()
 			throws SQLException, IOException, InterruptedException, SapsException {
+		clean();
 
 		// 1. we have 2 NOT_DOWNLOADED images, pendingDB is empty
 		// 2. we proceed to download them
@@ -149,6 +149,8 @@ public class TestInputDownloaderIntegration {
 	@Test
 	public void testinputDownloaderErrorWhileGetCreatedImages()
 			throws SQLException, IOException, SapsException {
+		clean();
+		
 		// setup
 		Properties properties = mock(Properties.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
@@ -173,6 +175,8 @@ public class TestInputDownloaderIntegration {
 
 	@Test
 	public void testPurgeImagesFromVolume() throws SQLException, IOException, InterruptedException {
+		clean();
+		
 		// setup
 		Properties properties = mock(Properties.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
@@ -210,6 +214,8 @@ public class TestInputDownloaderIntegration {
 
 	@Test
 	public void testFederationMemberCheck() throws SQLException, IOException, InterruptedException {
+		clean();
+		
 		// setup
 		Properties properties = mock(Properties.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
@@ -251,6 +257,8 @@ public class TestInputDownloaderIntegration {
 
 	@Test
 	public void testPendingTaskMap() throws SQLException, IOException {
+		clean();
+		
 		Properties properties = mock(Properties.class);
 		ImageDataStore imageStore = mock(JDBCImageDataStore.class);
 		String inputDownloaderIP = "fake-inputDownloader-ip";
@@ -297,8 +305,24 @@ public class TestInputDownloaderIntegration {
 
 		InputDownloader inputDownloader = spy(new InputDownloader(properties, imageStore,
 				inputDownloaderIP, inputDownloaderPort, nfsPort, federationMember));
-		
+
 		doNothing().when(inputDownloader).prepareTaskDirStructure(Mockito.any(ImageTask.class));
+		PowerMockito.mockStatic(ExecutionScriptTagUtil.class);
+		ExecutionScriptTag executionScriptTag = new ExecutionScriptTag("", "", "", "");
+		BDDMockito.given(ExecutionScriptTagUtil.getExecutionScritpTag(Mockito.anyString(),
+				Mockito.anyString())).willReturn(executionScriptTag);
+
+		PowerMockito.mockStatic(DockerUtil.class);
+		boolean notImportantBoolean = true;
+		BDDMockito.given(DockerUtil.pullImage(Mockito.anyString(), Mockito.anyString()))
+				.willReturn(notImportantBoolean);
+		String containerId = "1";
+		BDDMockito.given(DockerUtil.runMappedContainer(Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString(), Mockito.anyString())).willReturn(containerId);
+		BDDMockito.given(DockerUtil.execDockerCommand(Mockito.eq(containerId), Mockito.anyString()))
+				.willReturn(1);
+		BDDMockito.given(DockerUtil.removeImage(Mockito.anyString()))
+				.willReturn(notImportantBoolean);
 
 		Assert.assertEquals(0, imageStore.getIn(ImageTaskState.FAILED).size()); // There's no failed
 																				// image tasks
@@ -326,6 +350,8 @@ public class TestInputDownloaderIntegration {
 
 	@Test
 	public void testTaskChangingState() throws Exception {
+		clean();
+		
 		Properties properties = new Properties();
 		setUpProperties(properties);
 
@@ -371,7 +397,9 @@ public class TestInputDownloaderIntegration {
 	}
 
 	@Test
-	public void testDownloadImageNotFoundImage() throws Exception {		
+	public void testDownloadImageNotFoundImage() throws Exception {
+		clean();
+		
 		Mockito.doNothing().when(this.inputDownloaderDefault).prepareTaskDirStructure(Mockito.eq(this.imageTaskDefault));
 		
         PowerMockito.mockStatic(ExecutionScriptTagUtil.class);
