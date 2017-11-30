@@ -6,7 +6,7 @@
   - **Submission Dispatcher**: The User interface, where the user can submit/remove new tasks.
   - **Task Catalogue**: Stores information of [LANDSAT](https://landsat.usgs.gov/) task data and its execution.
   - **Input Downloader**: Searches at **Task Catalogue** for LANDSAT new tasks, then this component assumes a FTP  Server role and downloads and stores image data into a NFS repository.
-  - **Pre Processor**: Search at **Task Catalogue** for LANDSAT tasks already downloaded by **Input Downloader** for pre processing treatment, if necessary, before it arrives to **Scheduler**.
+  - **Pre Processor**: Search at **Task Catalogue** for LANDSAT tasks already downloaded by **Input Downloader** for pre processing treatment (for example, detection of clouds), if necessary, before it arrives to **Scheduler**.
  - **Scheduler**: Orders resources as needed, then schedules tasks to **Worker Nodes**, which performs the actual processing.
   - **Worker Node**: Receives a task from **Scheduler** and executes it. The execution consists processing an image and then storing data at the NFS Server.
   - **Archiver**: Search at **Task Catalogue** for tasks that finished execution and transfers all task data from the NFS Server to a permanent storage. After that, **Input Downloader** is able to detect if the task was archived, so it can remove all task files from its own local repository.
