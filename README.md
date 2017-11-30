@@ -1,15 +1,15 @@
 # SAPS Engine
 ## What is SAPS Engine?
-  SAPS Engine is a tool created to provide a dynamic use of SEBAL algorithm using computational resources obtained through a multi-cloud environment federated by the [Fogbow Middleware](http://www.fogbowcloud.org) (to install it, follow the instructions [here](http://www.fogbowcloud.org/the-big-picture.html)).
+  SAPS Engine is a tool created to provide dynamic access to SEBAL algorithm using computational resources obtained through a multi-cloud environment federated by the [Fogbow Middleware](http://www.fogbowcloud.org) (to install it, follow the instructions [here](http://www.fogbowcloud.org/the-big-picture.html)).
   
   SAPS Engine has seven main components:
-  - **Submission Dispatcher**: Serves requests from a federation member, such as the creation and monitoring new work units, or the purge of processed data.
-  - **Task Catalogue**: Stores information of LANDSAT task data and its execution.
-  - **Input Downloader**: Search at **Task Catalogue** for LANDSAT tasks in "created" state. This component assumes a NFS Server and FTP Server role and stores image data into a repository provided by an interation with **Fogbow Middleware**.
+  - **Submission Dispatcher**: The User interface, where the user can submit/remove new tasks.
+  - **Task Catalogue**: Stores information of [LANDSAT](https://landsat.usgs.gov/) task data and its execution.
+  - **Input Downloader**: Searches at **Task Catalogue** for LANDSAT new tasks, then this component assumes a FTP  Server role and downloads and stores image data into a NFS repository.
   - **Pre Processor**: Search at **Task Catalogue** for LANDSAT tasks already downloaded by **Input Downloader** for pre processing treatment, if necessary, before it arrives to **Scheduler**.
-  - **Scheduler**: Order resources as it detects whether or not are images with "preprocessed" state in **Task Catalogue**, then redirects scheduled tasks to **Worker Nodes**, which performs the task processing.
-  - **Worker Node**: Receives a task from **Scheduler** and executes it. The execution consists in perform an image processing and store data in the NFS Server at the end of it.
-  - **Archiver**: Search at **Task Catalogue** for tasks in "finished" (processed by a **Worker Node**) state and transfer all task data from FTP Server to a permanent storage. After that, **Input Downloader** is able to detect if the task was archived, so it can remove all task files from its own local repository.
+ - **Scheduler**: Orders resources as needed, then schedules tasks to **Worker Nodes**, which performs the actual processing.
+  - **Worker Node**: Receives a task from **Scheduler** and executes it. The execution consists processing an image and then storing data at the NFS Server.
+  - **Archiver**: Search at **Task Catalogue** for tasks that finished execution and transfers all task data from the NFS Server to a permanent storage. After that, **Input Downloader** is able to detect if the task was archived, so it can remove all task files from its own local repository.
 
 ## Install and Deploy
 ### Install Docker CE
@@ -25,4 +25,3 @@ Once Docker is installed, the SAPS components can be deployed by pulling the con
 * [Pre Processor](docs/preprocessor-install.md)
 * [Scheduler](docs/scheduler-install.md)
 * [Archiver](docs/archiver-install.md)
-  
