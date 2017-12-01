@@ -1,7 +1,7 @@
 # Install and Configure Archiver
 
 ## What is Archiver
-	The component responsible for permanent storage of Task data (input and output) and meta-data
+The component responsible for permanent storage of Task data (input and output) and meta-data
 ## Dependencies
 First of all, configure the timezone and NTP client as [follows](./ntp-server-config.md)
 
