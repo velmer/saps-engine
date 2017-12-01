@@ -1,27 +1,16 @@
 # Install and Configure Archiver
-  
-## Dependencies
-First of all, configure the timezone and NTP client as shown below:
 
-  ```
-  1. bash -c ‘echo "America/Recife" > /etc/timezone’
-  2. dpkg-reconfigure -f noninteractive tzdata
-  3. apt-get update
-  4. apt install -y ntp
-  5. sed -i "/server 0.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  6. sed -i "/server 1.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  7. sed -i "/server 2.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  8. sed -i "/server 3.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  9. sed -i "/server ntp.ubuntu.com/d" /etc/ntp.conf
-  10. bash -c ‘echo "server ntp.lsd.ufcg.edu.br" >> /etc/ntp.conf’
-  11. service ntp restart
-  ```
+## What is Archiver
+	The component responsible for permanent storage of Task data (input and output) and meta-data
+## Dependencies
+First of all, configure the timezone and NTP client as [follows](./ntp-server-config.md)
+
 
 After this, the Docker image of the Archiver component can be pulled, and a container running this image can be started, using the following commands:
 
   ```
   1. docker pull fogbow/archiver
-  2. docker run -td -v fogbow/archiver
+  2. docker run -td -v <nfs_directory>:<container_dir> <docker_user>/<docker_repository>:<docker_repository_tag>
   3. container_id=$(docker ps | grep “fogbow/archiver" | awk '{print $1}')
   ```
 
@@ -35,7 +24,7 @@ The Archiver component can also be customized through its configuration file (ex
   # Catalogue database ip
   datastore_ip=
 
-  # Catalogue database port
+  # Catalogue database port (ask your admnistrator for the following info)
   datastore_port=
 
   # Catalogue database name
@@ -130,19 +119,20 @@ Before running the Archiver, the saps-engine/bin/start-archiver configuration fi
   # SAPS Engine directory path (Usually /home/ubuntu/saps-engine)
   saps_engine_dir_path=
 
-  # Scheduler configuration file path
-  saps_engine_conf_path=
+  # Scheduler configuration file path (if you followed the tutorial until here it is 
+#/home/ubuntu/saps-engine/config  
+saps_engine_conf_path=
 
-  # Scheduler log file path
+  # Scheduler log file path (choose any)
   saps_engine_log_properties_path=
 
   # Scheduler target file path (ex.: target/saps-engine-0.0.1-SNAPSHOT.jar:target/lib)
   saps_engine_target_path=
 
-  # Local library path
+  # Local library path (ex: /usr/lib
   library_path=
 
-  # Debug port
+  # Debug port (ask your network administrator for this info)
   debug_port=
   ```
 
@@ -157,3 +147,5 @@ Finally, run the Archiver using:
   ```
   docker exec <container_id> bash -c “cd /home/ubuntu/saps-engine && bash bin/start-archiver &”
   ```
+
+
