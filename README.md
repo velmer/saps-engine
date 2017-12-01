@@ -19,6 +19,10 @@ To install Docker in a Debian based virtual machine follow the instructions prov
 
 Once Docker is installed, the SAPS components can be deployed by pulling the container images available in the service’s repository. In the following, we show how this can be done, for each SAPS component, as well as the necessary customizations made for these components.
 
+### Configure NTP Server
+
+SAPS component are dependent on a NTP Server in an specific configuration. Thus, before proper installing them, the NTP Server must be configured following the instructions [here](docs/ntp-server-config.md)
+
 ### SAPS Components Installation
 * [Dispacher/Dashboard](docs/dispacher-install.md)
 * [Input Downloader](docs/input-downloader-install.md)
