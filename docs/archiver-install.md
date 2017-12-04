@@ -16,97 +16,99 @@ After this, the Docker image of the Archiver component can be pulled, and a cont
 Configure
 
 The Archiver component can also be customized through its configuration file (example available here):
+ ´´´
+ # Catalogue database URL prefix (ex.: jdbc:postgresql://)
+ datastore_url_prefix=
 
-# Catalogue database URL prefix (ex.: jdbc:postgresql://)
-datastore_url_prefix=
+ # Catalogue database ip  (ask your admnistrator for the following info)
+ datastore_ip=
 
-# Catalogue database ip  (ask your admnistrator for the following info)
-datastore_ip=
+ # Catalogue database port
+ datastore_port= 
 
-# Catalogue database port
-datastore_port=
+ # Catalogue database name
+ datastore_name=
 
-# Catalogue database name
-datastore_name=
+ # Catalogue database driver
+ datastore_driver=
 
-# Catalogue database driver
-datastore_driver=
+ # Catalogue database user name
+ datastore_username=
 
-# Catalogue database user name
-datastore_username=
+ # Catalogue database user password
+ datastore_password=
 
-# Catalogue database user password
-datastore_password=
+ # Archiver SFTP script path (tipically: /home/ubuntu/saps-engine/scripts/sftp-access.sh)
+ saps_sftp_script_path=
 
-# Archiver SFTP script path (tipically: /home/ubuntu/saps-engine/scripts/sftp-access.sh)
-saps_sftp_script_path=
+ # Default FTP server user (tipically: ubuntu)
+ default_ftp_server_user=
 
-# Default FTP server user (tipically: ubuntu)
-default_ftp_server_user=
+ # Default FTP server port (tipically: 22)
+ default_ftp_server_port=
 
-# Default FTP server port (tipically: 22)
-default_ftp_server_port=
+ # FTP server export path (tipically: /local/exports)
+ saps_export_path=
 
-# FTP server export path (tipically: /local/exports)
-saps_export_path=
+ # Local files path (tipically: /local/exports)
+ local_input_output_path=
 
-# Local files path (tipically: /local/exports)
-local_input_output_path=
+ # SAPS execution period (tipically: 60000)
+ saps_execution_period=
 
-# SAPS execution period (tipically: 60000)
-saps_execution_period=
+ # Default Archiver loop period (tipically: 60000)
+ default_archiver_period=
 
-# Default Archiver loop period (tipically: 60000)
-default_archiver_period=
+ # Swift container name (ask your cloud admnistrator for the following info)
+ swift_container_name=
 
-# Swift container name (ask your cloud admnistrator for the following info)
-swift_container_name=
+ # Swift input pseudo folder prefix
+ swift_input_pseud_folder_prefix=
 
-# Swift input pseudo folder prefix
-swift_input_pseud_folder_prefix=
+ # Swift output pseudo folder prefix
+ swift_output_pseud_folder_prefix=
 
-# Swift output pseudo folder prefix
-swift_output_pseud_folder_prefix=
+ # Swift user name
+ swift_username=
 
-# Swift user name
-swift_username=
+ # Swift user password
+ swift_password=
 
-# Swift user password
-swift_password=
+ # Swift tenant id
+ swift_tenant_id=
 
-# Swift tenant id
-swift_tenant_id=
+ # Swift tenant name
+ swift_tenant_name=
 
-# Swift tenant name
-swift_tenant_name=
+ # Swift authorization URL
+ swift_auth_url=
 
-# Swift authorization URL
-swift_auth_url=
+ # Keystone V3 project id
+ fogbow.keystonev3.project.id=
 
-# Keystone V3 project id
-fogbow.keystonev3.project.id=
+ # Keystone V3 user id
+ fogbow.keystonev3.user.id=
 
-# Keystone V3 user id
-fogbow.keystonev3.user.id=
+ # Keystone V3 user password
+ fogbow.keystonev3.password=
 
-# Keystone V3 user password
-fogbow.keystonev3.password=
+ # Keystone V3 authorization URL
+ fogbow.keystonev3.auth.url=
 
-# Keystone V3 authorization URL
-fogbow.keystonev3.auth.url=
+ # Keystone V3 Swift authorization URL
+ fogbow.keystonev3.swift.url=
 
-# Keystone V3 Swift authorization URL
-fogbow.keystonev3.swift.url=
-
-# Keystone V3 Swift token update period
-fogbow.keystonev3.swift.token.update.period=
-
+ # Keystone V3 Swift token update period
+ fogbow.keystonev3.swift.token.update.period=
+ ´´´
 # Fogbow-cli directory path
 fogbow_cli_path=
 Once edited, the configuration file needs to be copied to the container:
 
+´´´
 docker cp archiver.conf <container_id>:/home/ubuntu/saps-engine/config
 Run
+´´´
 
 Before running the Archiver, the saps-engine/bin/start-archiver configuration file (example available here) also needs to be edited.
 
