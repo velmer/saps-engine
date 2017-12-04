@@ -16,7 +16,8 @@ After this, the Docker image of the Archiver component can be pulled, and a cont
 Configure
 
 The Archiver component can also be customized through its configuration file (example available here):
- ´´´
+ 
+ ```
  # Catalogue database URL prefix (ex.: jdbc:postgresql://)
  datastore_url_prefix=
 
@@ -100,18 +101,18 @@ The Archiver component can also be customized through its configuration file (ex
 
  # Keystone V3 Swift token update period
  fogbow.keystonev3.swift.token.update.period=
- ´´´
+ ```
 # Fogbow-cli directory path
 fogbow_cli_path=
 Once edited, the configuration file needs to be copied to the container:
 
-´´´
+```
 docker cp archiver.conf <container_id>:/home/ubuntu/saps-engine/config
 Run
-´´´
+```
 
 Before running the Archiver, the saps-engine/bin/start-archiver configuration file (example available here) also needs to be edited.
-
+```
 # SAPS Engine directory path (Usually /home/ubuntu/saps-engine)
 saps_engine_dir_path=
 
@@ -130,6 +131,7 @@ library_path=
 
 # Debug port (ask your network administrator for this info)
 debug_port=
+```
 Then, it needs to be copied to the container:
 
 docker cp start-archiver <container_id>:/home/ubuntu/saps-engine/bin
