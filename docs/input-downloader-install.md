@@ -5,6 +5,9 @@
 This component searches for new tasks from the catalogue, verifies if the requested computations isn't already in storage, if it isn't Input Downloader will then download the input data necessary for performing the processes and store it on NFS
 
 ## Dependencies
+
+All components from saps depend on Docker to function, installation guide [here:](./container-install.md)
+
 Before starting the Input Downloader container, first an NFS server needs to be installed, and configured. It implements the Temporary Storage component. The following steps must be followed:
 	
   ```
