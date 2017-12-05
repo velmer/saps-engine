@@ -1,6 +1,6 @@
 ### Install and Configure Dashboard and Submission Dispatcher
 
-### What is Dispatcher
+#### What is Dispatcher
 Dispatcher is the user interface component, where the user defines what are the tasks the he wants created
 
 #### Dashboard and Submission Dispatcher
