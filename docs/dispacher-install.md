@@ -1,5 +1,8 @@
 ### Install and Configure Dashboard and Submission Dispatcher
 
+### What is Dispatcher
+Dispatcher is the user interface component, where the user defines what are the tasks the he wants created
+
 #### Dashboard and Submission Dispatcher
 Once raised, the VM must contain all the necessary dependencies. In order to do that, follow the steps below:
 
@@ -64,22 +67,22 @@ To run the saps-dashboard, change the
 # Catalogue database URL prefix (ex.: jdbc:postgresql://)
 datastore_url_prefix=
 
-# Catalogue database ip
+# Catalogue database ip (ask your administrator for this info)
 datastore_ip=
 
-# Catalogue database port
+# Catalogue database port (ask your administrator for this info)
 datastore_port=
 
-# Catalogue database name
+# Catalogue database name (ask your administrator for this info)
 datastore_name=
 
-# Catalogue database driver
+# Catalogue database driver (ask your administrator for this info)
 datastore_driver=
 
-# Catalogue database user name
+# Catalogue database user name (ask your administrator for this info)
 datastore_username=
 
-# Catalogue database user password
+# Catalogue database user password (ask your administrator for this info)
 datastore_password=
 ```
 
@@ -100,24 +103,24 @@ submission_rest_server_port=
 
 ##### Container Configuration
 ```
-# Path NFS directory <nfs_directory>
+# Path NFS directory <nfs_directory> (tipically: /local/exports)
 saps_export_path=
 ```
 
 ##### USGS Configuration
 ```
-# USGS login URL
+# USGS login URL (ask your administrator for this info)
 usgs_login_url=
 
-# USGS API URL
+# USGS API URL (ask your administrator for this info)
 usgs_json_url=
 
-# USGS username
+# USGS username (ask your administrator for this info)
 usgs_username=
 
-# USGS password
+# USGS password (ask your administrator for this info)
 usgs_password=
 
-# Period to refresh USGS’ API key
+# Period to refresh USGS’ API key (tipically: 3600)
 usgs_api_key_period=
 ```
