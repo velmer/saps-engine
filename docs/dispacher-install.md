@@ -88,7 +88,7 @@ datastore_password=
 
 ##### Restlet Configuration
 ```
-# Admin email
+# Admin email (this is saps administrator not network administrator)
 admin_email=
 
 # Admin username
