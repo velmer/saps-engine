@@ -101,9 +101,11 @@ The Archiver component can also be customized through its configuration file (ex
 
  # Keystone V3 Swift token update period
  fogbow.keystonev3.swift.token.update.period=
- ```
-# Fogbow-cli directory path
-fogbow_cli_path=
+ 
+ # Fogbow-cli directory path
+ fogbow_cli_path=
+```
+
 Once edited, the configuration file needs to be copied to the container:
 
 ```
