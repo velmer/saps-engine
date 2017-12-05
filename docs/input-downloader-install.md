@@ -1,5 +1,9 @@
 # Install and Configure Input Downloader
 
+## What is Input Downloader?
+
+This component searches for new tasks from the catalogue, verifies if the requested computations isn't already in storage, if it isn't Input Downloader will then download the input data necessary for performing the processes and store it on NFS
+
 ## Dependencies
 Before starting the Input Downloader container, first an NFS server needs to be installed, and configured. It implements the Temporary Storage component. The following steps must be followed:
 	
@@ -30,43 +34,43 @@ With all software deployed, the Input Downloader can be customized by editing it
   # Input Downloader database URL prefix (ex.: jdbc:postgresql://)
   datastore_url_prefix=
 
-  # Input Downloader database ip
+  # Input Downloader database ip (ask your administrator for this info)
   datastore_ip=
 
-  # Input Downloader database port
+  # Input Downloader database port (ask your administrator for this info)
   datastore_port=
 
-  # Input Downloader database name
+  # Input Downloader database name (ask your administrator for this info)
   datastore_name=
 
-  # Input Downloader database driver
+  # Input Downloader database driver (ask your administrator for this info)
   datastore_driver=
 
-  # Input Downloader database user name
+  # Input Downloader database user name (ask your administrator for this info)
   datastore_username=
 
-  # Input Downloader database user password
+  # Input Downloader database user password (ask your administrator for this info)
   datastore_password=
 
-  # Input Downloader default volume size
+  # Input Downloader default volume size (tipically: 180MB)
   default_volume_size=
 
-  # Input Downloader default downloader period
+  # Input Downloader default downloader period (tipically: 600000)
   default_downloader_period=
 
-  # NFS server export path
+  # NFS server export path (tipically: /local/exports )
   saps_export_path=
 
-  # Path to store scenes
+  # Path to store scenes (tipically: /home/ubuntu/results)
   saps_container_linked_path=
 
-  # Max number of tasks to download
+  # Max number of tasks to download (tipically: 33)
   max_tasks_to_download=
 
-  # Max attempts trying to download a scene
+  # Max attempts trying to download a scene (tipically: 2)
   max_download_attempts=
 
-  # Script used to download a scene
+  # Script used to download a scene (tipically: /home/ubuntu/run.sh) 
   container_script=
 
   # Max number of requests to USGS download link
@@ -81,13 +85,13 @@ With all software deployed, the Input Downloader can be customized by editing it
   # USGS API URL
   usgs_json_url=https://earthexplorer.usgs.gov/inventory/json
 
-  # USGS username
+  # USGS username (ask your network administrator for this info)
   usgs_username=
 
-  # USGS password
+  # USGS password (ask your network administrator for this info)
   usgs_password=
 
-  # Period to refresh USGS’ API key
+  # Period to refresh USGS’ API key (tipically 300000)
   usgs_api_key_period=
   ```
 
