@@ -4,6 +4,9 @@
 Dispatcher is the user interface component, where the user defines what are the tasks the he wants created
 
 #### Dashboard and Submission Dispatcher
+
+All components from saps depend on Docker to function, installation guide [here](./container-install.md)
+
 Once raised, the VM must contain all the necessary dependencies. In order to do that, follow the steps below:
 
     # add-apt-repository -y ppa:openjdk-r/ppa
