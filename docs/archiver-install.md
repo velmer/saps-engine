@@ -137,8 +137,10 @@ library_path=
 debug_port=
 ```
 Then, it needs to be copied to the container:
-
+```
 docker cp start-archiver <container_id>:/home/ubuntu/saps-engine/bin
+```
 Finally, run the Archiver using:
-
+```
 docker exec <container_id> bash -c “cd /home/ubuntu/saps-engine && bash bin/start-archiver &”
+```
