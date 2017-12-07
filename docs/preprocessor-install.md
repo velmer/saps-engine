@@ -1,21 +1,13 @@
 # Install and Configure Preprocessor
 
+### What is Preprocessor
+Preprocessor is the component of saps-engine responsible for executing commands/processes that are agnostic to which main algorith was choosen to run on a taks, for example, detection of clouds in a image
+
 ### Dependencies
-Configure your timezone and NTP client as shown below.
-  ```
-  1. bash -c ‘echo "America/Recife" > /etc/timezone’
-  2. dpkg-reconfigure -f noninteractive tzdata
-  3. apt-get update
-  4. apt install -y ntp
-  5. sed -i "/server 0.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  6. sed -i "/server 1.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  7. sed -i "/server 2.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  8. sed -i "/server 3.ubuntu.pool.ntp.org/d" /etc/ntp.conf
-  9. sed -i "/server ntp.ubuntu.com/d" /etc/ntp.conf
-  10. bash -c ‘echo "server ntp.lsd.ufcg.edu.br" >> /etc/ntp.conf’
-  11. service ntp restart
-  12. service postgresql restart
-  ```
+All components from saps depend on Docker to function, installation guide [here](./container-install.md)
+
+First of all, configure the timezone and NTP client as [follows](./ntp-server-config.md)
+
 Install and configure NFS Client Installation in the Host.
 ```
 1. sudo apt-get update
@@ -35,7 +27,7 @@ The configuration file of the Preprocessor component must be edited to customize
 # Catalogue database URL prefix (ex.: jdbc:postgresql://)
 datastore_url_prefix=
 
-# Catalogue database ip
+# Catalogue database ip  (ask your admnistrator for the following info)
 datastore_ip=
 
 # Catalogue database port
@@ -54,15 +46,15 @@ datastore_username=
 datastore_password=
 
 # Container Configuration #####
-# Path NFS directory <nfs_directory>
+# Path NFS directory <nfs_directory> (tipically: /local/exports
 saps_export_path=
 
-# Path in the container
-# default : /tmp
+# Path in the container (tipically: /home/ubuntu/results) 
+# default : /tmp 
 saps_container_linked_path=
 
 # No Required Configuration ####
-# Preprocessor Execution interval (ms)
+# Preprocessor Execution interval (ms) (tipically 600000 )
 preprocessor_execution_period=
 ```
 Again, the file must be copied to the container:
@@ -72,8 +64,14 @@ docker cp preprocessor.conf <container_id>:/home/ubuntu/saps-engine/config
 The saps-engine/bin/start-preprocessor script must
 also be configured:
 ```
+# Preprocessor log file patch (choose any)
 saps_engine_log_properties_path =
+
+# Preprocessor engine target path (ex.: target/saps-engine-0.0.1-SNAPSHOT.jar:target/lib)
 saps_engine_target_path =
+
+# Preprocessor configuration file path (if you followed the tutorial until here it is
+#/home/ubuntu/saps-engine/config
 saps_engine_conf_path =
 ```
 Then, the edited start-preprocessor script must be copied to the container:
