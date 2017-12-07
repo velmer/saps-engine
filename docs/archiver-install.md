@@ -120,14 +120,14 @@ Before running the Archiver, the saps-engine/bin/start-archiver configuration fi
 # SAPS Engine directory path (Usually /home/ubuntu/saps-engine)
 saps_engine_dir_path=
 
-# Scheduler configuration file path (if you followed the tutorial until here it is 
+# Archiver configuration file path (if you followed the tutorial until here it is 
 #/home/ubuntu/saps-engine/config  
 saps_engine_conf_path=
 
 # Achiver log file path (choose any)
 saps_engine_log_properties_path=
 
-# Scheduler target file path (ex.: target/saps-engine-0.0.1-SNAPSHOT.jar:target/lib)
+# Archiver target file path (ex.: target/saps-engine-0.0.1-SNAPSHOT.jar:target/lib)
 saps_engine_target_path=
 
 # Local library path (ex: /usr/lib)
