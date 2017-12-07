@@ -124,7 +124,7 @@ saps_engine_dir_path=
 #/home/ubuntu/saps-engine/config  
 saps_engine_conf_path=
 
-# Scheduler log file path (choose any)
+# Achiver log file path (choose any)
 saps_engine_log_properties_path=
 
 # Scheduler target file path (ex.: target/saps-engine-0.0.1-SNAPSHOT.jar:target/lib)
