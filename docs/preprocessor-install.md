@@ -27,7 +27,7 @@ The configuration file of the Preprocessor component must be edited to customize
 # Catalogue database URL prefix (ex.: jdbc:postgresql://)
 datastore_url_prefix=
 
-# Catalogue database ip  (ask your admnistrator for the following info)
+# Catalogue database ip  (Catalogue info should be the same from Scheduler installation )
 datastore_ip=
 
 # Catalogue database port
