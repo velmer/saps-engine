@@ -70,22 +70,22 @@ To run the saps-dashboard, change the
 # Catalogue database URL prefix (ex.: jdbc:postgresql://)
 datastore_url_prefix=
 
-# Catalogue database ip (ask your administrator for this info)
+# Catalogue database ip (Catalogue info should be the same from Scheduler instalation)
 datastore_ip=
 
-# Catalogue database port (ask your administrator for this info)
+# Catalogue database port 
 datastore_port=
 
-# Catalogue database name (ask your administrator for this info)
+# Catalogue database name 
 datastore_name=
 
-# Catalogue database driver (ask your administrator for this info)
+# Catalogue database driver 
 datastore_driver=
 
-# Catalogue database user name (ask your administrator for this info)
+# Catalogue database user name 
 datastore_username=
 
-# Catalogue database user password (ask your administrator for this info)
+# Catalogue database user password
 datastore_password=
 ```
 
