@@ -23,9 +23,12 @@ Once Docker is installed, the SAPS components can be deployed by pulling the con
 
 SAPS component are dependent on a NTP Server in an specific configuration. Thus, before proper installing them, the NTP Server must be configured following the instructions [here](docs/ntp-server-config.md)
 
+### Scheuduler instalation
+The first component that should be installed is the Scheduler, follow this instructions:
+* [Scheduler](docs/scheduler-install.md)
+
 ### SAPS Components Installation
 * [Dispacher/Dashboard](docs/dispacher-install.md)
 * [Input Downloader](docs/input-downloader-install.md)
 * [Pre Processor](docs/preprocessor-install.md)
-* [Scheduler](docs/scheduler-install.md)
 * [Archiver](docs/archiver-install.md)
