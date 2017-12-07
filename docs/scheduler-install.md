@@ -1,6 +1,11 @@
 # Install and Configure Scheduler
 
+## What is Scheduler
+Scheduler is the component responsible for making the requisition of new computer nodes on the cloud, transfering the necessary files, executing and monitoring the processing of images
+
 ## Dependencies
+All components from saps depend on Docker to function, installation guide [here](./container-install.md)
+
 Before starting the Scheduler container, the Catalog database must be created, using the following commands
 
   ```
@@ -17,7 +22,7 @@ Before starting the Scheduler container, the Catalog database must be created, u
   11. service postgresql restart
   ```
 
-After that, configure the timezone and NTP client as shown below.
+After that, configure the timezone and NTP client as it's explained on [this link](./ntp-server-config.md)
 
   ```
   1. bash -c ‘echo "America/Recife" > /etc/timezone’
@@ -49,119 +54,124 @@ Before starting the service, the Scheduler configuration file (example available
   # Catalogue database URL prefix (ex.: jdbc:postgresql://)
   datastore_url_prefix=
 
-  # Catalogue database ip
+  # Catalogue database ip (All catalogue info should match the inputs on the installation above)
   datastore_ip=
 
-  # Catalogue database port
+  # Catalogue database port (All catalogue info should match the inputs on the installation above)
   datastore_port=
 
-  # Catalogue database name
+  # Catalogue database name (All catalogue info should match the inputs on the installation above)
   datastore_name=
 
-  # Catalogue database driver
+  # Catalogue database driver (All catalogue info should match the inputs on the installation above)
   datastore_driver=
 
-  # Catalogue database user name
+  # Catalogue database user name (All catalogue info should match the inputs on the installation above)
   datastore_username=
 
-  # Catalogue database user password
+  # Catalogue database user password (All catalogue info should match the inputs on the installation above)
   datastore_password=
 
-  # Worker spec file
+  # Worker spec file ##TODO (tipically config/workerSpec)
   infra_initial_specs_file_path=
 
-  # Worker sandbox path
+  # Worker sandbox path (tipically: /tmp/sandbox )
   worker_sandbox=
 
-  # Worker temporary raster directory
+  # Worker temporary raster directory (tipically: /mnt/rasterTmp)
   worker_raster_tmp_dir=
 
-  # Worker run script path
+  # Worker run script path (tipically: /home/ubuntu/saps-engine/scripts/worker-run.sh)
   saps_worker_run_script_path=
 
-  # Worker remote user
+  # Worker remote user (tipically: ubuntu)
   worker_remote_user=
 
-  # NFS server export path
+  # NFS server export path (tipically: /local/exports)
   saps_export_path=
 
-  # Worker mount point
+  # Worker mount point (tipically: /nfs )
   worker_mount_point=
 
-  # Worker exit code file path
+  # Worker exit code file path (tipically: /home/fogbow/exit-check)
   remote_command_exit_path=
 
-  # Blowout directory path
+  # Blowout directory path (tipically: /home/ubuntu/blowout)
   blowout_dir_path=
 
-  # Infrastructure order service time
+  # Infrastructure order service time (tipically: 60000)
   infra_order_service_time=
 
-  # Infrastructure resource service time
+  # Infrastructure resource service time (tipically: 40000)
   infra_resource_service_time=
 
-  # Scheduler loop period
+  # Scheduler loop period (tipically: 60000)
   scheduler_period=
 
-  # SAPS loop period
+  # SAPS loop period (tipically: 60000)
   saps_execution_period=
 
-  # Infrastructure specs block creating
+  # Infrastructure specs block creating (tipically: false)
   infra_specs_block_creating=
 
-  # Execution monitor period
+  # Execution monitor period (tipically: 60000)
   execution_monitor_period=
 
-  # Blowout Infrastructure manager implementation
+  # Blowout Infrastructure manager implementation 
+  # (tipically: org.fogbowcloud.blowout.infrastructure.manage.DefaultInfrastructureManager)
   impl_infra_manager_class_name=
 
   # Blowout Scheduler implementation
+  # (tipically: org.fogbowcloud.blwout.core.StandardScheduler)
   impl_scheduler_class_name=
 
   # Blowout Pool implementation
+  # (tipically: org.fogbowcloud.blowout.pool.DefaultBlowoutPool)
   impl_blowout_pool_class_name=
 
-  # Infrastructure is elastic
+  # Infrastructure is elastic (tipically: true)
   infra_is_elastic=
 
   # Infrastructure Provider implementation
+  # (tipically: org.fogbowcloud.blowout.infrastructure.provider.fogbow.FogbowInfrastructureProvider)
   infra_provider_class_name=
 
-  # Infrastructure resource connection timeout
+  # Infrastructure resource connection timeout (tipically: 20000)
   infra_resource_connection_timeout=
 
-  # Infrastructure resource idle lifetime
+  # Infrastructure resource idle lifetime (tipically: 120000)
   infra_resource_idle_lifetime=
 
-  # Maximum resource reuse
+  # Maximum resource reuse (tipically: 10000)
   max_resource_reuse=
 
-  # Maximum resource connection retries
+  # Maximum resource connection retries (tipically: 4)
   max_resource_connection_retry=
 
-  # Infrastructure monitor period
+  # Infrastructure monitor period (tipically: 30000)
   infra_monitor_period=
 
-  # Local Blowout command interpreter
+  # Local Blowout command interpreter (tipically: /home/ubuntu/blowout/scripts/su_command)
   local_command_interpreter=
 
-  # Token update time
+  # Token update time (tipically: 2)
   token_update_time=
 
-  # Token update time unit
+  # Token update time unit (tipically: h)
   token_update_time_unit=
 
-  # Blowout datastore URL
+  # Blowout datastore URL (tipically: jdbc:sqlite:/tmp/blowout.db)
   blowout_datastore_url=
   ```
 
 Scheduler must know from which Fogbow Manager the resources requests will be made. Currently, we have three plugins available to use in SAPS Engine: LDAPTokenUpdatePlugin, NAFTokenUpdatePlugin and KeystoneTokenUpdatePlugin. Depending on Manager implementation, the plugin chosen will change. To configure this, modify your scheduler.conf with
 
   ```
-  # Fogbow infrastructure manager base URL
+  # Fogbow infrastructure manager base URL (ask your network administrator for this info)
   infra_fogbow_manager_base_url=
 
   # Infrastructure authorization token plugin
+  # for ldap (tipically: org.fogbowcloud.blowout.infrastructure.token.LDAPTokenUpdatePlugin)
   infra_auth_token_update_plugin=
   ```
 
@@ -174,16 +184,16 @@ To configure LDAP authentication:
   # LDAP Infrastructure user password
   fogbow.ldap.password=
 
-  # LDAP Infrastructure authorization URL
+  # LDAP Infrastructure authorization URL (ask your network admnistrator for this info)
   fogbow.ldap.auth.url=
 
-  # LDAP Infrastructure base
+  # LDAP Infrastructure base (ask your network admnistrator for this info)
   fogbow.ldap.base=
 
-  # LDAP Infrastructure encrypt type
+  # LDAP Infrastructure encrypt type (ask your network admnistrator for this info)
   auth_token_prop_ldap_encrypt_type=
 
-  # LDAP Infrastructure private key
+  # LDAP Infrastructure private key 
   fogbow.ldap.private.key=
 
   # LDAP Infrastructure public key
@@ -193,7 +203,7 @@ To configure LDAP authentication:
 To configure NAF authentication:
 
   ```
-  # NAF Infrastructure private key
+  # NAF Infrastructure private key 
   auth_token_prop_naf_identity_private_key=
 
   # NAF Infrastructure public key
@@ -218,7 +228,7 @@ To configure Keystone authentication:
   # Keystone Infrastructure user name
   auth_token_prop_keystone_username=
 
-  # Keystone Infrastructure authentication URL
+  # Keystone Infrastructure authentication URL (ask your network admnistrator for this info)
   auth_token_prop_keystone_auth_url=
   ```
 
