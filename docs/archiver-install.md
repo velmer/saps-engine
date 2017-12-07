@@ -23,7 +23,7 @@ The Archiver component can also be customized through its configuration file (ex
  # Catalogue database URL prefix (ex.: jdbc:postgresql://)
  datastore_url_prefix=
 
- # Catalogue database ip  (ask your admnistrator for the following info)
+ # Catalogue database ip  (Catalogue info should be the same of the installation of Scheduler)
  datastore_ip=
 
  # Catalogue database port
