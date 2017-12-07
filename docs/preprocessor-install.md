@@ -6,7 +6,7 @@ Preprocessor is the component of saps-engine responsible for executing commands/
 ### Dependencies
 All components from saps depend on Docker to function, installation guide [here](./container-install.md)
 
-First of all, configure the timezone and NTP client as [follows](./ntp-server-config.md)
+First of all, configure the timezone and NTP client as it's explained on [this link](./ntp-server-config.md)
 
 Install and configure NFS Client Installation in the Host.
 ```
