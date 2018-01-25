@@ -19,7 +19,7 @@ Once raised, the VM must contain all the necessary dependencies. In order to do 
 
 Once the needed dependencies are installed, download and build saps-dashboard, fogbow-manager, blowout and saps-engine:
 
-    # git clone -b backend-integration https://github.com/fogbow/saps-dashboard.git
+    # git clone -b master https://github.com/fogbow/saps-dashboard.git
     # cd saps-dashboard
     # npm install
     # mv node_modules public/
@@ -30,12 +30,12 @@ Once the needed dependencies are installed, download and build saps-dashboard, f
     # mvn install -Dmaven.test.skip=true
     # cd ..
 
-    # git clone -b sebal-experiment-resources-fix https://github.com/fogbow/blowout.git
+    # git clone -b sebal-experiment-queue-fix https://github.com/fogbow/blowout.git
     # cd blowout
     # mvn install -Dmaven.test.skip=true
     # cd ..
 
-    # git clone -b frontend-integration https://github.com/fogbow/saps-engine.git
+    # git clone -b develop-pure https://github.com/fogbow/saps-engine.git
     # cd saps-engine
     # mvn install -Dmaven.test.skip=true
     # cd ..
