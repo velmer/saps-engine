@@ -154,6 +154,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         endCal.setTime(endDate);
         endCal.add(Calendar.DAY_OF_YEAR, 1);
 
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         while (cal.before(endCal)) {
             try {
                 int startingYear = cal.get(Calendar.YEAR);
@@ -161,12 +162,16 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
 
                 for (String dataset : datasets) {
                     int endingYear = endCal.get(Calendar.YEAR);
-                    Set<String> regions = repository.getRegionsFromArea(
-                            dataset, startingYear, endingYear, lowerLeftLatitude,
-                            lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
+//                    Set<String> regions = repository.getRegionsFromArea(
+//                            dataset, startingYear, endingYear, lowerLeftLatitude,
+//                            lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
+
+                    Set<String> regions = new HashSet<String>(Arrays.asList(new String[] {"215065"}));
 
                     for (String region : regions) {
                         String taskId = UUID.randomUUID().toString();
+
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG3):" + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
 
                         ImageTask iTask = getImageStore().addImageTask(
                                 taskId,
@@ -185,6 +190,8 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                         getImageStore().addStateStamp(taskId, ImageTaskState.CREATED,
                                 getImageStore().getTask(taskId).getUpdateTime());
                         getImageStore().dispatchMetadataInfo(taskId);
+
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG4):" + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
 
                         createdTasks.add(task);
                     }

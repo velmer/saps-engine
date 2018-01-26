@@ -96,6 +96,8 @@ public class ImageResource extends BaseResource {
 	@Post
 	public StringRepresentation insertTasks(Representation entity) {
 		Form form = new Form(entity);
+		String initialDate = form.getFirstValue(PROCESSING_INIT_DATE);
+		LOGGER.error("SAPS-EXPERIMENT-01 (LOG2):" + initialDate + " - " + System.currentTimeMillis());
 
 		String userEmail = form.getFirstValue(UserResource.REQUEST_ATTR_USER_EMAIL, true);
 		String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
