@@ -171,7 +171,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                     for (String region : regions) {
                         String taskId = UUID.randomUUID().toString();
 
-                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG3):" + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG3): " + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
 
                         ImageTask iTask = getImageStore().addImageTask(
                                 taskId,
@@ -191,7 +191,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                                 getImageStore().getTask(taskId).getUpdateTime());
                         getImageStore().dispatchMetadataInfo(taskId);
 
-                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG4):" + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG4): " + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
 
                         createdTasks.add(task);
                     }
