@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.database.JDBCImageDataStore;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
-import org.fogbowcloud.saps.engine.core.model.SapsUser;																																		
+import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.core.repository.USGSNasaRepository;
 import org.fogbowcloud.saps.engine.core.util.DatasetUtil;
 import org.fogbowcloud.saps.notifier.Ward;
@@ -160,7 +160,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 int startingYear = cal.get(Calendar.YEAR);
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
 
-                for (String dataset : datasets) {
+                for (String dataset : datasets.subList(0, 1)) {
                     int endingYear = endCal.get(Calendar.YEAR);
 //                    Set<String> regions = repository.getRegionsFromArea(
 //                            dataset, startingYear, endingYear, lowerLeftLatitude,

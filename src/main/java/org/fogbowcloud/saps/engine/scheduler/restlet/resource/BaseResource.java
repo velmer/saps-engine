@@ -46,8 +46,8 @@ public class BaseResource extends ServerResource {
 	}
 
 	String extractCoordinate(Form form, String name, int index) {
-		String data[] = form.getValuesArray(name + "[]");
-		return data[index];
+		String data = form.getFirstValue(name);
+		return data.substring(1, data.length() - 1).split(", ")[index];
 	}
 
 	Date extractDate(Form form, String name) throws ParseException {

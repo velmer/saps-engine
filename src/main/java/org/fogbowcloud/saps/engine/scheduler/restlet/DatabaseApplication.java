@@ -91,6 +91,7 @@ public class DatabaseApplication extends Application {
 		router.attach("/regions/details", RegionResource.class);
 		router.attach("/regions/search", RegionResource.class);
 		router.attach("/email", ProcessedImagesResource.class);
+		router.attach("/deletedb", DeleteDBRegisterResource.class);
 
 		return router;
 	}
