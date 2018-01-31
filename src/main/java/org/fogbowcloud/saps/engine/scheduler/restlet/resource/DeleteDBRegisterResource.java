@@ -38,24 +38,28 @@ public class DeleteDBRegisterResource extends BaseResource {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
 
-		String flow = series.getFirstValue("flow", true);
+		String flow = series.getFirstValue("requestsPerSecond", true);
 		String round = series.getFirstValue("round", true);
 
 		boolean allCommandsOk = true;
 
-		Process pb = new ProcessBuilder("cp", "-c",
-				"/local/volume/saps-engine/log/dispatcher-lsd.log",
-				"/local/volume/dispatcher-experiment/dispatcher-lsd-" + flow + "-" + round + ".log")
-						.start();
+		Process pb = new ProcessBuilder("/bin/bash", "-c",
+				"cp /local/volume/saps-engine/log/dispatcher-lsd.log /local/volume/dispatcher-experiment/dispatcher-lsd-"
+						+ flow + "-" + round + ".log").start();
 
 		LOGGER.info("CP Command :: Exit value: " + pb.exitValue());
-		
+
 		if (pb.exitValue() != 0) {
 			allCommandsOk = false;
 		}
-		
-		if (!allCommandsOk) {
-			throw new ResourceException(HttpStatus.SC_METHOD_FAILURE);
+
+		pb = new ProcessBuilder("/bin/bash", "-c",
+				"echo \"\" > /local/volume/saps-engine/log/dispatcher-lsd.log").start();
+
+		LOGGER.info("ECHO Command :: Exit value: " + pb.exitValue());
+
+		if (pb.exitValue() != 0) {
+			allCommandsOk = false;
 		}
 
 		List<String> commandList = new ArrayList<String>();
@@ -64,7 +68,7 @@ public class DeleteDBRegisterResource extends BaseResource {
 		commandList.add("\"DELETE FROM states_timestamps;\"");
 
 		for (String command : commandList) {
-			pb = new ProcessBuilder("psql", "-c", command).start();
+			pb = new ProcessBuilder("/bin/bash", "-c", "psql -c " + command).start();
 			pb.waitFor();
 			LOGGER.info("Command: " + command + " :: Exit value: " + pb.exitValue());
 			if (pb.exitValue() != 0) {
