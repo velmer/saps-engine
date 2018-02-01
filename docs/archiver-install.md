@@ -11,11 +11,13 @@ All components from saps depend on Docker to function, installation guide [here]
 First of all, configure the timezone and NTP client as [follows](./ntp-server-config.md)
 
 After this, the Docker image of the Archiver component can be pulled, and a container running this image can be started, using the following commands:
-
+```
 1. docker pull fogbow/archiver
 2. docker run -td -v <nfs_directory>:<container_dir> <docker_user>/<docker_repository>:<docker_repository_tag>
 3. container_id=$(docker ps | grep “fogbow/archiver" | awk '{print $1}')
+```
 Configure
+
 
 The Archiver component can also be customized through its configuration file (example available here):
  
