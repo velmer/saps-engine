@@ -47,6 +47,8 @@ public class DeleteDBRegisterResource extends BaseResource {
 				"cp /local/volume/saps-engine/log/dispatcher-lsd.log /local/volume/dispatcher-experiment/dispatcher-lsd-"
 						+ flow + "-" + round + ".log").start();
 
+		pb.waitFor();
+
 		LOGGER.info("CP Command :: Exit value: " + pb.exitValue());
 
 		if (pb.exitValue() != 0) {
@@ -56,6 +58,8 @@ public class DeleteDBRegisterResource extends BaseResource {
 		pb = new ProcessBuilder("/bin/bash", "-c",
 				"echo \"\" > /local/volume/saps-engine/log/dispatcher-lsd.log").start();
 
+		pb.waitFor();
+
 		LOGGER.info("ECHO Command :: Exit value: " + pb.exitValue());
 
 		if (pb.exitValue() != 0) {
@@ -63,12 +67,13 @@ public class DeleteDBRegisterResource extends BaseResource {
 		}
 
 		List<String> commandList = new ArrayList<String>();
-		commandList.add("\"DELETE FROM nasa_images;\"");
-		commandList.add("\"DELETE FROM provenance_data;\"");
-		commandList.add("\"DELETE FROM states_timestamps;\"");
+		commandList.add("DELETE FROM nasa_images;");
+		commandList.add("DELETE FROM provenance_data;");
+		commandList.add("DELETE FROM states_timestamps;");
 
 		for (String command : commandList) {
-			pb = new ProcessBuilder("/bin/bash", "-c", "psql -c " + command).start();
+			pb = new ProcessBuilder("/bin/bash", "-c", "sudo su sebal -c \"psql -c '" + command + "'\"")
+					.start();
 			pb.waitFor();
 			LOGGER.info("Command: " + command + " :: Exit value: " + pb.exitValue());
 			if (pb.exitValue() != 0) {
