@@ -1,7 +1,5 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet.resource;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -161,6 +159,9 @@ public class ImageResource extends BaseResource {
 					inputPreprocessing,
 					algorithmExecution
 			);
+			
+			LOGGER.error("SAPS-EXPERIMENT-01 (LOG5): " + initialDate + " - " + System.currentTimeMillis());
+			
 			if (application.isUserNotifiable(userEmail)) {
 				Submission submission = new Submission(UUID.randomUUID().toString());
 				for (Task imageTask : createdTasks) {
