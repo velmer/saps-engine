@@ -40,12 +40,13 @@ public class DeleteDBRegisterResource extends BaseResource {
 
 		String flow = series.getFirstValue("requestsPerSecond", true);
 		String round = series.getFirstValue("round", true);
+		String years = series.getFirstValue("years", true)
 
 		boolean allCommandsOk = true;
 
 		Process pb = new ProcessBuilder("/bin/bash", "-c",
-				"cp /local/volume/saps-engine/log/dispatcher-lsd.log /local/volume/dispatcher-experiment/dispatcher-lsd-"
-						+ flow + "-" + round + ".log").start();
+				"cp /home/ubuntu/saps-engine/log/dispatcher-lsd.log /home/ubuntu/dispatcher-experiment/dispatcher-lsd-"
+						+ flow + "-" + years + "-" + round + ".log").start();
 
 		pb.waitFor();
 
@@ -56,7 +57,7 @@ public class DeleteDBRegisterResource extends BaseResource {
 		}
 
 		pb = new ProcessBuilder("/bin/bash", "-c",
-				"echo \"\" > /local/volume/saps-engine/log/dispatcher-lsd.log").start();
+				"echo \"\" > /home/ubuntu/saps-engine/log/dispatcher-lsd.log").start();
 
 		pb.waitFor();
 
@@ -72,7 +73,7 @@ public class DeleteDBRegisterResource extends BaseResource {
 		commandList.add("DELETE FROM states_timestamps;");
 
 		for (String command : commandList) {
-			pb = new ProcessBuilder("/bin/bash", "-c", "sudo su sebal -c \"psql -c '" + command + "'\"")
+			pb = new ProcessBuilder("/bin/bash", "-c", "sudo su ubuntu -c \"psql -d sebal -c '" + command + "'\"")
 					.start();
 			pb.waitFor();
 			LOGGER.info("Command: " + command + " :: Exit value: " + pb.exitValue());
