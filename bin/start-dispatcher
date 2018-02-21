@@ -2,4 +2,5 @@
 
 SAPS_DIR="/home/ubuntu/saps-engine/"
 
-sudo java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n -Dlog4j.configuration=file:$SAPS_DIR/config/dispatcher-lsd-log4j.properties -cp $SAPS_DIR/target/saps-engine-0.0.1-SNAPSHOT.jar:$SAPS_DIR/target/lib/* org.fogbowcloud.saps.engine.scheduler.restlet.RestletServerMain $SAPS_DIR/config/saps-dispatcher-lsd.conf &
+sudo java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n -Dlog4j.configuration=file:$SAPS_DIR/config/dispatcher-log4j.properties -cp $SAPS_DIR/target/saps-engine-0.0.1-SNAPSHOT.jar:$SAPS_DIR/target/lib/* org.fogbowcloud.saps.engine.scheduler.restlet.RestletServerMain $SAPS_DIR/config/dispatcher.conf &
+
