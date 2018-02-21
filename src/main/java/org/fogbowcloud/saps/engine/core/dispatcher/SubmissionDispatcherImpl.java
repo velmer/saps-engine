@@ -145,7 +145,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
             String lowerLeftLatitude, String lowerLeftLongitude,
             String upperRightLatitude, String upperRightLongitude,
             Date initDate, Date endDate, String inputGathering, String inputPreprocessing,
-            String algorithmExecution) {
+            String algorithmExecution, String taskIdForm) {
         List<Task> createdTasks = new ArrayList<>();
 
         GregorianCalendar cal = new GregorianCalendar();
@@ -154,14 +154,13 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         endCal.setTime(endDate);
         endCal.add(Calendar.DAY_OF_YEAR, 1);
 
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         while (cal.before(endCal)) {
             try {
                 int startingYear = cal.get(Calendar.YEAR);
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
 
                 for (String dataset : datasets.subList(0, 1)) {
-                    int endingYear = endCal.get(Calendar.YEAR);
+                    //int endingYear = endCal.get(Calendar.YEAR);
 //                    Set<String> regions = repository.getRegionsFromArea(
 //                            dataset, startingYear, endingYear, lowerLeftLatitude,
 //                            lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
@@ -171,7 +170,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                     for (String region : regions) {
                         String taskId = UUID.randomUUID().toString();
 
-                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG3): " + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG3): " + taskIdForm + " - " + System.currentTimeMillis());
 
                         ImageTask iTask = getImageStore().addImageTask(
                                 taskId,
@@ -191,7 +190,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                                 getImageStore().getTask(taskId).getUpdateTime());
                         getImageStore().dispatchMetadataInfo(taskId);
 
-                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG4): " + dateFormatter.format(initDate) + " - " + System.currentTimeMillis());
+                        LOGGER.error("SAPS-EXPERIMENT-01 (LOG4): " + taskIdForm + " - " + System.currentTimeMillis());
 
                         createdTasks.add(task);
                     }

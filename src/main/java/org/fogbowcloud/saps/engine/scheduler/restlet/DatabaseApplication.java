@@ -117,7 +117,7 @@ public class DatabaseApplication extends Application {
 			Date endDate,
 			String inputGathering,
 			String inputPreprocessing,
-			String algorithmExecution) {
+			String algorithmExecution, String taskId) {
 		return submissionDispatcher.fillDB(
 				lowerLeftLatitude,
 				lowerLeftLongitude,
@@ -127,7 +127,8 @@ public class DatabaseApplication extends Application {
 				endDate,
 				inputGathering,
 				inputPreprocessing,
-				algorithmExecution
+				algorithmExecution,
+				taskId
 		);
 	}
 

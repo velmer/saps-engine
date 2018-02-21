@@ -94,8 +94,8 @@ public class ImageResource extends BaseResource {
 	@Post
 	public StringRepresentation insertTasks(Representation entity) {
 		Form form = new Form(entity);
-		String initialDate = form.getFirstValue(PROCESSING_INIT_DATE);
-		LOGGER.error("SAPS-EXPERIMENT-01 (LOG2): " + initialDate + " - " + System.currentTimeMillis());
+		String taskId = form.getFirstValue("taskId", true);
+		LOGGER.error("SAPS-EXPERIMENT-01 (LOG2): " + taskId + " - " + System.currentTimeMillis());
 
 		String userEmail = form.getFirstValue(UserResource.REQUEST_ATTR_USER_EMAIL, true);
 		String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
@@ -103,7 +103,7 @@ public class ImageResource extends BaseResource {
 		if (!authenticateUser(userEmail, userPass) || userEmail.equals("anonymous")) {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
-
+		
 		String lowerLeftLatitude;
 		String lowerLeftLongitude;
 		String upperRightLatitude;
@@ -157,10 +157,11 @@ public class ImageResource extends BaseResource {
 					endDate,
 					inputGathering,
 					inputPreprocessing,
-					algorithmExecution
+					algorithmExecution,
+					taskId
 			);
 			
-			LOGGER.error("SAPS-EXPERIMENT-01 (LOG5): " + initialDate + " - " + System.currentTimeMillis());
+			LOGGER.error("SAPS-EXPERIMENT-01 (LOG5): " + taskId + " - " + System.currentTimeMillis());
 			
 			if (application.isUserNotifiable(userEmail)) {
 				Submission submission = new Submission(UUID.randomUUID().toString());

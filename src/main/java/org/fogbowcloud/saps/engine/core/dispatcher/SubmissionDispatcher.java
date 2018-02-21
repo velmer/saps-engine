@@ -22,7 +22,7 @@ public interface SubmissionDispatcher {
 	List<Task> fillDB(String lowerLeftLatitude, String lowerLeftLongitude,
 			String upperRightLatitude, String upperRightLongitude, Date initDate,
 			Date endDate, String inputGathering, String inputPreprocessing,
-			String algorithmExecution) throws IOException, ParseException;
+			String algorithmExecution, String taskIdForm) throws IOException, ParseException;
 
 	List<Ward> getUsersToNotify() throws SQLException;
 
@@ -37,4 +37,5 @@ public interface SubmissionDispatcher {
 	void updateUserState(String userEmail, boolean userState) throws SQLException;
 
 	boolean isUserNotifiable(String userEmail) throws SQLException;
+
 }
