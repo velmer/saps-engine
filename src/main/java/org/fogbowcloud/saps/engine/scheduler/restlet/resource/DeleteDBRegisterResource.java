@@ -40,7 +40,7 @@ public class DeleteDBRegisterResource extends BaseResource {
 
 		String flow = series.getFirstValue("requestsPerSecond", true);
 		String round = series.getFirstValue("round", true);
-		String years = series.getFirstValue("years", true)
+		String years = series.getFirstValue("years", true);
 
 		boolean allCommandsOk = true;
 
