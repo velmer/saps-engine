@@ -8,7 +8,6 @@
 pending-task-archive.db
 pending-task-archive.db.p
 pending-task-archive.db.t
-.settings/
 .project
-.classpath
 
+.idea/
