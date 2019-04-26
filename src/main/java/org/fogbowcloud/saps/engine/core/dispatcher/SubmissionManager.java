@@ -1,7 +1,9 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
+
+import org.json.JSONException;
 
 /**
  * Manages submissions by realizing communication between SAPS instances.
@@ -14,6 +16,8 @@ public interface SubmissionManager {
    * 
    * @param submissionParameters Parameters of user submission.
    * @return List of added tasks.
+   * @throws IOException
+   * @throws JSONException
    */
-  List<Task> addTasks(SubmissionParameters submissionParameters);
+  List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException;
 }

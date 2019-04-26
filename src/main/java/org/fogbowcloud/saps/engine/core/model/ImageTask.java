@@ -66,6 +66,27 @@ public class ImageTask implements Serializable {
 		this.error = error;
 	}
 
+	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException {
+		this.taskId = imageTaskJsonObject.getString("taskId");
+		this.dataset = imageTaskJsonObject.getString("dataset");
+		this.region = imageTaskJsonObject.getString("region");
+		this.imageDate = (Date) imageTaskJsonObject.get("imageDate");
+		this.downloadLink = imageTaskJsonObject.getString("downloadLink");
+		this.state = ImageTaskState.valueOf(imageTaskJsonObject.getString("state"));
+		this.federationMember = imageTaskJsonObject.getString("federationMember");
+		this.priority = imageTaskJsonObject.getInt("priority");
+		this.stationId = imageTaskJsonObject.getString("stationId");
+		this.inputGatheringTag = imageTaskJsonObject.getString("inputGatheringTag");
+		this.inputPreprocessingTag = imageTaskJsonObject.getString("inputPreprocessingTag");
+		this.algorithmExecutionTag = imageTaskJsonObject.getString("algorithmExecutionTag");
+		this.archiverVersion = imageTaskJsonObject.getString("archiverVersion");
+		this.blowoutVersion = imageTaskJsonObject.getString("blowoutVersion");
+		this.creationTime = (Timestamp) imageTaskJsonObject.get("creationTime");
+		this.updateTime = (Timestamp) imageTaskJsonObject.get("updateTime");
+		this.status = imageTaskJsonObject.getString("status");
+		this.error = imageTaskJsonObject.getString("error");
+	}
+
 	public String getTaskId() {
 		return taskId;
 	}

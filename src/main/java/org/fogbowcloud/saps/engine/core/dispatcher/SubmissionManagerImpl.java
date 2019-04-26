@@ -1,7 +1,17 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
-import java.util.Date;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.fogbowcloud.saps.engine.core.model.ImageTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.ext.json.JsonConverter;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
 /**
  * Concret implementation of {@link SubmissionManager}.
@@ -12,9 +22,45 @@ public class SubmissionManagerImpl implements SubmissionManager {
   private static final String REMOTE_INSTANCE_URL = "";
 
   @Override
-  public List<Task> addTasks(SubmissionParameters submissionParameters) {
-    String remoteInstanceUrl = getRemoteInstanceUrl();
+  public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException {
+    List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
     return null;
+  }
+
+  /**
+   * Gets a list of processed tasks from a SAPS remote instance.
+   * 
+   * @param submissionParameters Parameters of user submission.
+   * @return List of processed tasks.
+   * @throws IOException
+   * @throws JSONException
+   */
+  private List<ImageTask> getRemotelyProcessedTasks(SubmissionParameters submissionParameters)
+      throws IOException, JSONException {
+    String remoteInstanceUrl = getRemoteInstanceUrl();
+    ClientResource clientResource = new ClientResource(remoteInstanceUrl);
+    Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
+    List<ImageTask> processedTasks = extractTasksList(response);
+    return processedTasks;
+  }
+
+  /**
+   * Extract a list of tasks from specified response object.
+   * 
+   * @param response Response containing a list of tasks.
+   * @return List of tasks.
+   * @throws IOException
+   * @throws JSONException
+   */
+  private List<ImageTask> extractTasksList(Representation response) throws IOException, JSONException {
+    List<ImageTask> tasks = new ArrayList<>();
+    JsonConverter jsonConverter = new JsonConverter();
+    JSONObject responseJson = jsonConverter.toObject(response, JSONObject.class, null);
+    JSONArray tasksJsonArray = responseJson.getJSONArray("result");
+    for (int i = 0; i < tasksJsonArray.length(); i++) {
+      tasks.add(new ImageTask(tasksJsonArray.optJSONObject(i)));
+    }
+    return tasks;
   }
 
   /**
