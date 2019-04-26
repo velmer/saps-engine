@@ -8,12 +8,22 @@ import java.util.List;
  */
 public class SubmissionManagerImpl implements SubmissionManager {
 
+  // TODO: Replace static string by config txt file
+  private static final String REMOTE_INSTANCE_URL = "";
+
   @Override
-  public List<Task> addTasks(String lowerLeftLatitude, String lowerLeftLongitude,
-      String upperRightLatitude, String upperRightLongitude,
-      Date initDate, Date endDate, String inputGathering,
-      String inputPreprocessing, String algorithmExecution) {
+  public List<Task> addTasks(SubmissionParameters submissionParameters) {
+    String remoteInstanceUrl = getRemoteInstanceUrl();
     return null;
+  }
+
+  /**
+   * Returns the URL of a SAPS remote instance.
+   * 
+   * @return URL of a SAPS remote instance.
+   */
+  private String getRemoteInstanceUrl() {
+    return REMOTE_INSTANCE_URL;
   }
   
 }
