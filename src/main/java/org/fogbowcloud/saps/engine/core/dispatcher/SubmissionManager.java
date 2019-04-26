@@ -24,7 +24,7 @@ public interface SubmissionManager {
    * @return List of added tasks.
    */
   List<Task> addTasks(String lowerLeftLatitude, String lowerLeftLongitude,
-      String upperRightLatitude, String upperRightLongitude, Date initDate,
-      Date endDate, String inputGathering, String inputPreprocessing,
-      String algorithmExecution);
+      String upperRightLatitude, String upperRightLongitude,
+      Date initDate, Date endDate, String inputGathering,
+      String inputPreprocessing, String algorithmExecution);
 }
