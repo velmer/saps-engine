@@ -11,14 +11,16 @@ import org.json.JSONException;
  */
 public interface SubmissionManager {
 
-  /**
-   * Adds tasks with specified parameters. Checks for existence of already
-   * processed tasks in others SAPS instances for reuse.
-   * 
-   * @param submissionParameters Parameters of user submission.
-   * @return List of added tasks.
-   * @throws IOException
-   * @throws JSONException
-   */
-  List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException;
+    /**
+     * Adds tasks with specified parameters. Checks for existence of already
+     * processed tasks in others SAPS instances for reuse.
+     *
+     * @param submissionParameters Parameters of user submission.
+     * @return List of added tasks.
+     * @throws IOException
+     * @throws JSONException
+     * @throws ParseException
+     */
+    List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException;
+
 }
