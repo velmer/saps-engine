@@ -43,8 +43,8 @@ public class DatabaseApplication extends Application {
 
 	public DatabaseApplication(Properties properties) throws Exception {
 		this.properties = properties;
-		this.submissionManager = new SubmissionManagerImpl();
 		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
+		this.submissionManager = new SubmissionManagerImpl(this.submissionDispatcher);
 
 		// CORS configuration
 		CorsService cors = new CorsService();

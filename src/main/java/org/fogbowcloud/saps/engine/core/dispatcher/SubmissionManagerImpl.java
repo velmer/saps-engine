@@ -23,6 +23,12 @@ public class SubmissionManagerImpl implements SubmissionManager {
   // TODO: Replace static string by config txt file
   private static final String REMOTE_INSTANCE_URL = "";
 
+  private SubmissionDispatcher submissionDispatcher;
+
+  public SubmissionManagerImpl(SubmissionDispatcher submissionDispatcher) {
+    this.submissionDispatcher = submissionDispatcher;
+  }
+
   @Override
   public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException {
     List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
