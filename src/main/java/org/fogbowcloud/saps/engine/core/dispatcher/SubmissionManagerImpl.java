@@ -1,6 +1,7 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
   }
 
   @Override
-  public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException {
+  public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException {
     List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
     List<Date> datesToExclude = processedTasks.stream()
       .map(ImageTask::getImageDate)

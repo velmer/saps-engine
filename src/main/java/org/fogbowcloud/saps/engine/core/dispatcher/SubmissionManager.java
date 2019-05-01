@@ -1,6 +1,7 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.json.JSONException;
@@ -19,5 +20,5 @@ public interface SubmissionManager {
    * @throws IOException
    * @throws JSONException
    */
-  List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException;
+  List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException;
 }
