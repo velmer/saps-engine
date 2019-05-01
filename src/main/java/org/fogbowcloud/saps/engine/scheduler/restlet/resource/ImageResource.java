@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.Submission;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.dispatcher.Task;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.scheduler.restlet.DatabaseApplication;
@@ -146,17 +147,18 @@ public class ImageResource extends BaseResource {
 		LOGGER.info(builder);
 
 		try {
-			List<Task> createdTasks = application.addTasks(
-					lowerLeftLatitude,
-					lowerLeftLongitude,
-					upperRightLatitude,
-					upperRightLongitude,
-					initDate,
-					endDate,
-					inputGathering,
-					inputPreprocessing,
-					algorithmExecution
+			SubmissionParameters submissionParameters = new SubmissionParameters(
+				lowerLeftLatitude,
+				lowerLeftLongitude,
+				upperRightLatitude,
+				upperRightLongitude,
+				initDate,
+				endDate,
+				inputGathering,
+				inputPreprocessing,
+				algorithmExecution
 			);
+			List<Task> createdTasks = application.addTasks(submissionParameters);
 			if (application.isUserNotifiable(userEmail)) {
 				Submission submission = new Submission(UUID.randomUUID().toString());
 				for (Task imageTask : createdTasks) {
