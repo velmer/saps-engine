@@ -52,6 +52,7 @@ public class RegionResource extends BaseResource {
 		}
 		
 		List<ImageTask> imageTasks = this.application.getTasksInState(ImageTaskState.ARCHIVED);
+		imageTasks.addAll(this.application.getTasksInState(ImageTaskState.REMOTELY_ARCHIVED));
 
 		Map<String, Integer> regionsFrequency = new HashMap<>();
 		for (ImageTask imageTask : imageTasks) {
