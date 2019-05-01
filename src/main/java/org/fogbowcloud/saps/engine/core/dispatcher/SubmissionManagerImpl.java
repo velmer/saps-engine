@@ -2,7 +2,9 @@ package org.fogbowcloud.saps.engine.core.dispatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.json.JSONArray;
@@ -24,6 +26,9 @@ public class SubmissionManagerImpl implements SubmissionManager {
   @Override
   public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException {
     List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
+    List<Date> datesToExclude = processedTasks.stream()
+      .map(ImageTask::getImageDate)
+      .collect(Collectors.toList());
     return null;
   }
 
