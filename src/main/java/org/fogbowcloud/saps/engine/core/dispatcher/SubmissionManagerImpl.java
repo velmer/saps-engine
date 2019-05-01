@@ -35,7 +35,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     List<Date> datesToExclude = processedTasks.stream()
       .map(ImageTask::getImageDate)
       .collect(Collectors.toList());
-    return null;
+    return submissionDispatcher.fillDB(submissionParameters, datesToExclude);
   }
 
   /**

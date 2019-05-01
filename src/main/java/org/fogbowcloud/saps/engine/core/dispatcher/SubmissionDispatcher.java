@@ -19,10 +19,7 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> fillDB(String lowerLeftLatitude, String lowerLeftLongitude,
-			String upperRightLatitude, String upperRightLongitude, Date initDate,
-			Date endDate, String inputGathering, String inputPreprocessing,
-			String algorithmExecution) throws IOException, ParseException;
+	List<Task> fillDB(SubmissionParameters submissionParameters, List<Date> datesToExclude) throws IOException, ParseException;
 
 	List<Ward> getUsersToNotify() throws SQLException;
 

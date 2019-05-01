@@ -141,20 +141,22 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public List<Task> fillDB(
-            String lowerLeftLatitude, String lowerLeftLongitude,
-            String upperRightLatitude, String upperRightLongitude,
-            Date initDate, Date endDate, String inputGathering, String inputPreprocessing,
-            String algorithmExecution) {
+    public List<Task> fillDB(SubmissionParameters submissionParameters, List<Date> datesToExclude) {
         List<Task> createdTasks = new ArrayList<>();
 
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(initDate);
+        cal.setTime(submissionParameters.getInitDate());
         GregorianCalendar endCal = new GregorianCalendar();
-        endCal.setTime(endDate);
+        endCal.setTime(submissionParameters.getEndDate());
         endCal.add(Calendar.DAY_OF_YEAR, 1);
 
         while (cal.before(endCal)) {
+            int currentDateIndex = datesToExclude.indexOf(cal.getTime());
+            boolean dateShouldBeExcluded = currentDateIndex != -1;
+            if (dateShouldBeExcluded) {
+                datesToExclude.remove(currentDateIndex);
+                continue;
+            }
             try {
                 int startingYear = cal.get(Calendar.YEAR);
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
@@ -164,8 +166,10 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 	LOGGER.debug("----------------------------------------> " +  dataset);
                 	
                     Set<String> regions = repository.getRegionsFromArea(
-                            lowerLeftLatitude,
-                            lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
+                        submissionParameters.getLowerLeftLatitude(),
+                        submissionParameters.getLowerLeftLongitude(),
+                        submissionParameters.getUpperRightLatitude(),
+                        submissionParameters.getUpperRightLongitude());
 
                     for (String region : regions) {
                         String taskId = UUID.randomUUID().toString();
@@ -177,9 +181,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                                 cal.getTime(),
                                 "None",
                                 DEFAULT_PRIORITY,
-                                inputGathering,
-                                inputPreprocessing,
-                                algorithmExecution
+                                submissionParameters.getInputGathering(),
+                                submissionParameters.getInputPreprocessing(),
+                                submissionParameters.getAlgorithmExecution()
                         );
 
                         Task task = new Task(UUID.randomUUID().toString());
