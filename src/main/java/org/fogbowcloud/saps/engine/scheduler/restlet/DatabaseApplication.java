@@ -11,6 +11,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionDispatcherImpl;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionManager;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionManagerImpl;
 import org.fogbowcloud.saps.engine.core.dispatcher.Task;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
@@ -32,11 +34,13 @@ public class DatabaseApplication extends Application {
 	public static final Logger LOGGER = Logger.getLogger(DatabaseApplication.class);
 
 	private Properties properties;
+	private SubmissionManager submissionManager;
 	private SubmissionDispatcherImpl submissionDispatcher;
 	private Component restletComponent;
 
 	public DatabaseApplication(Properties properties) throws Exception {
 		this.properties = properties;
+		this.submissionManager = new SubmissionManagerImpl();
 		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
 
 		// CORS configuration
