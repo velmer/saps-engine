@@ -12,3 +12,5 @@ pending-task-archive.db.t
 .project
 .classpath
 .vscode/
+.idea/
+*.iml
