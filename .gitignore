@@ -1,7 +1,5 @@
 /target/
 
-.classpath
-
 .project
 
 .settings/
@@ -9,5 +7,7 @@ pending-task-archive.db
 pending-task-archive.db.p
 pending-task-archive.db.t
 .project
-
+.classpath
+.vscode/
 .idea/
+*.iml
