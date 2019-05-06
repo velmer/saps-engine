@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionDispatcherImpl;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.dispatcher.Task;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
@@ -108,27 +109,8 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(
-			String lowerLeftLatitude,
-			String lowerLeftLongitude,
-			String upperRightLatitude,
-			String upperRightLongitude,
-			Date initDate,
-			Date endDate,
-			String inputGathering,
-			String inputPreprocessing,
-			String algorithmExecution) {
-		return submissionDispatcher.fillDB(
-				lowerLeftLatitude,
-				lowerLeftLongitude,
-				upperRightLatitude,
-				upperRightLongitude,
-				initDate,
-				endDate,
-				inputGathering,
-				inputPreprocessing,
-				algorithmExecution
-		);
+	public List<Task> addTasks(SubmissionParameters submissionParameters) {
+		return submissionDispatcher.fillDB(submissionParameters);
 	}
 
 	public void purgeImage(String day, String force) throws SQLException, ParseException {
@@ -169,26 +151,7 @@ public class DatabaseApplication extends Application {
 		return properties;
 	}
 
-	public List<ImageTask> searchProcessedTasks(
-			String lowerLeftLatitude,
-			String lowerLeftLongitude,
-			String upperRightLatitude,
-			String upperRightLongitude,
-			Date initDate,
-			Date endDate,
-			String inputPreprocessing,
-			String inputGathering,
-			String algorithmExecution) {
-		return submissionDispatcher.searchProcessedTasks(
-			lowerLeftLatitude,
-			lowerLeftLongitude,
-			upperRightLatitude,
-			upperRightLongitude,
-			initDate,
-			endDate,
-			inputPreprocessing,
-			inputGathering,
-			algorithmExecution
-		);
+	public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
+		return submissionDispatcher.searchProcessedTasks(submissionParameters);
 	}
 }
