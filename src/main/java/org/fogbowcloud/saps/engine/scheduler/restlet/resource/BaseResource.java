@@ -3,8 +3,12 @@ package org.fogbowcloud.saps.engine.scheduler.restlet.resource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
+import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.scheduler.restlet.DatabaseApplication;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -13,6 +17,8 @@ import org.restlet.resource.ServerResource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BaseResource extends ServerResource {
 
@@ -125,4 +131,32 @@ public class BaseResource extends ServerResource {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		return dateFormat.parse(data);
 	}
+
+	/**
+	 * Builds a response as JSONObject from specified list of tasks. The built
+	 * object will have only the property "result", which carries a JSONArray
+	 * of tasks that were parsed to JSONObjects.
+	 *
+	 * @param tasks Tasks to be returned inside "result" property of built
+	 *              JSONObject.
+	 * @return Response as JSONObject.
+	 */
+    JSONObject buildJsonResponseFromTaskList(List<ImageTask> tasks) {
+        JSONArray tasksJsonArray = new JSONArray();
+        for (ImageTask task: tasks) {
+            try {
+                tasksJsonArray.put(task.toJSON());
+            } catch (JSONException e) {
+                LOGGER.error("Failed to build JSON object of Image Task", e);
+            }
+        }
+
+        JSONObject resObj = new JSONObject();
+        try {
+            resObj.put("result", tasksJsonArray);
+        } catch (JSONException e) {
+            LOGGER.error("Failed to build response JSON object", e);
+        }
+        return resObj;
+    }
 }

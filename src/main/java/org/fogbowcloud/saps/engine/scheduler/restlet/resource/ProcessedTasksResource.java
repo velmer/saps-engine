@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -47,23 +45,7 @@ public class ProcessedTasksResource extends BaseResource {
 		LOGGER.info(log);
 
 		List<ImageTask> tasks = application.searchProcessedTasks(submissionParameters);
-
-		JSONArray arr = new JSONArray();
-		for (ImageTask task: tasks) {
-			try {
-				arr.put(task.toJSON());
-			} catch (JSONException e) {
-				LOGGER.error("Failed to build JSON object of Image Task", e);
-			}
-		}
-
-		JSONObject resObj = new JSONObject();
-		try {
-			resObj.put("result", arr);
-		} catch (JSONException e) {
-			LOGGER.error("Failed to build response JSON object", e);
-		}
-
+		JSONObject resObj = buildJsonResponseFromTaskList(tasks);
 		return new StringRepresentation(resObj.toString(), MediaType.APPLICATION_JSON);
 	}
 
