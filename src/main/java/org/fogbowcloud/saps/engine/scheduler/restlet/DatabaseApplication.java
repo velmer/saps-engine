@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -92,7 +91,7 @@ public class DatabaseApplication extends Application {
 		router.attach("/regions/details", RegionResource.class);
 		router.attach("/regions/search", RegionResource.class);
 		router.attach("/email", ProcessedImagesResource.class);
-		router.attach("/processedTasks", ProcessedTasksResource.class);
+		router.attach("/archivedTasks", ArchivedTasksResource.class);
 
 		return router;
 	}

@@ -13,13 +13,13 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 
 /**
- * Responsable for retrieve information about already processed tasks.
+ * Responsable for retrieve information about already processed - archived - tasks.
  */
-public class ProcessedTasksResource extends BaseResource {
+public class ArchivedTasksResource extends BaseResource {
 
-	private static final Logger LOGGER = Logger.getLogger(ProcessedTasksResource.class);
+	private static final Logger LOGGER = Logger.getLogger(ArchivedTasksResource.class);
 
-	public ProcessedTasksResource() {
+	public ArchivedTasksResource() {
 		super();
 	}
 
