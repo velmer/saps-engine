@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
 import org.restlet.data.Form;
@@ -87,75 +88,20 @@ public class RegionResource extends BaseResource {
 		if (!authenticateUser(userEmail, userPass) || userEmail.equals("anonymous")) {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
-		String lowerLeftLatitude;
-		String lowerLeftLongitude;
-		String upperRightLatitude;
-		String upperRightLongitude;
-		try {
-			lowerLeftLatitude = extractCoordinate(form, LOWER_LEFT, 0);
-			lowerLeftLongitude = extractCoordinate(form, LOWER_LEFT, 1);
-			upperRightLatitude = extractCoordinate(form, UPPER_RIGHT, 0);
-			upperRightLongitude = extractCoordinate(form, UPPER_RIGHT, 1);
-		} catch (Exception e) {
-			LOGGER.error("Failed to parse coordinates of new processing.", e);
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "All coordinates must be informed.");
-		}
-		Date initDate;
-		Date endDate;
-		try {
-			initDate = extractDate(form, PROCESSING_INIT_DATE);
-			endDate = extractDate(form, PROCESSING_FINAL_DATE);
-		} catch (Exception e) {
-			LOGGER.error("Failed to parse dates of new processing.", e);
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "All dates must be informed.");
-		}
 
-		String inputGathering = form.getFirstValue(PROCESSING_INPUT_GATHERING_TAG);
-		if (inputGathering.isEmpty())
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Input Gathering must be informed.");
-		String inputPreprocessing = form.getFirstValue(PROCESSING_INPUT_PREPROCESSING_TAG);
-		if (inputPreprocessing.isEmpty())
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Input Preprocessing must be informed.");
-		String algorithmExecution = form.getFirstValue(PROCESSING_ALGORITHM_EXECUTION_TAG);
-		if (algorithmExecution.isEmpty())
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Algorithm Execution must be informed.");
+		SubmissionParameters submissionParameters = extractSubmissionParameters(form);
 
-		String builder = "Recovering processed images with settings:\n" +
-				"\tLower Left: " + lowerLeftLatitude + ", " + lowerLeftLongitude + "\n" +
-				"\tUpper Right: " + upperRightLatitude + ", " + upperRightLongitude + "\n" +
-				"\tInterval: " + initDate + " - " + endDate + "\n" +
-				"\tGathering: " + inputGathering + "\n" +
-				"\tPreprocessing: " + inputPreprocessing + "\n" +
-				"\tAlgorithm: " + algorithmExecution + "\n";
-		LOGGER.info(builder);
+		String log = "Recovering processed images with settings:\n" +
+				"\tLower Left: " + submissionParameters.getLowerLeftLatitude() + ", " + submissionParameters.getLowerLeftLongitude() + "\n" +
+				"\tUpper Right: " + submissionParameters.getUpperRightLatitude() + ", " + submissionParameters.getUpperRightLongitude() + "\n" +
+				"\tInterval: " + submissionParameters.getInitDate() + " - " + submissionParameters.getEndDate() + "\n" +
+				"\tGathering: " + submissionParameters.getInputGathering() + "\n" +
+				"\tPreprocessing: " + submissionParameters.getInputPreprocessing() + "\n" +
+				"\tAlgorithm: " + submissionParameters.getAlgorithmExecution() + "\n";
+		LOGGER.info(log);
 
-		// TODO uncomment when USGS comes back up
-		List<ImageTask> tasks = application.searchProcessedTasks(
-				lowerLeftLatitude,
-				lowerLeftLongitude,
-				upperRightLatitude,
-				upperRightLongitude,
-				initDate,
-				endDate,
-				inputPreprocessing,
-				inputGathering,
-				algorithmExecution
-		);
-		JSONArray arr = new JSONArray();
-		for (ImageTask task: tasks) {
-			try {
-				arr.put(task.toJSON());
-			} catch (JSONException e) {
-				LOGGER.error("Failed to build JSON object of Image Task", e);
-			}
-		}
-		JSONObject resObj = new JSONObject();
-		try {
-			resObj.put("result", arr);
-		} catch (JSONException e) {
-			LOGGER.error("Failed to build response JSON object", e);
-		}
-
+		List<ImageTask> tasks = application.searchProcessedTasks(submissionParameters);
+		JSONObject resObj = buildJsonResponseFromTaskList(tasks);
 		return new StringRepresentation(resObj.toString(), MediaType.APPLICATION_JSON);
 	}
 }
