@@ -141,22 +141,22 @@ public class BaseResource extends ServerResource {
 	 *              JSONObject.
 	 * @return Response as JSONObject.
 	 */
-    JSONObject buildJsonResponseFromTaskList(List<ImageTask> tasks) {
-        JSONArray tasksJsonArray = new JSONArray();
-        for (ImageTask task: tasks) {
-            try {
-                tasksJsonArray.put(task.toJSON());
-            } catch (JSONException e) {
-                LOGGER.error("Failed to build JSON object of Image Task", e);
-            }
-        }
+	JSONObject buildJsonResponseFromTaskList(List<ImageTask> tasks) {
+		JSONArray tasksJsonArray = new JSONArray();
+		for (ImageTask task: tasks) {
+			try {
+				tasksJsonArray.put(task.toJSON());
+			} catch (JSONException e) {
+				LOGGER.error("Failed to build JSON object of Image Task", e);
+			}
+		}
 
-        JSONObject resObj = new JSONObject();
-        try {
-            resObj.put("result", tasksJsonArray);
-        } catch (JSONException e) {
-            LOGGER.error("Failed to build response JSON object", e);
-        }
-        return resObj;
-    }
+		JSONObject resObj = new JSONObject();
+		try {
+			resObj.put("result", tasksJsonArray);
+		} catch (JSONException e) {
+			LOGGER.error("Failed to build response JSON object", e);
+		}
+		return resObj;
+	}
 }

@@ -155,9 +155,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 int startingYear = cal.get(Calendar.YEAR);
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
 
-                for (String dataset : datasets) {
-                	LOGGER.debug("Adding tasks for regions from dataset: " + dataset);
-                	
+                for (String dataset : datasets) { 
+                    LOGGER.debug("Adding tasks for regions from dataset: " + dataset);
+
                     Set<String> regions = repository.getRegionsFromArea(
                             submissionParameters.getLowerLeftLatitude(),
                             submissionParameters.getLowerLeftLongitude(),
@@ -220,7 +220,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     public List<ImageTask> getTasksInState(ImageTaskState imageState) throws SQLException {
-    	return this.imageStore.getIn(imageState);
+        return this.imageStore.getIn(imageState);
     }
 
     public JDBCImageDataStore getImageStore() {
@@ -232,8 +232,8 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-	public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
-		List<ImageTask> filteredTasks = new ArrayList<>();
+    public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
+        List<ImageTask> filteredTasks = new ArrayList<>();
         Set<String> regions = new HashSet<>(repository.getRegionsFromArea(
                 submissionParameters.getLowerLeftLatitude(),
                 submissionParameters.getLowerLeftLongitude(),
@@ -244,12 +244,12 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         for (String region : regions) {
             List<ImageTask> iTasks;
             try {
-				iTasks = getImageStore().getProcessedImages(
-				        region,
+                iTasks = getImageStore().getProcessedImages(
+                        region,
                         submissionParameters.getInitDate(),
                         submissionParameters.getEndDate(),
                         submissionParameters.getInputGathering(),
-						submissionParameters.getInputPreprocessing(),
+                        submissionParameters.getInputPreprocessing(),
                         submissionParameters.getAlgorithmExecution()
                 );
                 filteredTasks.addAll(iTasks);
