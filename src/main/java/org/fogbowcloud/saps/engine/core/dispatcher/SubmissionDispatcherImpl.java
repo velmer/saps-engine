@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.database.JDBCImageDataStore;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
-import org.fogbowcloud.saps.engine.core.model.SapsUser;																																		
+import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.core.repository.USGSNasaRepository;
 import org.fogbowcloud.saps.engine.core.util.DatasetUtil;
 import org.fogbowcloud.saps.notifier.Ward;
@@ -162,14 +162,14 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
 
                 for (String dataset : datasets) {
-                	
-                	LOGGER.debug("----------------------------------------> " +  dataset);
-                	
+                    LOGGER.debug("Adding tasks for regions from dataset: " + dataset);
+
                     Set<String> regions = repository.getRegionsFromArea(
-                        submissionParameters.getLowerLeftLatitude(),
-                        submissionParameters.getLowerLeftLongitude(),
-                        submissionParameters.getUpperRightLatitude(),
-                        submissionParameters.getUpperRightLongitude());
+                            submissionParameters.getLowerLeftLatitude(),
+                            submissionParameters.getLowerLeftLongitude(),
+                            submissionParameters.getUpperRightLatitude(),
+                            submissionParameters.getUpperRightLongitude()
+                    );
 
                     for (String region : regions) {
                         String taskId = UUID.randomUUID().toString();
@@ -191,7 +191,6 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                         getImageStore().addStateStamp(taskId, ImageTaskState.CREATED,
                                 getImageStore().getTask(taskId).getUpdateTime());
                         getImageStore().dispatchMetadataInfo(taskId);
-
                         createdTasks.add(task);
                     }
                 }
@@ -225,9 +224,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
 
         return null;
     }
-    
+
     public List<ImageTask> getTasksInState(ImageTaskState imageState) throws SQLException {
-    	return this.imageStore.getIn(imageState);
+        return this.imageStore.getIn(imageState);
     }
 
     public JDBCImageDataStore getImageStore() {
@@ -238,28 +237,35 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         return properties;
     }
 
-	public List<ImageTask> searchProcessedTasks(String lowerLeftLatitude, String lowerLeftLongitude,
-			String upperRightLatitude, String upperRightLongitude, Date initDate, Date endDate,
-			String inputPreprocessing, String inputGathering, String algorithmExecution) {
-        
-		List<ImageTask> filteredTasks = new ArrayList<>();
-        Set<String> regions = new HashSet<>();
-		regions.addAll(repository.getRegionsFromArea(lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude,
-				upperRightLongitude));
-		
+    @Override
+    public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
+        List<ImageTask> filteredTasks = new ArrayList<>();
+        Set<String> regions = new HashSet<>(repository.getRegionsFromArea(
+                submissionParameters.getLowerLeftLatitude(),
+                submissionParameters.getLowerLeftLongitude(),
+                submissionParameters.getUpperRightLatitude(),
+                submissionParameters.getUpperRightLongitude()
+        ));
+
         for (String region : regions) {
-            List<ImageTask> iTasks = null;
+            List<ImageTask> iTasks;
             try {
-				iTasks = getImageStore().getProcessedImages(region, initDate, endDate, inputGathering,
-						inputPreprocessing, algorithmExecution);
+                iTasks = getImageStore().getProcessedImages(
+                        region,
+                        submissionParameters.getInitDate(),
+                        submissionParameters.getEndDate(),
+                        submissionParameters.getInputGathering(),
+                        submissionParameters.getInputPreprocessing(),
+                        submissionParameters.getAlgorithmExecution()
+                );
                 filteredTasks.addAll(iTasks);
             } catch (SQLException e) {
                 String builder = "Failed to load images with configuration:\n" +
                         "\tRegion: " + region + "\n" +
-                        "\tInterval: " + initDate + " - " + endDate + "\n" +
-                        "\tPreprocessing: " + inputPreprocessing + "\n" +
-                        "\tGathering: " + inputGathering + "\n" +
-                        "\tAlgorithm: " + algorithmExecution + "\n";
+                        "\tInterval: " + submissionParameters.getInitDate() + " - " + submissionParameters.getEndDate() + "\n" +
+                        "\tGathering: " + submissionParameters.getInputGathering() + "\n" +
+                        "\tPreprocessing: " + submissionParameters.getInputPreprocessing() + "\n" +
+                        "\tAlgorithm: " + submissionParameters.getAlgorithmExecution() + "\n";
                 LOGGER.error(builder, e);
             }
         }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -56,11 +55,11 @@ public class DatabaseApplication extends Application {
 	public void startServer() throws Exception {
 		Properties properties = this.submissionDispatcher.getProperties();
 		if (!properties.containsKey(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT)) {
-			throw new IllegalArgumentException(
-					SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT + " is missing on properties.");
+			throw new IllegalArgumentException(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT
+					+ " is missing on properties.");
 		}
-		Integer restServerPort = Integer
-				.valueOf((String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
+		Integer restServerPort = Integer.valueOf(
+				(String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
 
 		LOGGER.info("Starting service on port: " + restServerPort);
 
@@ -85,13 +84,20 @@ public class DatabaseApplication extends Application {
 		Router router = new Router(getContext());
 		router.attach("/", MainResource.class);
 		router.attach("/ui/{requestPath}", MainResource.class);
-		router.attach("/static", new Directory(getContext(), "file:///" + new File(DB_WEB_STATIC_ROOT).getAbsolutePath()));
+		router.attach(
+				"/static",
+				new Directory(
+						getContext(),
+						"file:///" + new File(DB_WEB_STATIC_ROOT).getAbsolutePath()
+				)
+		);
 		router.attach("/users", UserResource.class);
 		router.attach("/processings", ImageResource.class);
 		router.attach("/images/{imgName}", ImageResource.class);
 		router.attach("/regions/details", RegionResource.class);
 		router.attach("/regions/search", RegionResource.class);
 		router.attach("/email", ProcessedImagesResource.class);
+		router.attach("/archivedTasks", ArchivedTasksResource.class);
 
 		return router;
 	}
@@ -99,7 +105,7 @@ public class DatabaseApplication extends Application {
 	public List<ImageTask> getTasks() throws SQLException, ParseException {
 		return submissionDispatcher.getTaskListInDB();
 	}
-
+	
 	public List<ImageTask> getTasksInState(ImageTaskState imageState) throws SQLException {
 		return this.submissionDispatcher.getTasksInState(imageState);
 	}
@@ -108,7 +114,7 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException {
+	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException {
 		return submissionManager.addTasks(submissionParameters);
 	}
 
@@ -150,26 +156,7 @@ public class DatabaseApplication extends Application {
 		return properties;
 	}
 
-	public List<ImageTask> searchProcessedTasks(
-			String lowerLeftLatitude,
-			String lowerLeftLongitude,
-			String upperRightLatitude,
-			String upperRightLongitude,
-			Date initDate,
-			Date endDate,
-			String inputPreprocessing,
-			String inputGathering,
-			String algorithmExecution) {
-		return submissionDispatcher.searchProcessedTasks(
-			lowerLeftLatitude,
-			lowerLeftLongitude,
-			upperRightLatitude,
-			upperRightLongitude,
-			initDate,
-			endDate,
-			inputPreprocessing,
-			inputGathering,
-			algorithmExecution
-		);
+	public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
+		return submissionDispatcher.searchProcessedTasks(submissionParameters);
 	}
 }

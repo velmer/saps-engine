@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.notifier.Ward;
 
@@ -34,4 +35,6 @@ public interface SubmissionDispatcher {
 	void updateUserState(String userEmail, boolean userState) throws SQLException;
 
 	boolean isUserNotifiable(String userEmail) throws SQLException;
+
+	List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters);
 }
