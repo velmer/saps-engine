@@ -7,23 +7,23 @@ import java.util.Date;
  */
 public class SubmissionParameters {
 
-    private String lowerLeftLatitude;
+    private final String lowerLeftLatitude;
 
-    private String lowerLeftLongitude;
+    private final String lowerLeftLongitude;
 
-    private String upperRightLatitude;
+    private final String upperRightLatitude;
 
-    private String upperRightLongitude;
+    private final String upperRightLongitude;
 
-    private Date initDate;
+    private final Date initDate;
 
-    private Date endDate;
+    private final Date endDate;
 
-    private String inputGathering;
+    private final String inputGathering;
 
-    private String inputPreprocessing;
+    private final String inputPreprocessing;
 
-    private String algorithmExecution;
+    private final String algorithmExecution;
 
     public SubmissionParameters(String lowerLeftLatitude, String lowerLeftLongitude,
                                 String upperRightLatitude, String upperRightLongitude,
@@ -48,24 +48,10 @@ public class SubmissionParameters {
     }
 
     /**
-     * @param lowerLeftLatitude the lowerLeftLatitude to set
-     */
-    public void setLowerLeftLatitude(String lowerLeftLatitude) {
-        this.lowerLeftLatitude = lowerLeftLatitude;
-    }
-
-    /**
      * @return the lowerLeftLongitude
      */
     public String getLowerLeftLongitude() {
         return lowerLeftLongitude;
-    }
-
-    /**
-     * @param lowerLeftLongitude the lowerLeftLongitude to set
-     */
-    public void setLowerLeftLongitude(String lowerLeftLongitude) {
-        this.lowerLeftLongitude = lowerLeftLongitude;
     }
 
     /**
@@ -76,24 +62,10 @@ public class SubmissionParameters {
     }
 
     /**
-     * @param upperRightLatitude the upperRightLatitude to set
-     */
-    public void setUpperRightLatitude(String upperRightLatitude) {
-        this.upperRightLatitude = upperRightLatitude;
-    }
-
-    /**
      * @return the upperRightLongitude
      */
     public String getUpperRightLongitude() {
         return upperRightLongitude;
-    }
-
-    /**
-     * @param upperRightLongitude the upperRightLongitude to set
-     */
-    public void setUpperRightLongitude(String upperRightLongitude) {
-        this.upperRightLongitude = upperRightLongitude;
     }
 
     /**
@@ -104,24 +76,10 @@ public class SubmissionParameters {
     }
 
     /**
-     * @param initDate the initDate to set
-     */
-    public void setInitDate(Date initDate) {
-        this.initDate = initDate;
-    }
-
-    /**
      * @return the endDate
      */
     public Date getEndDate() {
         return endDate;
-    }
-
-    /**
-     * @param endDate the endDate to set
-     */
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
     /**
@@ -132,13 +90,6 @@ public class SubmissionParameters {
     }
 
     /**
-     * @param inputGathering the inputGathering to set
-     */
-    public void setInputGathering(String inputGathering) {
-        this.inputGathering = inputGathering;
-    }
-
-    /**
      * @return the inputPreprocessing
      */
     public String getInputPreprocessing() {
@@ -146,24 +97,10 @@ public class SubmissionParameters {
     }
 
     /**
-     * @param inputPreprocessing the inputPreprocessing to set
-     */
-    public void setInputPreprocessing(String inputPreprocessing) {
-        this.inputPreprocessing = inputPreprocessing;
-    }
-
-    /**
      * @return the algorithmExecution
      */
     public String getAlgorithmExecution() {
         return algorithmExecution;
-    }
-
-    /**
-     * @param algorithmExecution the algorithmExecution to set
-     */
-    public void setAlgorithmExecution(String algorithmExecution) {
-        this.algorithmExecution = algorithmExecution;
     }
 
     @Override
