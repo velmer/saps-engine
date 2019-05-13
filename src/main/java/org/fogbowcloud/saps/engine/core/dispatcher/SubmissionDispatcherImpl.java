@@ -156,7 +156,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
 
                 for (String dataset : datasets) {
-                	LOGGER.debug("----------------------------------------> " +  dataset);
+                	LOGGER.debug("Adding tasks for regions from dataset: " + dataset);
                 	
                     Set<String> regions = repository.getRegionsFromArea(
                             submissionParameters.getLowerLeftLatitude(),
