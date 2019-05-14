@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
-import org.json.JSONException;
-
 /**
  * Manages submissions by realizing communication between SAPS instances.
  */
@@ -18,9 +16,8 @@ public interface SubmissionManager {
      * @param submissionParameters Parameters of user submission.
      * @return List of added tasks.
      * @throws IOException
-     * @throws JSONException
      * @throws ParseException
      */
-    List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException;
+    List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException;
 
 }
