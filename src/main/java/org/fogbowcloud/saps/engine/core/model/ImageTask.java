@@ -67,24 +67,26 @@ public class ImageTask implements Serializable {
 	}
 
 	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException {
-		this.taskId = imageTaskJsonObject.getString("taskId");
-		this.dataset = imageTaskJsonObject.getString("dataset");
-		this.region = imageTaskJsonObject.getString("region");
-		this.imageDate = (Date) imageTaskJsonObject.get("imageDate");
-		this.downloadLink = imageTaskJsonObject.getString("downloadLink");
-		this.state = ImageTaskState.valueOf(imageTaskJsonObject.getString("state"));
-		this.federationMember = imageTaskJsonObject.getString("federationMember");
-		this.priority = imageTaskJsonObject.getInt("priority");
-		this.stationId = imageTaskJsonObject.getString("stationId");
-		this.inputGatheringTag = imageTaskJsonObject.getString("inputGatheringTag");
-		this.inputPreprocessingTag = imageTaskJsonObject.getString("inputPreprocessingTag");
-		this.algorithmExecutionTag = imageTaskJsonObject.getString("algorithmExecutionTag");
-		this.archiverVersion = imageTaskJsonObject.getString("archiverVersion");
-		this.blowoutVersion = imageTaskJsonObject.getString("blowoutVersion");
-		this.creationTime = (Timestamp) imageTaskJsonObject.get("creationTime");
-		this.updateTime = (Timestamp) imageTaskJsonObject.get("updateTime");
-		this.status = imageTaskJsonObject.getString("status");
-		this.error = imageTaskJsonObject.getString("error");
+		this(
+				imageTaskJsonObject.getString("taskId"),
+				imageTaskJsonObject.getString("dataset"),
+				imageTaskJsonObject.getString("region"),
+				(Date) imageTaskJsonObject.get("imageDate"),
+				imageTaskJsonObject.getString("downloadLink"),
+				ImageTaskState.valueOf(imageTaskJsonObject.getString("state")),
+				imageTaskJsonObject.getString("federationMember"),
+				imageTaskJsonObject.getInt("priority"),
+				imageTaskJsonObject.getString("stationId"),
+				imageTaskJsonObject.getString("inputGatheringTag"),
+				imageTaskJsonObject.getString("inputPreprocessingTag"),
+				imageTaskJsonObject.getString("algorithmExecutionTag"),
+				imageTaskJsonObject.getString("archiverVersion"),
+				imageTaskJsonObject.getString("blowoutVersion"),
+				(Timestamp) imageTaskJsonObject.get("creationTime"),
+				(Timestamp) imageTaskJsonObject.get("updateTime"),
+				imageTaskJsonObject.getString("status"),
+				imageTaskJsonObject.getString("error")
+		);
 	}
 
 	public String getTaskId() {
