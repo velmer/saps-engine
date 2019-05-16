@@ -141,7 +141,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public List<Task> fillDB(SubmissionParameters submissionParameters, List<Date> datesToExclude) {
+    public List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) {
         List<Task> createdTasks = new ArrayList<>();
 
         GregorianCalendar cal = new GregorianCalendar();
@@ -151,10 +151,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         endCal.add(Calendar.DAY_OF_YEAR, 1);
 
         while (cal.before(endCal)) {
-            int currentDateIndex = datesToExclude.indexOf(cal.getTime());
-            boolean dateShouldBeExcluded = currentDateIndex != -1;
-            if (dateShouldBeExcluded) {
-                datesToExclude.remove(currentDateIndex);
+            boolean dateHasAlreadyBeenProcessed = processedDates.contains(cal.getTime());
+            if (dateHasAlreadyBeenProcessed) {
+                processedDates.remove(cal.getTime());
                 continue;
             }
             try {

@@ -40,7 +40,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
                 .map(ImageTask::getImageDate)
                 .collect(Collectors.toList());
         // TODO: Insert on ServiceCatalog the {@code processedTasks} list
-        return submissionDispatcher.fillDB(submissionParameters, datesToExclude);
+        return submissionDispatcher.addTasks(submissionParameters, datesToExclude);
     }
 
     /**
