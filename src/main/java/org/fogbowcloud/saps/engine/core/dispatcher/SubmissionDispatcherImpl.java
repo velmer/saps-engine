@@ -154,9 +154,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         List<Date> datesToProcess = DateUtil.getDateListFromInterval(
                 submissionParameters.getInitDate(),
                 submissionParameters.getEndDate());
+        // Filter already processed dates
         datesToProcess = datesToProcess.stream()
-                // Exclude already processed dates
-                .filter(date -> !processedDates.contains(date))
+                .filter(processedDates::contains)
                 .collect(Collectors.toList());
         List<Task> createdTasks = new ArrayList<>();
         for (Date currentDate : datesToProcess) {
@@ -170,40 +170,51 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         return createdTasks;
     }
 
+    /**
+     * Adds all the needed tasks for specified date. It will add a task for every
+     * satellite in operation in specified date, for every specified region.
+     *
+     * @param date                 Date of processing.
+     * @param submissionParameters Submission parameters specified by user.
+     * @param regions              Regions to be processed.
+     * @return List of added tasks.
+     */
     private List<Task> addTasksForDate(Date date,
                                        SubmissionParameters submissionParameters,
                                        Set<String> regions) {
-        LOGGER.debug("Adding tasks for date: " + date.toString());
+        LOGGER.debug("Adding tasks for date: " + date);
         int startingYear = DateUtil.calendarFromDate(date).get(Calendar.YEAR);
         List<String> satellitesInOperation = DatasetUtil.getSatsInOperationByYear(startingYear);
         List<Task> createdTasksForDate = new ArrayList<>();
         for (String satellite : satellitesInOperation) {
-            List<Task> createdTasksForSatellite = addTasksForSatellite(satellite, date, submissionParameters, regions);
-            createdTasksForDate.addAll(createdTasksForSatellite);
+            for (String region : regions) {
+                try {
+                    ImageTask imageTask = addImageTask(date, submissionParameters, region, satellite);
+                    Task task = new Task(UUID.randomUUID().toString());
+                    task.setImageTask(imageTask);
+                    createdTasksForDate.add(task);
+                } catch (SQLException e) {
+                    LOGGER.error("Error while adding image to database", e);
+                }
+            }
         }
         return createdTasksForDate;
     }
 
-    private List<Task> addTasksForSatellite(String satellite,
-                                            Date date,
-                                            SubmissionParameters submissionParameters,
-                                            Set<String> regions) {
-        LOGGER.debug("Adding tasks for satellite: " + satellite);
-        List<Task> createdTasksForSatellite = new ArrayList<>();
-        for (String region : regions) {
-            try {
-                ImageTask imageTask = addImageTask(satellite, date, submissionParameters, region);
-                Task task = new Task(UUID.randomUUID().toString());
-                task.setImageTask(imageTask);
-                createdTasksForSatellite.add(task);
-            } catch (SQLException e) {
-                LOGGER.error("Error while adding image to database", e);
-            }
-        }
-        return createdTasksForSatellite;
-    }
-
-    private ImageTask addImageTask(String satellite, Date date, SubmissionParameters submissionParameters, String region) throws SQLException {
+    /**
+     * Adds a ImageTask to ImageStore for specified date, region and satellite.
+     *
+     * @param date                 Date of processing.
+     * @param submissionParameters Submission parameters specified by user.
+     * @param region               Region to be processed.
+     * @param satellite            Satellite that provide the landsat image.
+     * @return Added ImageTask.
+     * @throws SQLException
+     */
+    private ImageTask addImageTask(Date date,
+                                   SubmissionParameters submissionParameters,
+                                   String region,
+                                   String satellite) throws SQLException {
         String imageTaskId = UUID.randomUUID().toString();
         ImageTask imageTask = getImageStore().addImageTask(
                 imageTaskId,
