@@ -3,6 +3,7 @@ package org.fogbowcloud.saps.engine.core.dispatcher;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,11 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) throws IOException, ParseException;
+	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) throws IOException, ParseException, SQLException;
+
+	void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException;
+
+	void addImageTask(ImageTask imageTask) throws SQLException;
 
 	List<Ward> getUsersToNotify() throws SQLException;
 

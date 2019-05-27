@@ -1,6 +1,7 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
+import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,12 +36,15 @@ public class SubmissionManagerImpl implements SubmissionManager {
     }
 
     @Override
-    public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException {
+    public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException {
         List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
+        for (ImageTask processedTask: processedTasks) {
+            processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
+        }
+        submissionDispatcher.addImageTasks(processedTasks);
         List<Date> datesToExclude = processedTasks.stream()
                 .map(ImageTask::getImageDate)
                 .collect(Collectors.toList());
-        // TODO: Insert on ServiceCatalog the {@code processedTasks} list
         return submissionDispatcher.addTasks(submissionParameters, datesToExclude);
     }
 

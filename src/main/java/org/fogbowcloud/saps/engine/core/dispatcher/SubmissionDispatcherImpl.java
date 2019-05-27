@@ -5,7 +5,16 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -231,6 +240,18 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 getImageStore().getTask(imageTaskId).getUpdateTime());
         getImageStore().dispatchMetadataInfo(imageTaskId);
         return imageTask;
+    }
+
+    @Override
+    public void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException {
+        for (ImageTask imageTask: imageTasks) {
+            addImageTask(imageTask);
+        }
+    }
+
+    @Override
+    public void addImageTask(ImageTask imageTask) throws SQLException {
+        imageStore.addImageTask(imageTask);
     }
 
     public List<ImageTask> getTaskListInDB() throws SQLException, ParseException {

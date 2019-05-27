@@ -20,7 +20,6 @@ import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
 import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.scheduler.restlet.resource.*;
 import org.fogbowcloud.saps.engine.scheduler.util.SapsPropertiesConstants;
-import org.json.JSONException;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -114,7 +113,7 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException {
+	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException {
 		return submissionManager.addTasks(submissionParameters);
 	}
 
