@@ -66,6 +66,29 @@ public class ImageTask implements Serializable {
 		this.error = error;
 	}
 
+	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException {
+		this(
+				imageTaskJsonObject.getString("taskId"),
+				imageTaskJsonObject.getString("dataset"),
+				imageTaskJsonObject.getString("region"),
+				(Date) imageTaskJsonObject.get("imageDate"),
+				imageTaskJsonObject.getString("downloadLink"),
+				ImageTaskState.valueOf(imageTaskJsonObject.getString("state")),
+				imageTaskJsonObject.getString("federationMember"),
+				imageTaskJsonObject.getInt("priority"),
+				imageTaskJsonObject.getString("stationId"),
+				imageTaskJsonObject.getString("inputGatheringTag"),
+				imageTaskJsonObject.getString("inputPreprocessingTag"),
+				imageTaskJsonObject.getString("algorithmExecutionTag"),
+				imageTaskJsonObject.getString("archiverVersion"),
+				imageTaskJsonObject.getString("blowoutVersion"),
+				(Timestamp) imageTaskJsonObject.get("creationTime"),
+				(Timestamp) imageTaskJsonObject.get("updateTime"),
+				imageTaskJsonObject.getString("status"),
+				imageTaskJsonObject.getString("error")
+		);
+	}
+
 	public String getTaskId() {
 		return taskId;
 	}

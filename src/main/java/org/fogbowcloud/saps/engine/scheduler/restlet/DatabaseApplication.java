@@ -1,6 +1,7 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -10,6 +11,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionDispatcherImpl;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionManager;
+import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionManagerImpl;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.dispatcher.Task;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
@@ -17,6 +20,7 @@ import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
 import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.scheduler.restlet.resource.*;
 import org.fogbowcloud.saps.engine.scheduler.util.SapsPropertiesConstants;
+import org.json.JSONException;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -32,12 +36,14 @@ public class DatabaseApplication extends Application {
 	public static final Logger LOGGER = Logger.getLogger(DatabaseApplication.class);
 
 	private Properties properties;
+	private SubmissionManager submissionManager;
 	private SubmissionDispatcherImpl submissionDispatcher;
 	private Component restletComponent;
 
 	public DatabaseApplication(Properties properties) throws Exception {
 		this.properties = properties;
 		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
+		this.submissionManager = new SubmissionManagerImpl(this.submissionDispatcher);
 
 		// CORS configuration
 		CorsService cors = new CorsService();
@@ -108,8 +114,8 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(SubmissionParameters submissionParameters) {
-		return submissionDispatcher.fillDB(submissionParameters);
+	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException {
+		return submissionManager.addTasks(submissionParameters);
 	}
 
 	public void purgeImage(String day, String force) throws SQLException, ParseException {

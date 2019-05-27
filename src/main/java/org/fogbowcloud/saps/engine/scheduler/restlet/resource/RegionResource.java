@@ -1,38 +1,31 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet.resource;
 
-import java.sql.SQLException;
-import java.util.*;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 import org.restlet.util.Series;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RegionResource extends BaseResource {
 
 	private static final Logger LOGGER = Logger.getLogger(ImageResource.class);
-
-	private static final String LOWER_LEFT = "lowerLeft";
-	private static final String UPPER_RIGHT = "upperRight";
-	private static final String PROCESSING_INIT_DATE = "initialDate";
-	private static final String PROCESSING_FINAL_DATE = "finalDate";
-	private static final String PROCESSING_INPUT_GATHERING_TAG = "inputGatheringTag";
-	private static final String PROCESSING_INPUT_PREPROCESSING_TAG = "inputPreprocessingTag";
-	private static final String PROCESSING_ALGORITHM_EXECUTION_TAG = "algorithmExecutionTag";
 
 	public RegionResource() {
 		super();
@@ -53,6 +46,7 @@ public class RegionResource extends BaseResource {
 		}
 		
 		List<ImageTask> imageTasks = this.application.getTasksInState(ImageTaskState.ARCHIVED);
+		imageTasks.addAll(this.application.getTasksInState(ImageTaskState.REMOTELY_ARCHIVED));
 
 		Map<String, Integer> regionsFrequency = new HashMap<>();
 		for (ImageTask imageTask : imageTasks) {
