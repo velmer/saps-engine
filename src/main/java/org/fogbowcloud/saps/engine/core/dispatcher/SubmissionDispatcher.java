@@ -21,7 +21,7 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> fillDB(SubmissionParameters submissionParameters, List<Date> datesToExclude) throws IOException, ParseException;
+	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) throws IOException, ParseException, SQLException;
 
 	void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException;
 
@@ -40,4 +40,6 @@ public interface SubmissionDispatcher {
 	void updateUserState(String userEmail, boolean userState) throws SQLException;
 
 	boolean isUserNotifiable(String userEmail) throws SQLException;
+
+	List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters);
 }

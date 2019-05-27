@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
 import org.json.JSONArray;
@@ -23,6 +24,8 @@ import org.restlet.resource.ClientResource;
  */
 public class SubmissionManagerImpl implements SubmissionManager {
 
+    private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
+
     // TODO: Replace static string by config txt file
     private static final String REMOTE_INSTANCE_URL = "";
 
@@ -33,7 +36,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     }
 
     @Override
-    public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, JSONException, ParseException, SQLException {
+    public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException {
         List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
         for (ImageTask processedTask: processedTasks) {
             processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
@@ -42,7 +45,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
         List<Date> datesToExclude = processedTasks.stream()
                 .map(ImageTask::getImageDate)
                 .collect(Collectors.toList());
-        return submissionDispatcher.fillDB(submissionParameters, datesToExclude);
+        return submissionDispatcher.addTasks(submissionParameters, datesToExclude);
     }
 
     /**
@@ -50,15 +53,17 @@ public class SubmissionManagerImpl implements SubmissionManager {
      *
      * @param submissionParameters Parameters of user submission.
      * @return List of processed tasks.
-     * @throws IOException
-     * @throws JSONException
      */
-    private List<ImageTask> getRemotelyProcessedTasks(SubmissionParameters submissionParameters)
-            throws IOException, JSONException {
-        String remoteInstanceUrl = getRemoteInstanceUrl();
-        ClientResource clientResource = new ClientResource(remoteInstanceUrl);
-        Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
-        List<ImageTask> processedTasks = extractTasksList(response);
+    private List<ImageTask> getRemotelyProcessedTasks(SubmissionParameters submissionParameters) {
+        List<ImageTask> processedTasks = new ArrayList<>();
+        try {
+            String remoteInstanceUrl = getRemoteInstanceUrl();
+            ClientResource clientResource = new ClientResource(remoteInstanceUrl);
+            Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
+            processedTasks = extractTasksList(response);
+        } catch (Throwable t) {
+            LOGGER.error("Error while getting tasks from other SAPS instance.", t);
+        }
         return processedTasks;
     }
 

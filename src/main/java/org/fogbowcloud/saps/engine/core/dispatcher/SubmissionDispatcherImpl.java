@@ -5,15 +5,27 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.fogbowcloud.saps.engine.core.database.ImageDataStore;
 import org.fogbowcloud.saps.engine.core.database.JDBCImageDataStore;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
-import org.fogbowcloud.saps.engine.core.model.SapsUser;																																		
+import org.fogbowcloud.saps.engine.core.model.SapsUser;
 import org.fogbowcloud.saps.engine.core.repository.USGSNasaRepository;
 import org.fogbowcloud.saps.engine.core.util.DatasetUtil;
+import org.fogbowcloud.saps.engine.core.util.DateUtil;
 import org.fogbowcloud.saps.notifier.Ward;
 
 public class SubmissionDispatcherImpl implements SubmissionDispatcher {
@@ -141,67 +153,93 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public List<Task> fillDB(SubmissionParameters submissionParameters, List<Date> datesToExclude) {
+    public List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) {
+        Set<String> regions = repository.getRegionsFromArea(
+                submissionParameters.getLowerLeftLatitude(),
+                submissionParameters.getLowerLeftLongitude(),
+                submissionParameters.getUpperRightLatitude(),
+                submissionParameters.getUpperRightLongitude()
+        );
+        List<Date> datesToProcess = DateUtil.getDateListFromInterval(
+                submissionParameters.getInitDate(),
+                submissionParameters.getEndDate());
+        // Filter already processed dates
+        datesToProcess = datesToProcess.stream()
+                .filter(processedDates::contains)
+                .collect(Collectors.toList());
         List<Task> createdTasks = new ArrayList<>();
-
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(submissionParameters.getInitDate());
-        GregorianCalendar endCal = new GregorianCalendar();
-        endCal.setTime(submissionParameters.getEndDate());
-        endCal.add(Calendar.DAY_OF_YEAR, 1);
-
-        while (cal.before(endCal)) {
-            int currentDateIndex = datesToExclude.indexOf(cal.getTime());
-            boolean dateShouldBeExcluded = currentDateIndex != -1;
-            if (dateShouldBeExcluded) {
-                datesToExclude.remove(currentDateIndex);
-                continue;
-            }
-            try {
-                int startingYear = cal.get(Calendar.YEAR);
-                List<String> datasets = DatasetUtil.getSatsInOperationByYear(startingYear);
-
-                for (String dataset : datasets) {
-                	
-                	LOGGER.debug("----------------------------------------> " +  dataset);
-                	
-                    Set<String> regions = repository.getRegionsFromArea(
-                        submissionParameters.getLowerLeftLatitude(),
-                        submissionParameters.getLowerLeftLongitude(),
-                        submissionParameters.getUpperRightLatitude(),
-                        submissionParameters.getUpperRightLongitude());
-
-                    for (String region : regions) {
-                        String taskId = UUID.randomUUID().toString();
-
-                        ImageTask iTask = getImageStore().addImageTask(
-                                taskId,
-                                dataset,
-                                region,
-                                cal.getTime(),
-                                "None",
-                                DEFAULT_PRIORITY,
-                                submissionParameters.getInputGathering(),
-                                submissionParameters.getInputPreprocessing(),
-                                submissionParameters.getAlgorithmExecution()
-                        );
-
-                        Task task = new Task(UUID.randomUUID().toString());
-                        task.setImageTask(iTask);
-                        getImageStore().addStateStamp(taskId, ImageTaskState.CREATED,
-                                getImageStore().getTask(taskId).getUpdateTime());
-                        getImageStore().dispatchMetadataInfo(taskId);
-
-                        createdTasks.add(task);
-                    }
-                }
-
-            } catch (SQLException e) {
-                LOGGER.error("Error while adding image to database", e);
-            }
-            cal.add(Calendar.DAY_OF_YEAR, 1);
+        for (Date currentDate : datesToProcess) {
+            List<Task> createdTasksForCurrentDate = addTasksForDate(
+                    currentDate,
+                    submissionParameters,
+                    regions
+            );
+            createdTasks.addAll(createdTasksForCurrentDate);
         }
         return createdTasks;
+    }
+
+    /**
+     * Adds all the needed tasks for specified date. It will add a task for every
+     * satellite in operation in specified date, for every specified region.
+     *
+     * @param date                 Date of processing.
+     * @param submissionParameters Submission parameters specified by user.
+     * @param regions              Regions to be processed.
+     * @return List of added tasks.
+     */
+    private List<Task> addTasksForDate(Date date,
+                                       SubmissionParameters submissionParameters,
+                                       Set<String> regions) {
+        LOGGER.debug("Adding tasks for date: " + date);
+        int startingYear = DateUtil.calendarFromDate(date).get(Calendar.YEAR);
+        List<String> satellitesInOperation = DatasetUtil.getSatsInOperationByYear(startingYear);
+        List<Task> createdTasksForDate = new ArrayList<>();
+        for (String satellite : satellitesInOperation) {
+            for (String region : regions) {
+                try {
+                    ImageTask imageTask = addImageTask(date, submissionParameters, region, satellite);
+                    Task task = new Task(UUID.randomUUID().toString());
+                    task.setImageTask(imageTask);
+                    createdTasksForDate.add(task);
+                } catch (SQLException e) {
+                    LOGGER.error("Error while adding image to database", e);
+                }
+            }
+        }
+        return createdTasksForDate;
+    }
+
+    /**
+     * Adds a ImageTask to ImageStore for specified date, region and satellite.
+     *
+     * @param date                 Date of processing.
+     * @param submissionParameters Submission parameters specified by user.
+     * @param region               Region to be processed.
+     * @param satellite            Satellite that provide the landsat image.
+     * @return Added ImageTask.
+     * @throws SQLException
+     */
+    private ImageTask addImageTask(Date date,
+                                   SubmissionParameters submissionParameters,
+                                   String region,
+                                   String satellite) throws SQLException {
+        String imageTaskId = UUID.randomUUID().toString();
+        ImageTask imageTask = getImageStore().addImageTask(
+                imageTaskId,
+                satellite,
+                region,
+                date,
+                ImageDataStore.NONE,
+                DEFAULT_PRIORITY,
+                submissionParameters.getInputGathering(),
+                submissionParameters.getInputPreprocessing(),
+                submissionParameters.getAlgorithmExecution()
+        );
+        getImageStore().addStateStamp(imageTaskId, ImageTaskState.CREATED,
+                getImageStore().getTask(imageTaskId).getUpdateTime());
+        getImageStore().dispatchMetadataInfo(imageTaskId);
+        return imageTask;
     }
 
     @Override
@@ -237,9 +275,9 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
 
         return null;
     }
-    
+
     public List<ImageTask> getTasksInState(ImageTaskState imageState) throws SQLException {
-    	return this.imageStore.getIn(imageState);
+        return this.imageStore.getIn(imageState);
     }
 
     public JDBCImageDataStore getImageStore() {
@@ -250,28 +288,35 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         return properties;
     }
 
-	public List<ImageTask> searchProcessedTasks(String lowerLeftLatitude, String lowerLeftLongitude,
-			String upperRightLatitude, String upperRightLongitude, Date initDate, Date endDate,
-			String inputPreprocessing, String inputGathering, String algorithmExecution) {
-        
-		List<ImageTask> filteredTasks = new ArrayList<>();
-        Set<String> regions = new HashSet<>();
-		regions.addAll(repository.getRegionsFromArea(lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude,
-				upperRightLongitude));
-		
+    @Override
+    public List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters) {
+        List<ImageTask> filteredTasks = new ArrayList<>();
+        Set<String> regions = new HashSet<>(repository.getRegionsFromArea(
+                submissionParameters.getLowerLeftLatitude(),
+                submissionParameters.getLowerLeftLongitude(),
+                submissionParameters.getUpperRightLatitude(),
+                submissionParameters.getUpperRightLongitude()
+        ));
+
         for (String region : regions) {
-            List<ImageTask> iTasks = null;
+            List<ImageTask> iTasks;
             try {
-				iTasks = getImageStore().getProcessedImages(region, initDate, endDate, inputGathering,
-						inputPreprocessing, algorithmExecution);
+                iTasks = getImageStore().getProcessedImages(
+                        region,
+                        submissionParameters.getInitDate(),
+                        submissionParameters.getEndDate(),
+                        submissionParameters.getInputGathering(),
+                        submissionParameters.getInputPreprocessing(),
+                        submissionParameters.getAlgorithmExecution()
+                );
                 filteredTasks.addAll(iTasks);
             } catch (SQLException e) {
                 String builder = "Failed to load images with configuration:\n" +
                         "\tRegion: " + region + "\n" +
-                        "\tInterval: " + initDate + " - " + endDate + "\n" +
-                        "\tPreprocessing: " + inputPreprocessing + "\n" +
-                        "\tGathering: " + inputGathering + "\n" +
-                        "\tAlgorithm: " + algorithmExecution + "\n";
+                        "\tInterval: " + submissionParameters.getInitDate() + " - " + submissionParameters.getEndDate() + "\n" +
+                        "\tGathering: " + submissionParameters.getInputGathering() + "\n" +
+                        "\tPreprocessing: " + submissionParameters.getInputPreprocessing() + "\n" +
+                        "\tAlgorithm: " + submissionParameters.getAlgorithmExecution() + "\n";
                 LOGGER.error(builder, e);
             }
         }
