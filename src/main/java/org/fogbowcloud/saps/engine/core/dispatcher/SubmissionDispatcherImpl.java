@@ -248,7 +248,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
             try {
                 addImageTask(imageTask);
             } catch (SQLException e) {
-                LOGGER.error("", e);
+                LOGGER.error("Error while adding ImageTask.", e);
             }
         }
     }

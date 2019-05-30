@@ -113,7 +113,7 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException {
+	public List<Task> addTasks(SubmissionParameters submissionParameters) {
 		return submissionManager.addTasks(submissionParameters);
 	}
 

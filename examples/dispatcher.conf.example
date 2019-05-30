@@ -37,5 +37,5 @@ swift_object_store_path=/path/to/archiver
 swift_object_store_container=container
 swift_object_store_key=mykey
 
-#### SAPS Community Configuration ####
+#### SAPS Network Configuration ####
 saps_neighbors_urls=url1;url2;url3;

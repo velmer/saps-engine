@@ -36,7 +36,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     public List<Task> addTasks(SubmissionParameters submissionParameters) {
         List<Date> processedDates = new ArrayList<>();
         try {
-            List<ImageTask> processedTasks = getRemotelyProcessedTasks(submissionParameters);
+            List<ImageTask> processedTasks = getAllRemotelyProcessedTasks(submissionParameters);
             for (ImageTask processedTask : processedTasks) {
                 processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
             }
@@ -45,29 +45,44 @@ public class SubmissionManagerImpl implements SubmissionManager {
                     .map(ImageTask::getImageDate)
                     .collect(Collectors.toList());
         } catch (Throwable t) {
-            LOGGER.error("", t);
+            LOGGER.error("Error while adding remotely processed tasks.", t);
         }
         return submissionDispatcher.addTasks(submissionParameters, processedDates);
     }
 
     /**
-     * Gets a list of processed tasks from a SAPS remote instance.
+     * Gets list of processed tasks from all SAPS neighbors from this instance.
      *
      * @param submissionParameters Parameters of user submission.
-     * @return List of processed tasks.
+     * @return List of processed tasks from all SAPS neighbors.
      */
-    private List<ImageTask> getRemotelyProcessedTasks(SubmissionParameters submissionParameters) {
-        List<ImageTask> processedTasks = new ArrayList<>();
+    private List<ImageTask> getAllRemotelyProcessedTasks(SubmissionParameters submissionParameters) {
         String[] SAPSNeighborsUrls = getSAPSNeighborsUrls();
-        for (String SAPSNeighborsUrl : SAPSNeighborsUrls) {
-            try {
-                ClientResource clientResource = new ClientResource(SAPSNeighborsUrl);
-                Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
-                processedTasks = extractTasksList(response);
-            } catch (Throwable t) {
-                LOGGER.error("Error while getting tasks from SAPS Neighbor with URL: " +
-                        SAPSNeighborsUrl + " .", t);
-            }
+        List<ImageTask> processedTasks = Arrays.stream(SAPSNeighborsUrls)
+                .map(SAPSNeighborsUrl -> getRemotelyProcessedTasksFromInstance(
+                        SAPSNeighborsUrl,
+                        submissionParameters))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        return processedTasks;
+    }
+
+    /**
+     * Gets list of processed tasks from SAPS neighbor that had its URL specified.
+     *
+     * @param SAPSNeighborUrl SAPS neighbor URL.
+     * @param submissionParameters Parameters of user submission.
+     * @return List of processed tasks from SAPS neighbor.
+     */
+    private List<ImageTask> getRemotelyProcessedTasksFromInstance(String SAPSNeighborUrl,
+                                                                  SubmissionParameters submissionParameters) {
+        List<ImageTask> processedTasks = new ArrayList<>();
+        try {
+            ClientResource clientResource = new ClientResource(SAPSNeighborUrl);
+            Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
+            processedTasks = extractTasksList(response);
+        } catch (Throwable t) {
+            LOGGER.error("Error while getting tasks from SAPS Neighbor.", t);
         }
         return processedTasks;
     }
@@ -77,29 +92,31 @@ public class SubmissionManagerImpl implements SubmissionManager {
      *
      * @param response Response containing a list of tasks.
      * @return List of tasks.
-     * @throws IOException
-     * @throws JSONException
      */
-    private List<ImageTask> extractTasksList(Representation response) throws IOException, JSONException {
+    private List<ImageTask> extractTasksList(Representation response) {
         List<ImageTask> tasks = new ArrayList<>();
-        JsonConverter jsonConverter = new JsonConverter();
-        JSONObject responseJson = jsonConverter.toObject(response, JSONObject.class, null);
-        JSONArray tasksJsonArray = responseJson.getJSONArray("result");
-        for (int i = 0; i < tasksJsonArray.length(); i++) {
-            tasks.add(new ImageTask(tasksJsonArray.optJSONObject(i)));
+        try {
+            JsonConverter jsonConverter = new JsonConverter();
+            JSONObject responseJson = jsonConverter.toObject(response, JSONObject.class, null);
+            JSONArray tasksJsonArray = responseJson.getJSONArray("result");
+            for (int i = 0; i < tasksJsonArray.length(); i++) {
+                tasks.add(new ImageTask(tasksJsonArray.optJSONObject(i)));
+            }
+        } catch (JSONException | IOException e) {
+            LOGGER.error("Error while extracting tasks from response", e);
         }
         return tasks;
     }
 
     /**
-     * Returns the URL of a SAPS remote instance.
+     * Returns a list of URLs of all SAPS neighbors of this instance.
      *
-     * @return URL of a SAPS remote instance.
+     * @return list of URLs of all SAPS neighbors of this instance.
      */
     private String[] getSAPSNeighborsUrls() {
-        String separador = ";";
+        String separator = ";";
         String SAPSNeighborsUrls = properties.getProperty(SAPS_NEIGHBORS_URLS);
-        return !Objects.isNull(SAPSNeighborsUrls) ? SAPSNeighborsUrls.split(separador)
+        return !Objects.isNull(SAPSNeighborsUrls) ? SAPSNeighborsUrls.split(separator)
                 : new String[]{};
     }
 
