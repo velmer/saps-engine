@@ -243,9 +243,13 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException {
+    public void addImageTasks(Collection<ImageTask> imageTasks) {
         for (ImageTask imageTask: imageTasks) {
-            addImageTask(imageTask);
+            try {
+                addImageTask(imageTask);
+            } catch (SQLException e) {
+                LOGGER.error("", e);
+            }
         }
     }
 
