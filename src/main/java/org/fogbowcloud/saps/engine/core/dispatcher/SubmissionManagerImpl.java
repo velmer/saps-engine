@@ -78,7 +78,8 @@ public class SubmissionManagerImpl implements SubmissionManager {
                                                                   SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
         try {
-            ClientResource clientResource = new ClientResource(SAPSNeighborUrl);
+            String processedTasksURN = "/archivedTasks";
+            ClientResource clientResource = new ClientResource(SAPSNeighborUrl + processedTasksURN);
             Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
             processedTasks = extractTasksList(response);
         } catch (Throwable t) {
