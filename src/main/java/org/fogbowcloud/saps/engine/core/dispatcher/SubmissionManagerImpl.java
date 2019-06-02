@@ -22,7 +22,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
 
     private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
 
-    private static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
+    public static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
 
     private Properties properties;
     private SubmissionDispatcher submissionDispatcher;
