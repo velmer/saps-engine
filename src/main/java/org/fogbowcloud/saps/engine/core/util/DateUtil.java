@@ -43,9 +43,42 @@ public class DateUtil {
         return dates;
     }
 
+    /**
+     * Creates a {@link Calendar} from specified date.
+     *
+     * @param date Date of calendar that will be created.
+     * @return Calendar from specified date.
+     */
     public static Calendar calendarFromDate(Date date) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         return calendar;
+    }
+
+    /**
+     * Builds a {@link Date} object from specified parameters.
+     *
+     * @param year   Year of Date.
+     * @param month  Month of Date.
+     * @param day    Day of Date.
+     * @return Date with specified parameters.
+     */
+    public static Date buildDate(int year, int month, int day) {
+        return buildDate(year, month, day, 0, 0, 0);
+    }
+
+    /**
+     * Builds a {@link Date} object from specified parameters.
+     *
+     * @param year   Year of Date.
+     * @param month  Month of Date. 0-based (e.g. 0 for January).
+     * @param day    Day of Date.
+     * @param hour   Hour of Date.
+     * @param minute Minute of Date.
+     * @param second Second of Date.
+     * @return Date with specified parameters.
+     */
+    public static Date buildDate(int year, int month, int day, int hour, int minute, int second) {
+        return new GregorianCalendar(year, month, day, hour, minute, second).getTime();
     }
 }
