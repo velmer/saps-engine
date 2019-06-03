@@ -23,6 +23,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
 
     private static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
+    private static final String PROCESSED_TASKS_URN = "/archivedTask";
 
     private Properties properties;
     private SubmissionDispatcher submissionDispatcher;
@@ -78,8 +79,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
                                                                   SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
         try {
-            String processedTasksURN = "/archivedTasks";
-            ClientResource clientResource = new ClientResource(SAPSNeighborUrl + processedTasksURN);
+            ClientResource clientResource = new ClientResource(SAPSNeighborUrl + PROCESSED_TASKS_URN);
             Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
             processedTasks = extractTasksList(response);
         } catch (Throwable t) {
