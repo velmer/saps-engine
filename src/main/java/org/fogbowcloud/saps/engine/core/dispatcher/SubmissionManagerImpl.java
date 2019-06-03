@@ -50,13 +50,8 @@ public class SubmissionManagerImpl implements SubmissionManager {
         return submissionDispatcher.addTasks(submissionParameters, processedDates);
     }
 
-    /**
-     * Gets list of processed tasks from all SAPS neighbors from this instance.
-     *
-     * @param submissionParameters Parameters of user submission.
-     * @return List of processed tasks from all SAPS neighbors.
-     */
-    private List<ImageTask> getAllRemotelyProcessedTasks(SubmissionParameters submissionParameters) {
+    @Override
+    public List<ImageTask> getAllRemotelyProcessedTasks(SubmissionParameters submissionParameters) {
         String[] SAPSNeighborsUrls = getSAPSNeighborsUrls();
         List<ImageTask> processedTasks = Arrays.stream(SAPSNeighborsUrls)
                 .map(SAPSNeighborsUrl -> getRemotelyProcessedTasksFromInstance(
@@ -67,15 +62,10 @@ public class SubmissionManagerImpl implements SubmissionManager {
         return processedTasks;
     }
 
-    /**
-     * Gets list of processed tasks from SAPS neighbor that had its URL specified.
-     *
-     * @param SAPSNeighborUrl SAPS neighbor URL.
-     * @param submissionParameters Parameters of user submission.
-     * @return List of processed tasks from SAPS neighbor.
-     */
-    private List<ImageTask> getRemotelyProcessedTasksFromInstance(String SAPSNeighborUrl,
-                                                                  SubmissionParameters submissionParameters) {
+    @Override
+    public List<ImageTask> getRemotelyProcessedTasksFromInstance(
+            String SAPSNeighborUrl,
+            SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
         try {
             String processedTasksURN = "/archivedTasks";
@@ -114,7 +104,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
      *
      * @return list of URLs of all SAPS neighbors of this instance.
      */
-    private String[] getSAPSNeighborsUrls() {
+    String[] getSAPSNeighborsUrls() {
         String separator = ";";
         String SAPSNeighborsUrls = properties.getProperty(SAPS_NEIGHBORS_URLS);
         return !Objects.isNull(SAPSNeighborsUrls) ? SAPSNeighborsUrls.split(separator)
