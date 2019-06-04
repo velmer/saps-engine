@@ -22,9 +22,9 @@ public interface SubmissionDispatcher {
 
 	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates);
 
-	void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException;
+	List<Task> addImageTasks(Collection<ImageTask> imageTasks);
 
-	void addImageTask(ImageTask imageTask) throws SQLException;
+	Task addImageTask(ImageTask imageTask) throws SQLException;
 
 	List<Ward> getUsersToNotify() throws SQLException;
 

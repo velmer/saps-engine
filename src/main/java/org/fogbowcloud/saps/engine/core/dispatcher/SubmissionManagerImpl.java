@@ -35,20 +35,28 @@ public class SubmissionManagerImpl implements SubmissionManager {
 
     @Override
     public List<Task> addTasks(SubmissionParameters submissionParameters) {
+        List<Task> processedTasks = new ArrayList<>();
         List<Date> processedDates = new ArrayList<>();
         try {
-            List<ImageTask> processedTasks = getAllRemotelyProcessedTasks(submissionParameters);
-            for (ImageTask processedTask : processedTasks) {
-                processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
+            List<ImageTask> processedImageTasks = getAllRemotelyProcessedTasks(submissionParameters);
+            if (!processedImageTasks.isEmpty()) {
+                for (ImageTask processedTask : processedImageTasks) {
+                    processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
+                }
+                processedTasks = submissionDispatcher.addImageTasks(processedImageTasks);
+                processedDates = processedImageTasks.stream()
+                        .map(ImageTask::getImageDate)
+                        .collect(Collectors.toList());
             }
-            submissionDispatcher.addImageTasks(processedTasks);
-            processedDates = processedTasks.stream()
-                    .map(ImageTask::getImageDate)
-                    .collect(Collectors.toList());
         } catch (Throwable t) {
             LOGGER.error("Error while adding remotely processed tasks.", t);
         }
-        return submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> allAddedTasks = new ArrayList<>();
+        allAddedTasks.addAll(processedTasks);
+        allAddedTasks.addAll(addedTasks);
+        allAddedTasks.sort(Comparator.comparing(task -> task.getImageTask().getImageDate()));
+        return allAddedTasks;
     }
 
     /**
@@ -64,7 +72,9 @@ public class SubmissionManagerImpl implements SubmissionManager {
                         SAPSNeighborsUrl,
                         submissionParameters))
                 .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(ImageTask::getImageDate))
                 .collect(Collectors.toList());
+        // TODO: Remove ImageTasks with same date
         return processedTasks;
     }
 
