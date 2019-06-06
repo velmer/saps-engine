@@ -60,7 +60,10 @@ public class SubmissionManagerImpl implements SubmissionManager {
     }
 
     /**
-     * Gets list of processed tasks from all SAPS neighbors from this instance.
+     * Gets list of processed image tasks, ordered by date, from all SAPS
+     * neighbors from this instance. If more than one image task is found for
+     * the same date, region and satellite, only the first one will be in
+     * returned list.
      *
      * @param submissionParameters Parameters of user submission.
      * @return List of processed tasks from all SAPS neighbors.
@@ -74,8 +77,32 @@ public class SubmissionManagerImpl implements SubmissionManager {
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparing(ImageTask::getImageDate))
                 .collect(Collectors.toList());
-        // TODO: Remove ImageTasks with same date
+        removeImageTaskDuplicates(processedTasks);
         return processedTasks;
+    }
+
+    /**
+     * Removes {@link ImageTask} duplicates. Considers that two ImageTasks are
+     * duplicates when they have the same date, region and satellite (dataset).
+     *
+     * Assumes that {@param imageTasks} list is ordered by date.
+     *
+     * @param imageTasks List of ImageTasks to have its duplicates removed.
+     */
+    private void removeImageTaskDuplicates(List<ImageTask> imageTasks) {
+        for(int i = 0; i < imageTasks.size(); i++) {
+            ImageTask current = imageTasks.get(i);
+            int j = i + 1;
+            while (j < imageTasks.size() && current.getImageDate().equals(imageTasks.get(j).getImageDate())) {
+                boolean areDuplicates = current.getRegion().equals(imageTasks.get(j).getRegion())
+                        && current.getDataset().equals(imageTasks.get(j).getDataset());
+                if (areDuplicates) {
+                    imageTasks.remove(j);
+                } else {
+                    j++;
+                }
+            }
+        }
     }
 
     /**
