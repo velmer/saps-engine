@@ -23,6 +23,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
 
     public static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
+    private static final String PROCESSED_TASKS_URN = "/archivedTask";
 
     private Properties properties;
     private SubmissionDispatcher submissionDispatcher;
@@ -34,20 +35,28 @@ public class SubmissionManagerImpl implements SubmissionManager {
 
     @Override
     public List<Task> addTasks(SubmissionParameters submissionParameters) {
+        List<Task> processedTasks = new ArrayList<>();
         List<Date> processedDates = new ArrayList<>();
         try {
-            List<ImageTask> processedTasks = getAllRemotelyProcessedTasks(submissionParameters);
-            for (ImageTask processedTask : processedTasks) {
-                processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
+            List<ImageTask> processedImageTasks = getAllRemotelyProcessedTasks(submissionParameters);
+            if (!processedImageTasks.isEmpty()) {
+                for (ImageTask processedTask : processedImageTasks) {
+                    processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
+                }
+                processedTasks = submissionDispatcher.addImageTasks(processedImageTasks);
+                processedDates = processedImageTasks.stream()
+                        .map(ImageTask::getImageDate)
+                        .collect(Collectors.toList());
             }
-            submissionDispatcher.addImageTasks(processedTasks);
-            processedDates = processedTasks.stream()
-                    .map(ImageTask::getImageDate)
-                    .collect(Collectors.toList());
         } catch (Throwable t) {
             LOGGER.error("Error while adding remotely processed tasks.", t);
         }
-        return submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> allAddedTasks = new ArrayList<>();
+        allAddedTasks.addAll(processedTasks);
+        allAddedTasks.addAll(addedTasks);
+        allAddedTasks.sort(Comparator.comparing(task -> task.getImageTask().getImageDate()));
+        return allAddedTasks;
     }
 
     @Override
@@ -58,8 +67,34 @@ public class SubmissionManagerImpl implements SubmissionManager {
                         SAPSNeighborsUrl,
                         submissionParameters))
                 .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(ImageTask::getImageDate))
                 .collect(Collectors.toList());
+        removeImageTaskDuplicates(processedTasks);
         return processedTasks;
+    }
+
+    /**
+     * Removes {@link ImageTask} duplicates. Considers that two ImageTasks are
+     * duplicates when they have the same date, region and satellite (dataset).
+     *
+     * Assumes that {@param imageTasks} list is ordered by date.
+     *
+     * @param imageTasks List of ImageTasks to have its duplicates removed.
+     */
+    private void removeImageTaskDuplicates(List<ImageTask> imageTasks) {
+        for(int i = 0; i < imageTasks.size(); i++) {
+            ImageTask current = imageTasks.get(i);
+            int j = i + 1;
+            while (j < imageTasks.size() && current.getImageDate().equals(imageTasks.get(j).getImageDate())) {
+                boolean areDuplicates = current.getRegion().equals(imageTasks.get(j).getRegion())
+                        && current.getDataset().equals(imageTasks.get(j).getDataset());
+                if (areDuplicates) {
+                    imageTasks.remove(j);
+                } else {
+                    j++;
+                }
+            }
+        }
     }
 
     @Override
@@ -68,8 +103,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
             SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
         try {
-            String processedTasksURN = "/archivedTasks";
-            ClientResource clientResource = new ClientResource(SAPSNeighborUrl + processedTasksURN);
+            ClientResource clientResource = new ClientResource(SAPSNeighborUrl + PROCESSED_TASKS_URN);
             Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
             processedTasks = extractTasksList(response);
         } catch (Throwable t) {
