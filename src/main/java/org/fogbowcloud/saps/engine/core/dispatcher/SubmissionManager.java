@@ -26,15 +26,4 @@ public interface SubmissionManager {
      */
     List<ImageTask> getAllRemotelyProcessedTasks(SubmissionParameters submissionParameters);
 
-    /**
-     * Gets list of processed tasks from SAPS neighbor that had its URL specified.
-     *
-     * @param SAPSNeighborUrl SAPS neighbor URL.
-     * @param submissionParameters Parameters of user submission.
-     * @return List of processed tasks from SAPS neighbor.
-     */
-    List<ImageTask> getRemotelyProcessedTasksFromInstance(
-            String SAPSNeighborUrl,
-            SubmissionParameters submissionParameters);
-
 }

@@ -7,12 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -24,7 +24,7 @@ public class SubmissionManagerImplTest {
     private static final String SAPS_NEIGHBOR_3_URL = "saps_neighbor_3_url";
 
     private Properties properties;
-    private SubmissionManagerImpl submissionManagerImpl;
+    private SubmissionManagerImpl submissionManagerImplSpy;
     private SubmissionDispatcher submissionDispatcher;
 
     @Before
@@ -35,52 +35,279 @@ public class SubmissionManagerImplTest {
         properties.setProperty(SubmissionManagerImpl.SAPS_NEIGHBORS_URLS, sapsNeighborsUrls);
 
         submissionDispatcher = Mockito.mock(SubmissionDispatcher.class);
-        submissionManagerImpl = new SubmissionManagerImpl(properties, submissionDispatcher);
+        SubmissionManagerImpl submissionManagerImpl = new SubmissionManagerImpl(properties, submissionDispatcher);
+        submissionManagerImplSpy = Mockito.spy(submissionManagerImpl);
     }
 
     @Test
-    public void testAddTasksWithoutProcessedTasks() throws SQLException {
+    public void testAddTasksWithoutProcessedTasks() {
         SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<Task> addedTasks = generateTaskList(
+                submissionParameters.getInitDate(),
+                submissionParameters.getEndDate());
 
-        Mockito.spy(submissionManagerImpl);
-        Mockito.when(submissionManagerImpl.getAllRemotelyProcessedTasks(submissionParameters))
-            .thenReturn(Collections.emptyList());
-        Mockito.stub(submissionDispatcher.addTasks(submissionParameters, Collections.emptyList()));
-        Mockito.doNothing().when(submissionDispatcher).addImageTasks(Collections.emptyList());
+        doReturn(Collections.emptyList())
+                .when(submissionManagerImplSpy)
+                .getAllRemotelyProcessedTasks(submissionParameters);
+        when(submissionDispatcher.addTasks(submissionParameters, Collections.emptyList()))
+                .thenReturn(addedTasks);
 
-        submissionManagerImpl.addTasks(submissionParameters);
+        List<Task> addedTasksActual = submissionManagerImplSpy.addTasks(submissionParameters);
 
-        Mockito.verify(submissionDispatcher.addTasks(submissionParameters, Collections.emptyList()));
-        Mockito.verify(submissionDispatcher).addImageTasks(Collections.emptyList());
+        verify(submissionDispatcher).addTasks(submissionParameters, Collections.emptyList());
+        verify(submissionDispatcher, never()).addImageTasks(Collections.emptyList());
+        assertEquals(addedTasks, addedTasksActual);
     }
 
     @Test
-    public void testAddTasksWithConsecutiveProcessedTasks() throws SQLException {
+    public void testAddTasksWithErrorWhileGettingProcessedTasks() throws Exception {
         SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
-        Date initDate = submissionParameters.getInitDate();
-        int amountProcessedTasks = 10;
-        List<ImageTask> processedTasks = generateImageTaskList(initDate, amountProcessedTasks);
-        List<Date> processedDates = processedTasks.stream()
+        List<Date> processedDates = Collections.emptyList();
+        List<Task> addedTasks = generateTaskList(
+                submissionParameters.getInitDate(),
+                submissionParameters.getEndDate());
+
+        doThrow(new RuntimeException())
+                .when(submissionManagerImplSpy)
+                .getAllRemotelyProcessedTasks(submissionParameters);
+        when(submissionDispatcher.addTasks(submissionParameters, processedDates))
+                .thenReturn(addedTasks);
+
+        List<Task> addedTasksActual = submissionManagerImplSpy.addTasks(submissionParameters);
+
+        verify(submissionDispatcher).addTasks(submissionParameters, processedDates);
+        verify(submissionDispatcher, never()).addImageTasks(any());
+        assertEquals(addedTasks, addedTasksActual);
+    }
+
+    @Test
+    public void testAddTasksWithConsecutiveProcessedTasks() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<ImageTask> processedImageTasks = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 22));
+        List<Task> processedTasks = generateTaskList(processedImageTasks);
+        List<Date> processedDates = processedImageTasks.stream()
+                .map(ImageTask::getImageDate)
+                .collect(Collectors.toList());
+        List<Task> addedTasks = generateTaskList(
+                DateUtil.buildDate(2014, 5, 23),
+                DateUtil.buildDate(2014, 6, 13));
+
+        doReturn(processedImageTasks)
+                .when(submissionManagerImplSpy)
+                .getAllRemotelyProcessedTasks(submissionParameters);
+        doReturn(processedTasks)
+                .when(submissionDispatcher)
+                .addImageTasks(processedImageTasks);
+        when(submissionDispatcher.addTasks(submissionParameters, processedDates))
+                .thenReturn(addedTasks);
+
+        List<Task> allAddedTasks = submissionManagerImplSpy.addTasks(submissionParameters);
+        List<Task> expectedAllAddedTasks = new ArrayList<>();
+        expectedAllAddedTasks.addAll(addedTasks);
+        expectedAllAddedTasks.addAll(processedTasks);
+        expectedAllAddedTasks.sort(Comparator.comparing(task -> task.getImageTask().getImageDate()));
+
+        verify(submissionDispatcher).addTasks(submissionParameters, processedDates);
+        verify(submissionDispatcher).addImageTasks(processedImageTasks);
+        assertEquals(expectedAllAddedTasks, allAddedTasks);
+    }
+
+    @Test
+    public void testAddTasksWithNonConsecutiveProcessedTasks() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<ImageTask> processedImageTasks = new ArrayList<>();
+        processedImageTasks.addAll(generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 17)));
+        processedImageTasks.addAll(generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 28),
+                DateUtil.buildDate(2014, 6, 2)));
+        processedImageTasks.addAll(generateImageTaskList(
+                DateUtil.buildDate(2014, 6, 6),
+                DateUtil.buildDate(2014, 6, 9)));
+
+        List<Task> processedTasks = generateTaskList(processedImageTasks);
+        List<Date> processedDates = processedImageTasks.stream()
                 .map(ImageTask::getImageDate)
                 .collect(Collectors.toList());
 
-        Mockito.spy(submissionManagerImpl);
-        Mockito.when(submissionManagerImpl.getAllRemotelyProcessedTasks(submissionParameters))
-                .thenReturn(processedTasks);
-        Mockito.stub(submissionDispatcher.addTasks(submissionParameters, processedDates));
-        Mockito.doNothing().when(submissionDispatcher).addImageTasks(processedTasks);
+        List<Task> addedTasks = new ArrayList<>();
+        addedTasks.addAll(generateTaskList(
+                DateUtil.buildDate(2014, 5, 18),
+                DateUtil.buildDate(2014, 5, 27)));
+        addedTasks.addAll(generateTaskList(
+                DateUtil.buildDate(2014, 6, 3),
+                DateUtil.buildDate(2014, 6, 5)));
+        addedTasks.addAll(generateTaskList(
+                DateUtil.buildDate(2014, 6, 10),
+                DateUtil.buildDate(2014, 6, 13)));
 
-        submissionManagerImpl.addTasks(submissionParameters);
+        doReturn(processedImageTasks)
+                .when(submissionManagerImplSpy)
+                .getAllRemotelyProcessedTasks(submissionParameters);
+        doReturn(processedTasks)
+                .when(submissionDispatcher)
+                .addImageTasks(processedImageTasks);
+        when(submissionDispatcher.addTasks(submissionParameters, processedDates))
+                .thenReturn(addedTasks);
 
-        Mockito.verify(submissionDispatcher.addTasks(submissionParameters, processedDates));
-        Mockito.verify(submissionDispatcher).addImageTasks(processedTasks);
+        List<Task> allAddedTasks = submissionManagerImplSpy.addTasks(submissionParameters);
+        List<Task> expectedAllAddedTasks = new ArrayList<>();
+        expectedAllAddedTasks.addAll(addedTasks);
+        expectedAllAddedTasks.addAll(processedTasks);
+        expectedAllAddedTasks.sort(Comparator.comparing(task -> task.getImageTask().getImageDate()));
+
+        verify(submissionDispatcher).addTasks(submissionParameters, processedDates);
+        verify(submissionDispatcher).addImageTasks(processedImageTasks);
+        assertEquals(expectedAllAddedTasks, allAddedTasks);
+    }
+
+    @Test
+    public void testGetAllRemotelyProcessedTasksWithoutNeighbors() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+
+        doReturn(new String[]{})
+                .when(submissionManagerImplSpy)
+                .getSAPSNeighborsUrls();
+
+        List<ImageTask> allProcessedImageTasksActual = submissionManagerImplSpy
+                .getAllRemotelyProcessedTasks(submissionParameters);
+
+        assertEquals(Collections.emptyList(), allProcessedImageTasksActual);
+    }
+
+    @Test
+    public void testGetAllRemotelyProcessedTasksWithoutProcessedTasks() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+
+        doReturn(new String[]{ SAPS_NEIGHBOR_1_URL })
+                .when(submissionManagerImplSpy)
+                .getSAPSNeighborsUrls();
+        doReturn(Collections.emptyList())
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_1_URL, submissionParameters);
+
+        List<ImageTask> allProcessedImageTasksActual = submissionManagerImplSpy
+                .getAllRemotelyProcessedTasks(submissionParameters);
+
+        assertEquals(Collections.emptyList(), allProcessedImageTasksActual);
+    }
+
+    @Test
+    public void testGetAllRemotelyProcessedTasksWithoutDateOverlapping() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<ImageTask> processedImageTasks1 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 17));
+        List<ImageTask> processedImageTasks2 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 28),
+                DateUtil.buildDate(2014, 6, 2));
+        List<ImageTask> processedImageTasks3 = generateImageTaskList(
+                DateUtil.buildDate(2014, 6, 6),
+                DateUtil.buildDate(2014, 6, 9));
+        List<ImageTask> allProcessedImageTasksExpected = new ArrayList<>();
+        allProcessedImageTasksExpected.addAll(processedImageTasks1);
+        allProcessedImageTasksExpected.addAll(processedImageTasks2);
+        allProcessedImageTasksExpected.addAll(processedImageTasks3);
+
+        doReturn(processedImageTasks1)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_1_URL, submissionParameters);
+        doReturn(processedImageTasks2)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_2_URL, submissionParameters);
+        doReturn(processedImageTasks3)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_3_URL, submissionParameters);
+
+        List<ImageTask> allProcessedImageTasksActual = submissionManagerImplSpy
+                .getAllRemotelyProcessedTasks(submissionParameters);
+
+        assertEquals(allProcessedImageTasksExpected, allProcessedImageTasksActual);
+    }
+
+    @Test
+    public void testGetAllRemotelyProcessedTasksWithDateOverlapping() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<ImageTask> processedImageTasks1 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 25));
+        List<ImageTask> processedImageTasks2 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 20),
+                DateUtil.buildDate(2014, 6, 7));
+        List<ImageTask> processedImageTasks3 = generateImageTaskList(
+                DateUtil.buildDate(2014, 6, 3),
+                DateUtil.buildDate(2014, 6, 9));
+        List<ImageTask> allProcessedImageTasksExpected = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 6, 9)
+        );
+
+        doReturn(processedImageTasks1)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_1_URL, submissionParameters);
+        doReturn(processedImageTasks2)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_2_URL, submissionParameters);
+        doReturn(processedImageTasks3)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_3_URL, submissionParameters);
+
+        List<ImageTask> allProcessedImageTasksActual = submissionManagerImplSpy
+                .getAllRemotelyProcessedTasks(submissionParameters);
+
+        assertEquals(allProcessedImageTasksExpected, allProcessedImageTasksActual);
+    }
+
+    @Test
+    public void testGetAllRemotelyProcessedTasksWithDateOverlappingWithoutRegionOverlapping() {
+        SubmissionParameters submissionParameters = getDefaultSubmissionParameters();
+        List<ImageTask> processedImageTasks1 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 25));
+        List<ImageTask> processedImageTasks2 = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 20),
+                DateUtil.buildDate(2014, 6, 7));
+        List<ImageTask> processedImageTasks3 = generateImageTaskList(
+                DateUtil.buildDate(2014, 6, 3),
+                DateUtil.buildDate(2014, 6, 9));
+        processedImageTasks2 = processedImageTasks2.stream()
+                .map(imageTask -> { imageTask.setRegion("differentRegion"); return imageTask; })
+                .collect(Collectors.toList());
+        List<ImageTask> allProcessedImageTasksExpected = generateImageTaskList(
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 5, 25)
+        );
+        allProcessedImageTasksExpected.addAll(processedImageTasks2);
+        allProcessedImageTasksExpected.addAll(generateImageTaskList(
+                DateUtil.buildDate(2014, 6, 3),
+                DateUtil.buildDate(2014, 6, 9)));
+        allProcessedImageTasksExpected.sort(Comparator.comparing(ImageTask::getImageDate));
+
+        doReturn(processedImageTasks1)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_1_URL, submissionParameters);
+        doReturn(processedImageTasks2)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_2_URL, submissionParameters);
+        doReturn(processedImageTasks3)
+                .when(submissionManagerImplSpy)
+                .getRemotelyProcessedTasksFromInstance(SAPS_NEIGHBOR_3_URL, submissionParameters);
+
+        List<ImageTask> allProcessedImageTasksActual = submissionManagerImplSpy
+                .getAllRemotelyProcessedTasks(submissionParameters);
+
+        assertEquals(allProcessedImageTasksExpected, allProcessedImageTasksActual);
     }
 
     private List<ImageTask> generateImageTaskList(Date initDate, int length) {
         Calendar endCalendar = DateUtil.calendarFromDate(initDate);
-        endCalendar.add(Calendar.DAY_OF_MONTH, length);
+        // Subtracts 1 because initDate is included in date interval
+        endCalendar.add(Calendar.DAY_OF_MONTH, length - 1);
         Date endDate = endCalendar.getTime();
-        return  generateImageTaskList(initDate, endDate);
+        return generateImageTaskList(initDate, endDate);
     }
 
     private List<ImageTask> generateImageTaskList(Date initDate, Date endDate) {
@@ -90,14 +317,32 @@ public class SubmissionManagerImplTest {
                 .collect(Collectors.toList());
     }
 
+    private List<Task> generateTaskList(Date initDate, int length) {
+        Calendar endCalendar = DateUtil.calendarFromDate(initDate);
+        // Subtracts 1 because initDate is included in date interval
+        endCalendar.add(Calendar.DAY_OF_MONTH, length - 1);
+        Date endDate = endCalendar.getTime();
+        return generateTaskList(initDate, endDate);
+    }
+
+    private List<Task> generateTaskList(Date initDate, Date endDate) {
+        return generateTaskList(generateImageTaskList(initDate, endDate));
+    }
+
+    private List<Task> generateTaskList(List<ImageTask> imageTasks) {
+        return imageTasks.stream()
+                .map(this::createTaskWithImageTask)
+                .collect(Collectors.toList());
+    }
+
     private SubmissionParameters getDefaultSubmissionParameters() {
         return new SubmissionParameters(
                 "lowerLeftLatitude",
                 "lowerLeftLongitude",
-                "UpperRightLatitude",
-                "UpperRightLongitude",
-                DateUtil.buildDate(2014, 6, 12),
-                DateUtil.buildDate(2014, 7, 13),
+                "upperRightLatitude",
+                "upperRightLongitude",
+                DateUtil.buildDate(2014, 5, 12),
+                DateUtil.buildDate(2014, 6, 13),
                 "default_script",
                 "default_pre-script",
                 "default_algorithm"
@@ -108,7 +353,8 @@ public class SubmissionManagerImplTest {
         return new ImageTask(
                 "taskId",
                 "dataset",
-                "region", date,
+                "region",
+                date,
                 "downloadLink",
                 ImageTaskState.CREATED,
                 "federationMember",
@@ -123,6 +369,10 @@ public class SubmissionManagerImplTest {
                 new Timestamp(date.getTime()),
                 "status",
                 null);
+    }
+
+    private Task createTaskWithImageTask(ImageTask imageTask) {
+        return new Task("id", imageTask);
     }
 
 }

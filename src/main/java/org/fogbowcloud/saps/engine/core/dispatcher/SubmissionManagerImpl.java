@@ -22,8 +22,8 @@ public class SubmissionManagerImpl implements SubmissionManager {
 
     private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
 
-    public static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
-    private static final String PROCESSED_TASKS_URN = "/archivedTask";
+    static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
+    static final String PROCESSED_TASKS_URN = "/archivedTask";
 
     private Properties properties;
     private SubmissionDispatcher submissionDispatcher;
@@ -97,8 +97,14 @@ public class SubmissionManagerImpl implements SubmissionManager {
         }
     }
 
-    @Override
-    public List<ImageTask> getRemotelyProcessedTasksFromInstance(
+    /**
+     * Gets list of processed tasks from SAPS neighbor that had its URL specified.
+     *
+     * @param SAPSNeighborUrl SAPS neighbor URL.
+     * @param submissionParameters Parameters of user submission.
+     * @return List of processed tasks from SAPS neighbor.
+     */
+    List<ImageTask> getRemotelyProcessedTasksFromInstance(
             String SAPSNeighborUrl,
             SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
