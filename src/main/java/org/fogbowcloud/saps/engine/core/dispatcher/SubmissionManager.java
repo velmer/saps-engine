@@ -1,8 +1,7 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
+import org.fogbowcloud.saps.engine.core.model.ImageTask;
+
 import java.util.List;
 
 /**
@@ -16,10 +15,15 @@ public interface SubmissionManager {
      *
      * @param submissionParameters Parameters of user submission.
      * @return List of added tasks.
-     * @throws IOException
-     * @throws ParseException
-     * @throws SQLException
      */
-    List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException;
+    List<Task> addTasks(SubmissionParameters submissionParameters);
+
+    /**
+     * Gets list of processed tasks from all SAPS neighbors from this instance.
+     *
+     * @param submissionParameters Parameters of user submission.
+     * @return List of processed tasks from all SAPS neighbors.
+     */
+    List<ImageTask> getAllRemotelyProcessedTasks(SubmissionParameters submissionParameters);
 
 }

@@ -42,7 +42,7 @@ public class DatabaseApplication extends Application {
 	public DatabaseApplication(Properties properties) throws Exception {
 		this.properties = properties;
 		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
-		this.submissionManager = new SubmissionManagerImpl(this.submissionDispatcher);
+		this.submissionManager = new SubmissionManagerImpl(properties, this.submissionDispatcher);
 
 		// CORS configuration
 		CorsService cors = new CorsService();
@@ -113,7 +113,7 @@ public class DatabaseApplication extends Application {
 		return submissionDispatcher.getTaskInDB(taskId);
 	}
 
-	public List<Task> addTasks(SubmissionParameters submissionParameters) throws IOException, ParseException, SQLException {
+	public List<Task> addTasks(SubmissionParameters submissionParameters) {
 		return submissionManager.addTasks(submissionParameters);
 	}
 

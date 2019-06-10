@@ -1,15 +1,14 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
-import java.io.IOException;
+import org.fogbowcloud.saps.engine.core.model.ImageTask;
+import org.fogbowcloud.saps.engine.core.model.SapsUser;
+import org.fogbowcloud.saps.notifier.Ward;
+
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.fogbowcloud.saps.engine.core.model.ImageTask;
-import org.fogbowcloud.saps.engine.core.model.SapsUser;
-import org.fogbowcloud.saps.notifier.Ward;
 
 public interface SubmissionDispatcher {
 
@@ -21,11 +20,11 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) throws IOException, ParseException, SQLException;
+	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates);
 
-	void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException;
+	List<Task> addImageTasks(Collection<ImageTask> imageTasks);
 
-	void addImageTask(ImageTask imageTask) throws SQLException;
+	Task addImageTask(ImageTask imageTask) throws SQLException;
 
 	List<Ward> getUsersToNotify() throws SQLException;
 

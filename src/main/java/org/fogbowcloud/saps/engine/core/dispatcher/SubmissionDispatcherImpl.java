@@ -243,15 +243,26 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public void addImageTasks(Collection<ImageTask> imageTasks) throws SQLException {
+    public List<Task> addImageTasks(Collection<ImageTask> imageTasks) {
+        List<Task> addedTasks = new ArrayList<>();
         for (ImageTask imageTask: imageTasks) {
-            addImageTask(imageTask);
+            try {
+                addedTasks.add(addImageTask(imageTask));
+            } catch (SQLException e) {
+                LOGGER.error("Error while adding ImageTask.", e);
+            }
         }
+        return addedTasks;
     }
 
     @Override
-    public void addImageTask(ImageTask imageTask) throws SQLException {
+    public Task addImageTask(ImageTask imageTask) throws SQLException {
         imageStore.addImageTask(imageTask);
+        getImageStore().addStateStamp(imageTask.getTaskId(), imageTask.getState(),
+                getImageStore().getTask(imageTask.getTaskId()).getUpdateTime());
+        Task task = new Task(UUID.randomUUID().toString());
+        task.setImageTask(imageTask);
+        return task;
     }
 
     public List<ImageTask> getTaskListInDB() throws SQLException, ParseException {
