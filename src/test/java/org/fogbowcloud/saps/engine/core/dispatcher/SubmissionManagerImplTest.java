@@ -334,14 +334,10 @@ public class SubmissionManagerImplTest {
         processedImageTasks2 = processedImageTasks2.stream()
                 .map(imageTask -> { imageTask.setRegion("differentRegion"); return imageTask; })
                 .collect(Collectors.toList());
-        List<ImageTask> allProcessedImageTasksExpected = createImageTaskList(
-                DateUtil.buildDate(2014, 5, 12),
-                DateUtil.buildDate(2014, 5, 25)
-        );
+        List<ImageTask> allProcessedImageTasksExpected = new ArrayList<>();
+        allProcessedImageTasksExpected.addAll(processedImageTasks1);
         allProcessedImageTasksExpected.addAll(processedImageTasks2);
-        allProcessedImageTasksExpected.addAll(createImageTaskList(
-                DateUtil.buildDate(2014, 6, 3),
-                DateUtil.buildDate(2014, 6, 9)));
+        allProcessedImageTasksExpected.addAll(processedImageTasks3);
         allProcessedImageTasksExpected.sort(Comparator.comparing(ImageTask::getImageDate));
 
         doReturn(processedImageTasks1)
