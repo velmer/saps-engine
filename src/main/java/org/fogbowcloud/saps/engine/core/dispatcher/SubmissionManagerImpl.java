@@ -117,7 +117,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     private String[] getSAPSNeighborsUrls() {
         String separator = ";";
         String SAPSNeighborsUrls = properties.getProperty(SAPS_NEIGHBORS_URLS);
-        return !Objects.isNull(SAPSNeighborsUrls) ? SAPSNeighborsUrls.split(separator)
+        return Objects.nonNull(SAPSNeighborsUrls) ? SAPSNeighborsUrls.split(separator)
                 : new String[]{};
     }
 
