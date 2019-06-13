@@ -1,7 +1,6 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -95,7 +94,7 @@ public class DatabaseApplication extends Application {
 		router.attach("/images/{imgName}", ImageResource.class);
 		router.attach("/regions/details", RegionResource.class);
 		router.attach("/regions/search", RegionResource.class);
-		router.attach("/email", ProcessedImagesResource.class);
+		router.attach("/email", ImagesEmailResource.class);
 		router.attach("/archivedTasks", ArchivedTasksResource.class);
 
 		return router;
