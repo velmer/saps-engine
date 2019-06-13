@@ -103,6 +103,10 @@ public class DatabaseApplication extends Application {
 	public List<ImageTask> getTasks() throws SQLException, ParseException {
 		return submissionDispatcher.getTaskListInDB();
 	}
+
+	public List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException {
+		return submissionDispatcher.getImageTasks(imageTasksIds);
+	}
 	
 	public List<ImageTask> getTasksInState(ImageTaskState imageState) throws SQLException {
 		return this.submissionDispatcher.getTasksInState(imageState);

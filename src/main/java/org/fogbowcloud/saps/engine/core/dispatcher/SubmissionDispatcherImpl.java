@@ -270,6 +270,11 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
+    public List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException {
+        return imageStore.getImageTasks(imageTasksIds);
+    }
+
+    @Override
     public List<Ward> getUsersToNotify() throws SQLException {
         List<Ward> wards = imageStore.getUsersToNotify();
         return wards;
