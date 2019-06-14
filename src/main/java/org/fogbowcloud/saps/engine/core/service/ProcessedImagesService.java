@@ -38,22 +38,23 @@ public class ProcessedImagesService {
      * @return A {@link ImageTaskFileList}.
      */
     public static ImageTaskFileList generateImageTaskFiles(Properties properties, ImageTask imageTask) {
-        List<String> filesPaths = ObjectStoreService.getImageTaskFilesPaths(properties, imageTask.getTaskId());
-        List<ImageTaskFile> imageTaskFiles = new ArrayList<>();
-        for (String filePath: filesPaths) {
-            File file = new File(filePath);
-            ImageTaskFile imageTaskFile = new ImageTaskFile(filePath, file.getName());
-            String imageTaskFileURL;
-            try {
-                imageTaskFileURL = generateTempURL(properties, imageTaskFile);
-            } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
-                LOGGER.error("Failed to generate download link for file " + filePath, e);
-                imageTaskFileURL = UNAVAILABLE;
-            }
-            imageTaskFile.setURL(imageTaskFileURL);
-            imageTaskFiles.add(imageTaskFile);
-        }
-        return new ImageTaskFileList(imageTask, imageTaskFiles);
+//        List<String> filesPaths = ObjectStoreService.getImageTaskFilesPaths(properties, imageTask.getTaskId());
+//        List<ImageTaskFile> imageTaskFiles = new ArrayList<>();
+//        for (String filePath: filesPaths) {
+//            File file = new File(filePath);
+//            ImageTaskFile imageTaskFile = new ImageTaskFile(filePath, file.getName());
+//            String imageTaskFileURL;
+//            try {
+//                imageTaskFileURL = generateTempURL(properties, imageTaskFile);
+//            } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+//                LOGGER.error("Failed to generate download link for file " + filePath, e);
+//                imageTaskFileURL = UNAVAILABLE;
+//            }
+//            imageTaskFile.setURL(imageTaskFileURL);
+//            imageTaskFiles.add(imageTaskFile);
+//        }
+//        return new ImageTaskFileList(imageTask, imageTaskFiles);
+        return null;
     }
 
     /**

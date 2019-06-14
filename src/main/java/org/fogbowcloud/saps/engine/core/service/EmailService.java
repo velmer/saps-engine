@@ -1,7 +1,7 @@
 package org.fogbowcloud.saps.engine.core.service;
 
 import org.fogbowcloud.saps.engine.scheduler.util.SapsPropertiesConstants;
-import org.fogbowcloud.saps.notifier.GoogleMail;
+//import org.fogbowcloud.saps.notifier.GoogleMail;
 
 import java.util.Properties;
 
@@ -47,13 +47,13 @@ public class EmailService {
             String recipientEmail,
             String title,
             String message) {
-        Thread emailThread = new Thread(() -> GoogleMail.Send(
-                username,
-                password,
-                recipientEmail,
-                title,
-                message
-        ));
-        emailThread.start();
+//        Thread emailThread = new Thread(() -> GoogleMail.Send(
+//                username,
+//                password,
+//                recipientEmail,
+//                title,
+//                message
+//        ));
+//        emailThread.start();
     }
 }

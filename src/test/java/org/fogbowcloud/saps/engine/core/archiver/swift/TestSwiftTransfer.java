@@ -14,26 +14,26 @@ public class TestSwiftTransfer {
 		FileInputStream input = new FileInputStream("config/sebal.conf");
 		properties.load(input);
 		
-		SwiftClient swiftClient = new SwiftClient(properties);
-		
-		String containerName = "container-test";
-		String pseudFolder = "test";
-		File file = new File("/tmp/test-file");
-		
-		swiftClient.createContainer(containerName);
-		
-		try {
-			Date beginTime = new Date(Calendar.getInstance().getTimeInMillis());
-			System.out.println(new Timestamp(beginTime.getTime()));
-			swiftClient.uploadFile(containerName, file, pseudFolder);
-			Date endTime = new Date(Calendar.getInstance().getTimeInMillis());
-			System.out.println(new Timestamp(endTime.getTime()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		swiftClient.deleteFile(containerName, pseudFolder, file.getName());
-		swiftClient.deleteContainer(containerName);
+//		SwiftClient swiftClient = new SwiftClient(properties);
+//
+//		String containerName = "container-test";
+//		String pseudFolder = "test";
+//		File file = new File("/tmp/test-file");
+//
+//		swiftClient.createContainer(containerName);
+//
+//		try {
+//			Date beginTime = new Date(Calendar.getInstance().getTimeInMillis());
+//			System.out.println(new Timestamp(beginTime.getTime()));
+//			swiftClient.uploadFile(containerName, file, pseudFolder);
+//			Date endTime = new Date(Calendar.getInstance().getTimeInMillis());
+//			System.out.println(new Timestamp(endTime.getTime()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		swiftClient.deleteFile(containerName, pseudFolder, file.getName());
+//		swiftClient.deleteContainer(containerName);
 	}
 
 }
