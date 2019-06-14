@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,13 +32,32 @@ public class ImageTaskFileList {
         this.imageTaskFiles = imageTaskFiles;
     }
 
+    public ImageTaskFileList(JSONObject jsonObject) throws JSONException {
+        ImageTask imageTask = new ImageTask(jsonObject.getString(IMAGE_TASK_ID),
+                jsonObject.getString(REGION),
+                (Date) jsonObject.get(IMAGE_DATE)
+        );
+        List<ImageTaskFile> imageTaskFiles = new ArrayList<>();
+        JSONArray filesJSONArray = jsonObject.getJSONArray(FILES);
+        for (int i = 0; i < filesJSONArray.length(); i++) {
+            JSONObject imageTaskFileJSON = filesJSONArray.optJSONObject(i);
+            imageTaskFiles.add(new ImageTaskFile(
+                    null,
+                    imageTaskFileJSON.getString(NAME),
+                    imageTaskFileJSON.getString(URL)
+            ));
+        }
+        this.imageTask = imageTask;
+        this.imageTaskFiles = imageTaskFiles;
+    }
+
     public JSONObject toJSON() throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(IMAGE_TASK_ID, imageTask.getTaskId());
         try {
             jsonObject.put(REGION, imageTask.getRegion());
-            jsonObject.put(COLLECTION_TIER_NAME, imageTask.getCollectionTierName());
             jsonObject.put(IMAGE_DATE, imageTask.getImageDate());
+            jsonObject.put(COLLECTION_TIER_NAME, imageTask.getCollectionTierName());
             JSONArray filesJSONArray = new JSONArray();
             for (ImageTaskFile imageTaskFile : imageTaskFiles) {
                 JSONObject imageTaskFileJSONObject = new JSONObject();
