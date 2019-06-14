@@ -1,6 +1,7 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet.resource;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,17 +24,13 @@ import org.restlet.resource.Post;
 import org.restlet.util.Series;
 
 /**
- * Responsable for retrieve information about already processed - archived - tasks.
+ * Responsible for retrieve information about already processed {@link ImageTask}.
  */
 public class ArchivedTasksResource extends BaseResource {
 
 	private static final Logger LOGGER = Logger.getLogger(ArchivedTasksResource.class);
 
 	private static final String REQUEST_ATTR_PROCESSED_IMAGES = "images_id[]";
-
-	public ArchivedTasksResource() {
-		super();
-	}
 
 	/**
 	 * Returns all processed tasks that matches the execution parameters passed
@@ -75,21 +72,48 @@ public class ArchivedTasksResource extends BaseResource {
 		LOGGER.info("Recovering files from processed ImageTasks from list of IDs: "
                 + Arrays.toString(imageTasksIds));
 
-        JSONArray resultJSONArray = new JSONArray();
-        try {
-            List<ImageTask> imageTasks = application.getImageTasks(imageTasksIds);
-            List<ImageTaskFileList> imageTaskFileLists = imageTasks.stream()
-                    .map(imageTask -> ProcessedImagesService.generateImageTaskFiles(
-                            application.getProperties(),
-                            imageTask))
-                    .collect(Collectors.toList());
+		List<ImageTaskFileList> imageTaskFileLists = getImageTaskFileLists(imageTasksIds);
+		JSONArray imageTaskFileListsJSONArray = parseToJsonArray(imageTaskFileLists);
+        return new StringRepresentation(imageTaskFileListsJSONArray.toString(), MediaType.APPLICATION_JSON);
+    }
+
+	/**
+	 * Gets a list of {@link ImageTaskFileList} given the IDs of {@link ImageTask}.
+	 *
+	 * @param imageTasksIds IDs of ImageTasks to have its ImageTaskFileList returned.
+	 * @return List of {@link ImageTaskFileList}.
+	 */
+	private List<ImageTaskFileList> getImageTaskFileLists(String[] imageTasksIds) {
+		List<ImageTaskFileList> imageTaskFileLists = new ArrayList<>();
+		try {
+			List<ImageTask> imageTasks = application.getImageTasks(imageTasksIds);
+			imageTaskFileLists = imageTasks.stream()
+					.map(imageTask -> ProcessedImagesService.generateImageTaskFiles(
+							application.getProperties(),
+							imageTask))
+					.collect(Collectors.toList());
+		} catch (SQLException e) {
+			LOGGER.error("Error while getting ImageTasks from Catalogue", e);
+		}
+		return imageTaskFileLists;
+	}
+
+	/**
+	 * Parses the specified list of {@link ImageTaskFileList} to a {@link JSONArray}.
+	 *
+	 * @param imageTaskFileLists List of ImageTaskFileList to be parsed.
+	 * @return List of ImageTaskFileList parsed to JSONArray.
+	 */
+	private JSONArray parseToJsonArray(List<ImageTaskFileList> imageTaskFileLists) {
+		JSONArray resultJSONArray = new JSONArray();
+		try {
             for (ImageTaskFileList imageTaskFileList: imageTaskFileLists) {
                 resultJSONArray.put(imageTaskFileList.toJSON());
             }
-        } catch (SQLException | JSONException e) {
-            LOGGER.error("Error while returning files of processed ImageTasks", e);
+        } catch (JSONException e) {
+            LOGGER.error("Error while parsing list of ImageTaskFileList to JSONArray", e);
         }
-        return new StringRepresentation(resultJSONArray.toString(), MediaType.APPLICATION_JSON);
-    }
+		return resultJSONArray;
+	}
 
 }
