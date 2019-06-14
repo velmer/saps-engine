@@ -1,6 +1,8 @@
 package org.fogbowcloud.saps.engine.core.database;
 
+import java.sql.Array;
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1016,7 +1018,7 @@ public class JDBCImageDataStore implements ImageDataStore {
 	}
 
 	private static final String SELECT_IMAGES_IN_ID_LIST_SQL = "SELECT * FROM " + IMAGE_TABLE_NAME
-			+ " WHERE " + TASK_ID_COL + " IN ?";
+			+ " WHERE " + TASK_ID_COL + " IN (?)";
 
 	@Override
 	public List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException {
@@ -1025,7 +1027,8 @@ public class JDBCImageDataStore implements ImageDataStore {
 		try {
 			conn = getConnection();
 			statement = conn.prepareStatement(SELECT_IMAGES_IN_ID_LIST_SQL);
-			statement.setString(1, Arrays.toString(imageTasksIds));
+			Array imageTasksIdsArray = conn.createArrayOf(JDBCType.VARCHAR.getName(), imageTasksIds);
+			statement.setArray(1, imageTasksIdsArray);
 			statement.setQueryTimeout(300);
 			statement.execute();
 			ResultSet rs = statement.getResultSet();
