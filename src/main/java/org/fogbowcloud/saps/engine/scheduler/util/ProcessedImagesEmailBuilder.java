@@ -33,8 +33,7 @@ public class ProcessedImagesEmailBuilder implements Runnable {
     private DatabaseApplication application;
     private Properties properties;
     private String userEmail;
-    private List<String> imageTasksIds;
-    private StringBuilder error;
+    private List<String> images;
 
     public ProcessedImagesEmailBuilder(
             DatabaseApplication databaseApplication,
@@ -44,8 +43,7 @@ public class ProcessedImagesEmailBuilder implements Runnable {
         this.application = databaseApplication;
         this.properties = properties;
         this.userEmail = userEmail;
-        this.imageTasksIds = imageTasksIds;
-        this.error = new StringBuilder();
+        this.images = images;
     }
 
     @Override
@@ -54,34 +52,35 @@ public class ProcessedImagesEmailBuilder implements Runnable {
         builder.append("Creating email for user ");
         builder.append(userEmail);
         builder.append(" with images:\n");
-        for (String imageTaskId: imageTasksIds) {
-            builder.append(imageTaskId).append("\n");
+        for (String str: images) {
+            builder.append(str).append("\n");
         }
         LOGGER.info(builder.toString());
-        JSONArray tasklist = generateAllTasksJsons();
+        StringBuilder errorBuilder = new StringBuilder();
+        JSONArray tasklist = generateAllTasksJsons(errorBuilder);
         sendTaskEmail(tasklist);
         sendErrorEmail();
     }
 
-    JSONArray generateAllTasksJsons() {
+    JSONArray generateAllTasksJsons(StringBuilder errorBuilder) {
         JSONArray tasklist = new JSONArray();
-        for (String imageTaskId: imageTasksIds) {
+        for (String str: images) {
             try {
-                tasklist.put(generateTaskEmailJson(properties, imageTaskId));
+                tasklist.put(generateTaskEmailJson(properties, str));
             } catch (SQLException e) {
                 LOGGER.error("Failed to fetch image from database.", e);
-                error.append("Failed to fetch image from database.").append("\n")
+                errorBuilder.append("Failed to fetch image from database.").append("\n")
                         .append(ExceptionUtils.getStackTrace(e)).append("\n");
             } catch (JSONException e) {
                 LOGGER.error("Failed to create task json.", e);
-                error.append("Failed to create task json.").append("\n")
+                errorBuilder.append("Failed to create task json.").append("\n")
                         .append(ExceptionUtils.getStackTrace(e)).append("\n");
             }
         }
         return tasklist;
     }
 
-    private void sendTaskEmail(JSONArray tasklist) {
+    private void sendTaskEmail(StringBuilder errorBuilder, JSONArray tasklist) {
         try {
             GoogleMail.Send(
                     properties.getProperty(SapsPropertiesConstants.NO_REPLY_EMAIL),
@@ -92,21 +91,21 @@ public class ProcessedImagesEmailBuilder implements Runnable {
             );
         } catch (MessagingException | JSONException e) {
             LOGGER.error("Failed to send email with images download links.", e);
-            error
+            errorBuilder
                     .append("Failed to send email with images download links.").append("\n")
                     .append(ExceptionUtils.getStackTrace(e)).append("\n");
         }
     }
 
-    private void sendErrorEmail() {
-        if (!error.toString().isEmpty()) {
+    private void sendErrorEmail(StringBuilder errorBuilder) {
+        if (!errorBuilder.toString().isEmpty()) {
             try {
                 GoogleMail.Send(
                         properties.getProperty(SapsPropertiesConstants.NO_REPLY_EMAIL),
                         properties.getProperty(SapsPropertiesConstants.NO_REPLY_PASS),
                         "sebal.no.reply@gmail.com",
                         "[SAPS] Errors during image temporary link creation",
-                        error.toString()
+                        errorBuilder.toString()
                 );
             } catch (MessagingException e) {
                 LOGGER.error("Failed to send email with errors to admins.", e);
