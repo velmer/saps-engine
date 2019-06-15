@@ -7,6 +7,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.fogbowcloud.manager.core.plugins.identity.openstack.KeystoneV3IdentityPlugin;
+import org.fogbowcloud.manager.occi.model.Token;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.scheduler.util.SapsPropertiesConstants;
 
@@ -16,7 +18,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Service that provides operations for communication with the Object Store.
+ * Service that provides operations for communication with Object Store.
  */
 public class ObjectStoreService {
 
@@ -42,16 +44,17 @@ public class ObjectStoreService {
      * @return List of paths.
      */
     public static List<String> getImageTaskFilesPaths(Properties properties, String imageTaskId) {
+        List<String> imageTaskFilesPaths = new ArrayList<>();
         try {
             HttpClient client = HttpClients.createDefault();
             HttpGet httpget = prepareObjectStoreRequest(properties, imageTaskId);
             HttpResponse response = client.execute(httpget);
-            return parseHttpResponse(response);
+            imageTaskFilesPaths = parseHttpResponse(response);
         } catch (IOException | URISyntaxException e) {
-            LOGGER.error("", e);
-            return Collections.emptyList();
+            LOGGER.error("Error while retrieving path of files of ImageTask" +
+                    " with ID: " + imageTaskId, e);
         }
-
+        return imageTaskFilesPaths;
     }
 
     /**
@@ -107,4 +110,5 @@ public class ObjectStoreService {
         KeystoneV3IdentityPlugin keystone = new KeystoneV3IdentityPlugin(properties);
         return keystone.createToken(credentials);
     }
+
 }

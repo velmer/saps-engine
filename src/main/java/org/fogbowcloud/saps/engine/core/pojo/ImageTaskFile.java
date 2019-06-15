@@ -25,8 +25,16 @@ public class ImageTaskFile {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getURL() {
@@ -36,4 +44,5 @@ public class ImageTaskFile {
     public void setURL(String URL) {
         this.URL = URL;
     }
+
 }
