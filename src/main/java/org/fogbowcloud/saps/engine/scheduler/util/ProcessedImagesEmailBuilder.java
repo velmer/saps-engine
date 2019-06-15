@@ -8,8 +8,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.fogbowcloud.manager.core.plugins.identity.openstack.KeystoneV3IdentityPlugin;
-import org.fogbowcloud.manager.occi.model.Token;
+//import org.fogbowcloud.manager.core.plugins.identity.openstack.KeystoneV3IdentityPlugin;
+//import org.fogbowcloud.manager.occi.model.Token;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.scheduler.restlet.DatabaseApplication;
 import org.fogbowcloud.saps.notifier.GoogleMail;
@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.mail.MessagingException;
+//import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -143,7 +143,7 @@ public class ProcessedImagesEmailBuilder implements Runnable {
                     "[SAPS] Filter results",
                     tasklist.toString(2)
             );
-        } catch (MessagingException | JSONException e) {
+        } catch (/*MessagingException | */JSONException e) {
             LOGGER.error("Failed to send email with images download links.", e);
             errorBuilder
                     .append("Failed to send email with images download links.").append("\n")
@@ -153,17 +153,17 @@ public class ProcessedImagesEmailBuilder implements Runnable {
 
     private void sendErrorEmail(StringBuilder errorBuilder) {
         if (!errorBuilder.toString().isEmpty()) {
-            try {
-                GoogleMail.Send(
-                        properties.getProperty(SapsPropertiesConstants.NO_REPLY_EMAIL),
-                        properties.getProperty(SapsPropertiesConstants.NO_REPLY_PASS),
-                        "sebal.no.reply@gmail.com",
-                        "[SAPS] Errors during image temporary link creation",
-                        errorBuilder.toString()
-                );
-            } catch (MessagingException e) {
-                LOGGER.error("Failed to send email with errors to admins.", e);
-            }
+//            try {
+//                GoogleMail.Send(
+//                        properties.getProperty(SapsPropertiesConstants.NO_REPLY_EMAIL),
+//                        properties.getProperty(SapsPropertiesConstants.NO_REPLY_PASS),
+//                        "sebal.no.reply@gmail.com",
+//                        "[SAPS] Errors during image temporary link creation",
+//                        errorBuilder.toString()
+//                );
+//            } catch (MessagingException e) {
+//                LOGGER.error("Failed to send email with errors to admins.", e);
+//            }
         }
     }
 
@@ -263,16 +263,16 @@ public class ProcessedImagesEmailBuilder implements Runnable {
     }
 
     List<String> getTaskFilesFromObjectStore(Properties properties, String objectStoreHost, String objectStorePath, String objectStoreContainer, ImageTask task) throws URISyntaxException, IOException {
-        Token token = getKeystoneToken(properties);
+//        Token token = getKeystoneToken(properties);
 
         HttpClient client = HttpClients.createDefault();
-        HttpGet httpget = prepObjectStoreRequest(objectStoreHost, objectStorePath, objectStoreContainer, task, token);
+        HttpGet httpget = prepObjectStoreRequest(objectStoreHost, objectStorePath, objectStoreContainer, task/*, token*/);
         HttpResponse response = client.execute(httpget);
 
         return Arrays.asList(EntityUtils.toString(response.getEntity()).split("\n"));
     }
 
-    private HttpGet prepObjectStoreRequest(String objectStoreHost, String objectStorePath, String objectStoreContainer, ImageTask task, Token token) throws URISyntaxException {
+    private HttpGet prepObjectStoreRequest(String objectStoreHost, String objectStorePath, String objectStoreContainer, ImageTask task/*, Token token*/) throws URISyntaxException {
         URI uri = new URIBuilder()
                 .setScheme("https")
                 .setHost(objectStoreHost)
@@ -281,17 +281,17 @@ public class ProcessedImagesEmailBuilder implements Runnable {
                 .build();
         LOGGER.debug("Getting list of files for task " + task.getTaskId() + " from " + uri);
         HttpGet httpget = new HttpGet(uri);
-        httpget.addHeader("X-Auth-Token", token.getAccessId());
+//        httpget.addHeader("X-Auth-Token", token.getAccessId());
         return httpget;
     }
 
-    private Token getKeystoneToken(Properties properties) {
-        KeystoneV3IdentityPlugin keystone = new KeystoneV3IdentityPlugin(properties);
-        Map<String, String> credentials = new HashMap<>();
-        credentials.put(AUTH_URL, properties.getProperty(SapsPropertiesConstants.SWIFT_AUTH_URL));
-        credentials.put(PROJECT_ID, properties.getProperty(SapsPropertiesConstants.SWIFT_PROJECT_ID));
-        credentials.put(USER_ID, properties.getProperty(SapsPropertiesConstants.SWIFT_USER_ID));
-        credentials.put(PASSWORD, properties.getProperty(SapsPropertiesConstants.SWIFT_PASSWORD));
-        return keystone.createToken(credentials);
-    }
+//    private Token getKeystoneToken(Properties properties) {
+//        KeystoneV3IdentityPlugin keystone = new KeystoneV3IdentityPlugin(properties);
+//        Map<String, String> credentials = new HashMap<>();
+//        credentials.put(AUTH_URL, properties.getProperty(SapsPropertiesConstants.SWIFT_AUTH_URL));
+//        credentials.put(PROJECT_ID, properties.getProperty(SapsPropertiesConstants.SWIFT_PROJECT_ID));
+//        credentials.put(USER_ID, properties.getProperty(SapsPropertiesConstants.SWIFT_USER_ID));
+//        credentials.put(PASSWORD, properties.getProperty(SapsPropertiesConstants.SWIFT_PASSWORD));
+//        return keystone.createToken(credentials);
+//    }
 }

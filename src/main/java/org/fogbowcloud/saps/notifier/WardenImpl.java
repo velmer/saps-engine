@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
+//import javax.mail.MessagingException;
+//import javax.mail.internet.AddressException;
 
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionDispatcherImpl;
@@ -88,17 +88,17 @@ public class WardenImpl implements Warden {
 		String message = "The task " + context.getTaskId() + " was ARCHIVED into swift.\n"
 				+ context.toString();
 
-		try {
+//		try {
 			GoogleMail.Send(properties.getProperty(NOREPLY_EMAIL),
 					properties.getProperty(NOREPLY_PASSWORD), email, subject, message);
 			return true;
-		} catch (AddressException e) {
-			LOGGER.error("Error while sending email to " + email, e);
-		} catch (MessagingException e) {
-			LOGGER.error("Error while sending email to " + email, e);
-		}
-
-		return false;
+//		} catch (AddressException e) {
+//			LOGGER.error("Error while sending email to " + email, e);
+//		} catch (MessagingException e) {
+//			LOGGER.error("Error while sending email to " + email, e);
+//		}
+//
+//		return false;
 	}
 
 	private void removeNonExistentWard(Ward ward) {
