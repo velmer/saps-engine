@@ -126,4 +126,6 @@ public interface ImageDataStore {
 			String inputGathering,
 			String inputPreprocessing,
 			String algorithmExecution) throws SQLException;
+
+    List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException;
 }

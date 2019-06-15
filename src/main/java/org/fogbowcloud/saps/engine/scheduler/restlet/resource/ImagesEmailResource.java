@@ -13,9 +13,9 @@ import org.restlet.resource.ResourceException;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class ProcessedImagesResource extends BaseResource {
+public class ImagesEmailResource extends BaseResource {
 
-    public static final Logger LOGGER = Logger.getLogger(ProcessedImagesResource.class);
+    public static final Logger LOGGER = Logger.getLogger(ImagesEmailResource.class);
 
     private static final String REQUEST_ATTR_PROCESSED_IMAGES = "images_id[]";
 
