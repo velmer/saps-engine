@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
+import org.fogbowcloud.saps.engine.core.util.DateUtil;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -32,8 +33,19 @@ public class ArchivedTasksResource extends BaseResource {
 	 */
 	@Post
 	public Representation getProcessedTasksInInterval(Representation representation) {
-		Form form = new Form(representation);
-		SubmissionParameters submissionParameters = extractSubmissionParameters(form);
+		/*Form form = new Form(representation);
+		SubmissionParameters submissionParameters = extractSubmissionParameters(form);*/
+		SubmissionParameters submissionParameters = new SubmissionParameters(
+				"-7.913",
+				"-37.814",
+				"-6.547",
+				"-35.757",
+				DateUtil.buildDate(2014, 5, 12),
+				DateUtil.buildDate(2014, 5, 13),
+				"Default",
+				"Default",
+				"Default"
+		);
 
 		String log = "Recovering processed tasks with settings:\n" +
 				"\tLower Left: " + submissionParameters.getLowerLeftLatitude() + ", " + submissionParameters.getLowerLeftLongitude() + "\n" +

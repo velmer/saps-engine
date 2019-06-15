@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
 import org.fogbowcloud.saps.engine.core.model.ImageTaskState;
+import org.fogbowcloud.saps.engine.core.util.DateUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +76,7 @@ public class RegionResource extends BaseResource {
 
 	@Post
 	public Representation getProcessedImagesInInterval(Representation representation) {
-		Form form = new Form(representation);
+		/*Form form = new Form(representation);
 
 		String userEmail = form.getFirstValue(UserResource.REQUEST_ATTR_USER_EMAIL, true);
 		String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
@@ -83,7 +84,19 @@ public class RegionResource extends BaseResource {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
 
-		SubmissionParameters submissionParameters = extractSubmissionParameters(form);
+		SubmissionParameters submissionParameters = extractSubmissionParameters(form);*/
+
+		SubmissionParameters submissionParameters = new SubmissionParameters(
+				"-7.913",
+				"-37.814",
+				"-6.547",
+				"-35.757",
+				DateUtil.buildDate(2014, 5, 12),
+				DateUtil.buildDate(2014, 5, 13),
+				"Default",
+				"Default",
+				"Default"
+		);
 
 		String log = "Recovering processed images with settings:\n" +
 				"\tLower Left: " + submissionParameters.getLowerLeftLatitude() + ", " + submissionParameters.getLowerLeftLongitude() + "\n" +

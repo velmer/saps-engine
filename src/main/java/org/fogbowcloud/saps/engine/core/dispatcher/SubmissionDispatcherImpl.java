@@ -165,7 +165,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                 submissionParameters.getEndDate());
         // Filter already processed dates
         datesToProcess = datesToProcess.stream()
-                .filter(processedDates::contains)
+                .filter(date -> !processedDates.contains(date))
                 .collect(Collectors.toList());
         List<Task> createdTasks = new ArrayList<>();
         for (Date currentDate : datesToProcess) {

@@ -10,6 +10,7 @@ import org.fogbowcloud.saps.engine.core.dispatcher.Submission;
 import org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters;
 import org.fogbowcloud.saps.engine.core.dispatcher.Task;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
+import org.fogbowcloud.saps.engine.core.util.DateUtil;
 import org.fogbowcloud.saps.engine.scheduler.restlet.DatabaseApplication;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,13 +98,24 @@ public class ImageResource extends BaseResource {
 		Form form = new Form(entity);
 
 		String userEmail = form.getFirstValue(UserResource.REQUEST_ATTR_USER_EMAIL, true);
-		String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
+		/*String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
 		LOGGER.debug("POST with userEmail " + userEmail);
 		if (!authenticateUser(userEmail, userPass) || userEmail.equals("anonymous")) {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
 
-		SubmissionParameters submissionParameters = extractSubmissionParameters(form);
+		SubmissionParameters submissionParameters = extractSubmissionParameters(form);*/
+		SubmissionParameters submissionParameters = new SubmissionParameters(
+				"-7.913",
+				"-37.814",
+				"-6.547",
+				"-35.757",
+				DateUtil.buildDate(2014, 5, 12),
+				DateUtil.buildDate(2014, 5, 13),
+				"Default",
+				"Default",
+				"Default"
+		);
 
 		String log = "Creating new image process with configuration:\n" +
 				"\tLower Left: " + submissionParameters.getLowerLeftLatitude() + ", " + submissionParameters.getLowerLeftLongitude() + "\n" +
