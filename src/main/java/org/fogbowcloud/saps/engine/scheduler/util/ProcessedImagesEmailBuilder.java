@@ -3,7 +3,7 @@ package org.fogbowcloud.saps.engine.scheduler.util;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.fogbowcloud.saps.engine.core.model.ImageTask;
-import org.fogbowcloud.saps.engine.core.pojo.ImageTaskFile;
+import org.fogbowcloud.saps.engine.core.pojo.ImageTaskFileList;
 import org.fogbowcloud.saps.engine.core.service.ProcessedImagesService;
 import org.fogbowcloud.saps.engine.scheduler.restlet.DatabaseApplication;
 import org.fogbowcloud.saps.notifier.GoogleMail;
@@ -20,16 +20,6 @@ public class ProcessedImagesEmailBuilder implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(ProcessedImagesEmailBuilder.class);
 
-    private static final String UNAVAILABLE = "UNAVAILABLE";
-    private static final String TASK_ID = "taskId";
-    private static final String REGION = "region";
-    private static final String COLLECTION_TIER_NAME = "collectionTierName";
-    private static final String IMAGE_DATE = "imageDate";
-    private static final String NAME = "name";
-    private static final String URL = "url";
-    private static final String FILES = "files";
-    private static final String STATUS = "status";
-
     private DatabaseApplication application;
     private Properties properties;
     private String userEmail;
@@ -39,7 +29,7 @@ public class ProcessedImagesEmailBuilder implements Runnable {
             DatabaseApplication databaseApplication,
             Properties properties,
             String userEmail,
-            List<String> imageTasksIds) {
+            List<String> images) {
         this.application = databaseApplication;
         this.properties = properties;
         this.userEmail = userEmail;
@@ -58,8 +48,8 @@ public class ProcessedImagesEmailBuilder implements Runnable {
         LOGGER.info(builder.toString());
         StringBuilder errorBuilder = new StringBuilder();
         JSONArray tasklist = generateAllTasksJsons(errorBuilder);
-        sendTaskEmail(tasklist);
-        sendErrorEmail();
+        sendTaskEmail(errorBuilder, tasklist);
+        sendErrorEmail(errorBuilder);
     }
 
     JSONArray generateAllTasksJsons(StringBuilder errorBuilder) {
@@ -115,30 +105,10 @@ public class ProcessedImagesEmailBuilder implements Runnable {
 
     JSONObject generateTaskEmailJson(Properties properties, String imageTaskId)
             throws SQLException, JSONException {
-        JSONObject result = new JSONObject();
-        result.put(TASK_ID, imageTaskId);
-
-        try {
-            ImageTask task = application.getTask(imageTaskId);
-            result.put(REGION, task.getRegion());
-            result.put(COLLECTION_TIER_NAME, task.getCollectionTierName());
-            result.put(IMAGE_DATE, task.getImageDate());
-            List<ImageTaskFile> imageTaskFiles = ProcessedImagesService
-                    .generateImageTaskFiles(properties, imageTaskId);
-            JSONArray filesJSONArray = new JSONArray();
-            for (ImageTaskFile imageTaskFile: imageTaskFiles) {
-                JSONObject imageTaskFileJSONObject = new JSONObject();
-                imageTaskFileJSONObject.put(NAME, imageTaskFile.getName());
-                imageTaskFileJSONObject.put(URL, imageTaskFile.getURL());
-                filesJSONArray.put(imageTaskFileJSONObject);
-            }
-            result.put(FILES, filesJSONArray);
-        } catch (SQLException | JSONException e) {
-            result.put(STATUS, UNAVAILABLE);
-            throw e;
-        }
-
-        return result;
+        ImageTask task = application.getTask(imageTaskId);
+        ImageTaskFileList imageTaskFileList = ProcessedImagesService
+                .generateImageTaskFiles(properties, task);
+        return imageTaskFileList.toJSON();
     }
 
 }
