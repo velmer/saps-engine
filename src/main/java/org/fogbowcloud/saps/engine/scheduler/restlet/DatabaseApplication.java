@@ -40,9 +40,9 @@ public class DatabaseApplication extends Application {
 	private Component restletComponent;
 
 	public DatabaseApplication(Properties properties) throws Exception {
-		this.properties = properties;
-		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
-		this.submissionManager = new SubmissionManagerImpl(properties, this.submissionDispatcher);
+//		this.properties = properties;
+//		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
+//		this.submissionManager = new SubmissionManagerImpl(properties, this.submissionDispatcher);
 
 		// CORS configuration
 		CorsService cors = new CorsService();
@@ -52,13 +52,14 @@ public class DatabaseApplication extends Application {
 	}
 
 	public void startServer() throws Exception {
-		Properties properties = this.submissionDispatcher.getProperties();
-		if (!properties.containsKey(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT)) {
-			throw new IllegalArgumentException(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT
-					+ " is missing on properties.");
-		}
-		Integer restServerPort = Integer.valueOf(
-				(String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
+//		Properties properties = this.submissionDispatcher.getProperties();
+//		if (!properties.containsKey(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT)) {
+//			throw new IllegalArgumentException(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT
+//					+ " is missing on properties.");
+//		}
+//		Integer restServerPort = Integer.valueOf(
+//				(String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
+		Integer restServerPort = 8091;
 
 		LOGGER.info("Starting service on port: " + restServerPort);
 
