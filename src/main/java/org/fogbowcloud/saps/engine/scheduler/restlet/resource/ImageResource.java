@@ -98,24 +98,13 @@ public class ImageResource extends BaseResource {
 		Form form = new Form(entity);
 
 		String userEmail = form.getFirstValue(UserResource.REQUEST_ATTR_USER_EMAIL, true);
-		/*String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
+		String userPass = form.getFirstValue(UserResource.REQUEST_ATTR_USERPASS, true);
 		LOGGER.debug("POST with userEmail " + userEmail);
 		if (!authenticateUser(userEmail, userPass) || userEmail.equals("anonymous")) {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
 
-		SubmissionParameters submissionParameters = extractSubmissionParameters(form);*/
-		SubmissionParameters submissionParameters = new SubmissionParameters(
-				"-7.913",
-				"-37.814",
-				"-6.547",
-				"-35.757",
-				DateUtil.buildDate(2014, 5, 12),
-				DateUtil.buildDate(2014, 5, 13),
-				"Default",
-				"Default",
-				"Default"
-		);
+		SubmissionParameters submissionParameters = extractSubmissionParameters(form);
 
 		String log = "Creating new image process with configuration:\n" +
 				"\tLower Left: " + submissionParameters.getLowerLeftLatitude() + ", " + submissionParameters.getLowerLeftLongitude() + "\n" +

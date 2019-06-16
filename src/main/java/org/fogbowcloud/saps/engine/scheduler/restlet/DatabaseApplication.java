@@ -1,7 +1,6 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -40,9 +39,9 @@ public class DatabaseApplication extends Application {
 	private Component restletComponent;
 
 	public DatabaseApplication(Properties properties) throws Exception {
-//		this.properties = properties;
-//		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
-//		this.submissionManager = new SubmissionManagerImpl(properties, this.submissionDispatcher);
+		this.properties = properties;
+		this.submissionDispatcher = new SubmissionDispatcherImpl(properties);
+		this.submissionManager = new SubmissionManagerImpl(properties, this.submissionDispatcher);
 
 		// CORS configuration
 		CorsService cors = new CorsService();
@@ -52,14 +51,13 @@ public class DatabaseApplication extends Application {
 	}
 
 	public void startServer() throws Exception {
-//		Properties properties = this.submissionDispatcher.getProperties();
-//		if (!properties.containsKey(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT)) {
-//			throw new IllegalArgumentException(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT
-//					+ " is missing on properties.");
-//		}
-//		Integer restServerPort = Integer.valueOf(
-//				(String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
-		Integer restServerPort = 8091;
+		Properties properties = this.submissionDispatcher.getProperties();
+		if (!properties.containsKey(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT)) {
+			throw new IllegalArgumentException(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT
+					+ " is missing on properties.");
+		}
+		Integer restServerPort = Integer.valueOf(
+				(String) properties.get(SapsPropertiesConstants.SUBMISSION_REST_SERVER_PORT));
 
 		LOGGER.info("Starting service on port: " + restServerPort);
 
