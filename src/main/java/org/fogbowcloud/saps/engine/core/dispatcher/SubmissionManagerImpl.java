@@ -37,7 +37,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     @Override
     public List<Task> addTasks(SubmissionParameters submissionParameters) {
         List<Task> processedTasks = new ArrayList<>();
-        List<Date> processedDates = new ArrayList<>();
+        Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate = new HashMap<>();
         try {
             List<ImageTask> processedImageTasks = getAllRemotelyProcessedTasks(submissionParameters);
             if (!processedImageTasks.isEmpty()) {
@@ -45,14 +45,14 @@ public class SubmissionManagerImpl implements SubmissionManager {
                     processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
                 }
                 processedTasks = submissionDispatcher.addImageTasks(processedImageTasks);
-                processedDates = processedImageTasks.stream()
-                        .map(ImageTask::getImageDate)
-                        .collect(Collectors.toList());
+                imageTasksProcessedGroupedByDate = processedTasks.stream()
+                        .map(Task::getImageTask)
+                        .collect(Collectors.groupingBy(ImageTask::getImageDate));
             }
         } catch (Throwable t) {
             LOGGER.error("Error while adding remotely processed tasks.", t);
         }
-        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, imageTasksProcessedGroupedByDate);
         List<Task> allAddedTasks = new ArrayList<>();
         allAddedTasks.addAll(processedTasks);
         allAddedTasks.addAll(addedTasks);

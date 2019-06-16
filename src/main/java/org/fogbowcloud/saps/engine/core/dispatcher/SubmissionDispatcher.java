@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface SubmissionDispatcher {
 
@@ -20,7 +21,7 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates);
+	List<Task> addTasks(SubmissionParameters submissionParameters, Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate);
 
 	List<Task> addImageTasks(Collection<ImageTask> imageTasks);
 

@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -153,7 +155,8 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     @Override
-    public List<Task> addTasks(SubmissionParameters submissionParameters, List<Date> processedDates) {
+    public List<Task> addTasks(SubmissionParameters submissionParameters,
+                               Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
         Set<String> regions = repository.getRegionsFromArea(
                 submissionParameters.getLowerLeftLatitude(),
                 submissionParameters.getLowerLeftLongitude(),
@@ -163,19 +166,14 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         List<Date> datesToProcess = DateUtil.getDateListFromInterval(
                 submissionParameters.getInitDate(),
                 submissionParameters.getEndDate());
-        // Filter already processed dates
-        datesToProcess = datesToProcess.stream()
-                .filter(date -> !processedDates.contains(date))
+        List<Task> createdTasks = datesToProcess.stream()
+                .map(currentDate -> addTasksForDate(
+                        currentDate,
+                        submissionParameters,
+                        regions,
+                        imageTasksProcessedGroupedByDate))
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        List<Task> createdTasks = new ArrayList<>();
-        for (Date currentDate : datesToProcess) {
-            List<Task> createdTasksForCurrentDate = addTasksForDate(
-                    currentDate,
-                    submissionParameters,
-                    regions
-            );
-            createdTasks.addAll(createdTasksForCurrentDate);
-        }
         return createdTasks;
     }
 
@@ -183,14 +181,16 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
      * Adds all the needed tasks for specified date. It will add a task for every
      * satellite in operation in specified date, for every specified region.
      *
-     * @param date                 Date of processing.
-     * @param submissionParameters Submission parameters specified by user.
-     * @param regions              Regions to be processed.
+     * @param date                             Date of processing.
+     * @param submissionParameters             Submission parameters specified by user.
+     * @param regions                          Regions to be processed.
+     * @param imageTasksProcessedGroupedByDate Lists of processed ImageTasks grouped
+     *                                         by date.
      * @return List of added tasks.
      */
     private List<Task> addTasksForDate(Date date,
                                        SubmissionParameters submissionParameters,
-                                       Set<String> regions) {
+                                       Set<String> regions, Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
         LOGGER.debug("Adding tasks for date: " + date);
         int startingYear = DateUtil.calendarFromDate(date).get(Calendar.YEAR);
         List<String> satellitesInOperation = DatasetUtil.getSatsInOperationByYear(startingYear);
@@ -198,10 +198,15 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         for (String satellite : satellitesInOperation) {
             for (String region : regions) {
                 try {
-                    ImageTask imageTask = addImageTask(date, submissionParameters, region, satellite);
-                    Task task = new Task(UUID.randomUUID().toString());
-                    task.setImageTask(imageTask);
-                    createdTasksForDate.add(task);
+                    if (!haveAlreadyBeenProcessed(date, satellite, region, imageTasksProcessedGroupedByDate)) {
+                        ImageTask imageTask = addImageTask(date, submissionParameters, region, satellite);
+                        Task task = new Task(UUID.randomUUID().toString());
+                        task.setImageTask(imageTask);
+                        createdTasksForDate.add(task);
+                    } else {
+                        LOGGER.debug(String.format("ImageTask with date: %s; satellite: %s and; region: %s; has " +
+                                "already been remotely processed, skipping local creation", date, satellite, region));
+                    }
                 } catch (SQLException e) {
                     LOGGER.error("Error while adding image to database", e);
                 }
@@ -211,9 +216,31 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
     }
 
     /**
+     * Returns if specified date, satellite and region have already been processed.
+     *
+     * @param date                             Date to be processed.
+     * @param satellite                        Satellite to be processed.
+     * @param region                           Region to be processed.
+     * @param imageTasksProcessedGroupedByDate Lists of processed ImageTasks grouped
+     *                                         by date.
+     * @return {@code true} if there's a ImageTask in {@param imageTasksProcessedGroupedByDate}
+     * that were processed in the specified date with specified satellite and region.
+     */
+    private boolean haveAlreadyBeenProcessed(Date date, String satellite, String region,
+                                             Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
+        List<ImageTask> imageTasksProcessedInDate = imageTasksProcessedGroupedByDate.get(date);
+        if (Objects.isNull(imageTasksProcessedInDate) || imageTasksProcessedInDate.isEmpty()) {
+            return false;
+        }
+        return imageTasksProcessedInDate.stream()
+                .anyMatch(imageTask -> imageTask.getDataset().equals(satellite)
+                        && imageTask.getRegion().equals(region));
+    }
+
+    /**
      * Adds a ImageTask to ImageStore for specified date, region and satellite.
      *
-     * @param date                 Date of processing.
+     * @param date                 Date to be processed.
      * @param submissionParameters Submission parameters specified by user.
      * @param region               Region to be processed.
      * @param satellite            Satellite that provide the landsat image.
