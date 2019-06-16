@@ -15,6 +15,10 @@ SAPS_INSTANCE_2_URL = HTTP_SCHEME + SAPS_INSTANCE_2_IP + ':' + str(SERVER_PORT)
 LOCAL_URL = HTTP_SCHEME + LOCALHOST + ':' + str(SERVER_PORT)
 PROCESSING_TASKS_URN = '/processings'
 
+QTY_IMAGE_TASKS_INSTANCE_1 = 3
+QTY_NO_IMAGE_TASKS = 0
+
+IMAGE_TASK_ID_KEY = 'taskId'
 STATE_KEY = 'state'
 ARCHIVED = 'archived'
 REMOTELY_ARCHIVED = 'remotely_archived'
@@ -82,25 +86,29 @@ def get_default_submission_parameters():
 def main():
     image_tasks_instance_1 = get_all_image_tasks(SAPS_INSTANCE_1_URL)
     image_tasks_instance_2 = get_all_image_tasks(SAPS_INSTANCE_2_URL)
-    assert len(image_tasks_instance_1) == 1
-    assert len(image_tasks_instance_2) == 0
+    assert len(image_tasks_instance_1) == QTY_IMAGE_TASKS_INSTANCE_1
+    assert len(image_tasks_instance_2) == QTY_NO_IMAGE_TASKS
 
     assert submit_processing(SAPS_INSTANCE_2_URL) == SUBMIT_PROCESSING_SUCCESSFUL
 
     image_tasks_instance_1 = get_all_image_tasks(SAPS_INSTANCE_1_URL)
     image_tasks_instance_2 = get_all_image_tasks(SAPS_INSTANCE_2_URL)
-    assert len(image_tasks_instance_1) == 1
-    assert len(image_tasks_instance_2) == 1
+    assert len(image_tasks_instance_1) == QTY_IMAGE_TASKS_INSTANCE_1
+    assert len(image_tasks_instance_2) == QTY_IMAGE_TASKS_INSTANCE_1
 
-    image_task_instance_1 = image_tasks_instance_1[0]
-    image_task_instance_2 = image_tasks_instance_2[0]
+    sorted(image_tasks_instance_1, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
+    sorted(image_tasks_instance_2, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
 
-    assert image_task_instance_1[STATE_KEY] == ARCHIVED
-    assert image_task_instance_2[STATE_KEY] == REMOTELY_ARCHIVED
-    
-    for key in list(image_task_instance_1.keys()):
-        if key != STATE_KEY:
-            assert image_task_instance_1[key] == image_task_instance_2[key]
+    for i in range(QTY_IMAGE_TASKS_INSTANCE_1):
+        image_task_instance_1 = image_tasks_instance_1[i]
+        image_task_instance_2 = image_tasks_instance_2[i]
+
+        assert image_task_instance_1[STATE_KEY] == ARCHIVED
+        assert image_task_instance_2[STATE_KEY] == REMOTELY_ARCHIVED
+
+        for key in list(image_task_instance_1.keys()):
+            if key != STATE_KEY:
+                assert image_task_instance_1[key] == image_task_instance_2[key]
 
 
 if __name__ == "__main__":
