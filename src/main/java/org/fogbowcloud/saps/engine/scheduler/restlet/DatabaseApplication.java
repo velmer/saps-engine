@@ -67,6 +67,7 @@ public class DatabaseApplication extends Application {
 
 		this.restletComponent = new Component();
 		this.restletComponent.getServers().add(Protocol.HTTP, restServerPort);
+		this.restletComponent.getClients().add(Protocol.HTTP);
 		this.restletComponent.getClients().add(Protocol.FILE);
 		this.restletComponent.getDefaultHost().attach(this);
 

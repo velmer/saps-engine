@@ -3,6 +3,7 @@ package org.fogbowcloud.saps.engine.core.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,7 @@ public class ImageTask implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
 	public static final String AVAILABLE = "available";
 	public static final String UNAVAILABLE = "unavailable";	
@@ -66,14 +68,14 @@ public class ImageTask implements Serializable {
 		this.error = error;
 	}
 
-	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException {
+	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException, ParseException {
 		this(
 				imageTaskJsonObject.getString("taskId"),
 				imageTaskJsonObject.getString("dataset"),
 				imageTaskJsonObject.getString("region"),
-				(Date) imageTaskJsonObject.get("imageDate"),
+				DATE_FORMATER.parse(imageTaskJsonObject.getString("imageDate")),
 				imageTaskJsonObject.getString("downloadLink"),
-				ImageTaskState.valueOf(imageTaskJsonObject.getString("state")),
+				ImageTaskState.getStateFromStr(imageTaskJsonObject.getString("state")),
 				imageTaskJsonObject.getString("federationMember"),
 				imageTaskJsonObject.getInt("priority"),
 				imageTaskJsonObject.getString("stationId"),
@@ -82,8 +84,8 @@ public class ImageTask implements Serializable {
 				imageTaskJsonObject.getString("algorithmExecutionTag"),
 				imageTaskJsonObject.getString("archiverVersion"),
 				imageTaskJsonObject.getString("blowoutVersion"),
-				(Timestamp) imageTaskJsonObject.get("creationTime"),
-				(Timestamp) imageTaskJsonObject.get("updateTime"),
+				new Timestamp(TIMESTAMP_FORMATTER.parse(imageTaskJsonObject.getString("creationTime")).getTime()),
+				new Timestamp(TIMESTAMP_FORMATTER.parse(imageTaskJsonObject.getString("updateTime")).getTime()),
 				imageTaskJsonObject.getString("status"),
 				imageTaskJsonObject.getString("error")
 		);
