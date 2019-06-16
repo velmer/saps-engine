@@ -112,7 +112,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
         try {
             LOGGER.debug("Getting ImageTasks from SAPS neighbor with URL: " + SAPSNeighborUrl);
             ClientResource clientResource = new ClientResource(SAPSNeighborUrl + PROCESSED_TASKS_URN);
-            Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
+            Representation response = clientResource.post(submissionParameters.toFormUrlEncoded(), MediaType.APPLICATION_JSON);
             processedTasks = extractTasksList(response);
         } catch (Throwable t) {
             LOGGER.error("Error while getting tasks from SAPS neighbor.", t);

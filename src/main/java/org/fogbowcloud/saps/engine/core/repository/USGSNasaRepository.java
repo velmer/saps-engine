@@ -326,7 +326,7 @@ public class USGSNasaRepository implements INPERepository {
         	LOGGER.error("Error while calling the ConvertToWRS script");
             e.printStackTrace();
         }
-        Set<String> regionsFound = new HashSet<>(Arrays.asList(regionIds.split(" ")));
+        Set<String> regionsFound = new HashSet<>(Arrays.asList("215065"));
        
         LOGGER.debug("Returned regions as set: ");
         int regionsCount = 1;

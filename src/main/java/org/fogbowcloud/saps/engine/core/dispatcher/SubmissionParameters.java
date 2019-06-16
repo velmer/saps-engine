@@ -1,11 +1,15 @@
 package org.fogbowcloud.saps.engine.core.dispatcher;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * DTO of parameters from a {@link Submission}.
  */
 public class SubmissionParameters {
+
+    private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd");
 
     private final String lowerLeftLatitude;
 
@@ -101,6 +105,21 @@ public class SubmissionParameters {
      */
     public String getAlgorithmExecution() {
         return algorithmExecution;
+    }
+
+    /**
+     * @return the Form URL Encoded representation of this SubmissionParameters.
+     */
+    public String toFormUrlEncoded() {
+        return String.format("%s=%s&", "lowerLeft[]", lowerLeftLatitude) +
+                String.format("%s=%s&", "lowerLeft[]", lowerLeftLongitude) +
+                String.format("%s=%s&", "upperRight[]", upperRightLatitude) +
+                String.format("%s=%s&", "upperRight[]", upperRightLongitude) +
+                String.format("%s=%s&", "initialDate", DATE_FORMATER.format(initDate)) +
+                String.format("%s=%s&", "finalDate", DATE_FORMATER.format(endDate)) +
+                String.format("%s=%s&", "inputGatheringTag", inputGathering) +
+                String.format("%s=%s&", "inputPreprocessingTag", inputPreprocessing) +
+                String.format("%s=%s", "algorithmExecutionTag", algorithmExecution);
     }
 
     @Override
