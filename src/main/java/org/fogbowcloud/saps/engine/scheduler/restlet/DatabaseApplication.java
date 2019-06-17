@@ -1,7 +1,6 @@
 package org.fogbowcloud.saps.engine.scheduler.restlet;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -67,6 +66,7 @@ public class DatabaseApplication extends Application {
 
 		this.restletComponent = new Component();
 		this.restletComponent.getServers().add(Protocol.HTTP, restServerPort);
+		this.restletComponent.getClients().add(Protocol.HTTP);
 		this.restletComponent.getClients().add(Protocol.FILE);
 		this.restletComponent.getDefaultHost().attach(this);
 

@@ -12,6 +12,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     private static final Logger LOGGER = Logger.getLogger(SubmissionManagerImpl.class);
 
     static final String SAPS_NEIGHBORS_URLS = "saps_neighbors_urls";
-    static final String PROCESSED_TASKS_URN = "/archivedTask";
+    static final String PROCESSED_TASKS_URN = "/archivedTasks";
 
     private Properties properties;
     private SubmissionDispatcher submissionDispatcher;
@@ -36,7 +37,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
     @Override
     public List<Task> addTasks(SubmissionParameters submissionParameters) {
         List<Task> processedTasks = new ArrayList<>();
-        List<Date> processedDates = new ArrayList<>();
+        Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate = new HashMap<>();
         try {
             List<ImageTask> processedImageTasks = getAllRemotelyProcessedTasks(submissionParameters);
             if (!processedImageTasks.isEmpty()) {
@@ -44,14 +45,14 @@ public class SubmissionManagerImpl implements SubmissionManager {
                     processedTask.setState(ImageTaskState.REMOTELY_ARCHIVED);
                 }
                 processedTasks = submissionDispatcher.addImageTasks(processedImageTasks);
-                processedDates = processedImageTasks.stream()
-                        .map(ImageTask::getImageDate)
-                        .collect(Collectors.toList());
+                imageTasksProcessedGroupedByDate = processedTasks.stream()
+                        .map(Task::getImageTask)
+                        .collect(Collectors.groupingBy(ImageTask::getImageDate));
             }
         } catch (Throwable t) {
             LOGGER.error("Error while adding remotely processed tasks.", t);
         }
-        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, processedDates);
+        List<Task> addedTasks = submissionDispatcher.addTasks(submissionParameters, imageTasksProcessedGroupedByDate);
         List<Task> allAddedTasks = new ArrayList<>();
         allAddedTasks.addAll(processedTasks);
         allAddedTasks.addAll(addedTasks);
@@ -109,11 +110,12 @@ public class SubmissionManagerImpl implements SubmissionManager {
             SubmissionParameters submissionParameters) {
         List<ImageTask> processedTasks = new ArrayList<>();
         try {
+            LOGGER.debug("Getting ImageTasks from SAPS neighbor with URL: " + SAPSNeighborUrl);
             ClientResource clientResource = new ClientResource(SAPSNeighborUrl + PROCESSED_TASKS_URN);
-            Representation response = clientResource.post(submissionParameters, MediaType.APPLICATION_JSON);
+            Representation response = clientResource.post(submissionParameters.toFormUrlEncoded(), MediaType.APPLICATION_JSON);
             processedTasks = extractTasksList(response);
         } catch (Throwable t) {
-            LOGGER.error("Error while getting tasks from SAPS Neighbor.", t);
+            LOGGER.error("Error while getting tasks from SAPS neighbor.", t);
         }
         return processedTasks;
     }
@@ -133,7 +135,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
             for (int i = 0; i < tasksJsonArray.length(); i++) {
                 tasks.add(new ImageTask(tasksJsonArray.optJSONObject(i)));
             }
-        } catch (JSONException | IOException e) {
+        } catch (JSONException | IOException | ParseException e) {
             LOGGER.error("Error while extracting tasks from response", e);
         }
         return tasks;

@@ -3,6 +3,7 @@ package org.fogbowcloud.saps.engine.core.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +14,8 @@ import org.json.JSONObject;
 public class ImageTask implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
 	public static final String AVAILABLE = "available";
 	public static final String UNAVAILABLE = "unavailable";	
@@ -66,14 +68,14 @@ public class ImageTask implements Serializable {
 		this.error = error;
 	}
 
-	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException {
+	public ImageTask(JSONObject imageTaskJsonObject) throws JSONException, ParseException {
 		this(
 				imageTaskJsonObject.getString("taskId"),
 				imageTaskJsonObject.getString("dataset"),
 				imageTaskJsonObject.getString("region"),
-				(Date) imageTaskJsonObject.get("imageDate"),
+				DATE_FORMATTER.parse(imageTaskJsonObject.getString("imageDate")),
 				imageTaskJsonObject.getString("downloadLink"),
-				ImageTaskState.valueOf(imageTaskJsonObject.getString("state")),
+				ImageTaskState.getStateFromStr(imageTaskJsonObject.getString("state")),
 				imageTaskJsonObject.getString("federationMember"),
 				imageTaskJsonObject.getInt("priority"),
 				imageTaskJsonObject.getString("stationId"),
@@ -82,11 +84,15 @@ public class ImageTask implements Serializable {
 				imageTaskJsonObject.getString("algorithmExecutionTag"),
 				imageTaskJsonObject.getString("archiverVersion"),
 				imageTaskJsonObject.getString("blowoutVersion"),
-				(Timestamp) imageTaskJsonObject.get("creationTime"),
-				(Timestamp) imageTaskJsonObject.get("updateTime"),
+				toTimestamp(imageTaskJsonObject.getString("creationTime")),
+				toTimestamp(imageTaskJsonObject.getString("updateTime")),
 				imageTaskJsonObject.getString("status"),
 				imageTaskJsonObject.getString("error")
 		);
+	}
+
+	private static Timestamp toTimestamp(String timestampString) throws ParseException {
+		return new Timestamp(TIMESTAMP_FORMATTER.parse(timestampString).getTime());
 	}
 
 	public String getTaskId() {
@@ -255,7 +261,7 @@ public class ImageTask implements Serializable {
 		json.put("collectionTierName", getCollectionTierName());
 		json.put("dataset", dataset);
 		json.put("region", region);
-		json.put("imageDate", DATE_FORMATER.format(imageDate));
+		json.put("imageDate", DATE_FORMATTER.format(imageDate));
 		json.put("downloadLink", downloadLink);
 		json.put("state", state.getValue());
 		json.put("federationMember", federationMember);
@@ -277,7 +283,7 @@ public class ImageTask implements Serializable {
 	@Override
 	public String toString() {
 		return "ImageTask{" + "taskId='" + taskId + '\'' + ", dataset='" + dataset + '\''
-				+ ", region='" + region + '\'' + ", imageDate=" + DATE_FORMATER.format(imageDate)
+				+ ", region='" + region + '\'' + ", imageDate=" + DATE_FORMATTER.format(imageDate)
 				+ ", downloadLink='" + downloadLink + '\'' + ", state=" + state
 				+ ", federationMember='" + federationMember + '\'' + ", priority=" + priority
 				+ ", stationId='" + stationId + '\'' + ", inputGatheringTag='" + inputGatheringTag

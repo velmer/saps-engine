@@ -34,7 +34,6 @@ public class RegionResource extends BaseResource {
 	@SuppressWarnings("unchecked")
 	@Get
 	public Representation getNumberImagesProcessedByRegion() throws SQLException {
-		
 		Series<Header> series = (Series<Header>) getRequestAttributes()
 				.get("org.restlet.http.headers");
 
@@ -44,7 +43,7 @@ public class RegionResource extends BaseResource {
 		if (!authenticateUser(userEmail, userPass)) {
 			throw new ResourceException(HttpStatus.SC_UNAUTHORIZED);
 		}
-		
+
 		List<ImageTask> imageTasks = this.application.getTasksInState(ImageTaskState.ARCHIVED);
 		imageTasks.addAll(this.application.getTasksInState(ImageTaskState.REMOTELY_ARCHIVED));
 

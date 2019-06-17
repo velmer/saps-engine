@@ -15,21 +15,15 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import static org.fogbowcloud.saps.engine.core.dispatcher.SubmissionParameters.*;
 
 public class BaseResource extends ServerResource {
 
 	private static final Logger LOGGER = Logger.getLogger(BaseResource.class);
 
-	private static final String LOWER_LEFT = "lowerLeft";
-	private static final String UPPER_RIGHT = "upperRight";
-	private static final String PROCESSING_INIT_DATE = "initialDate";
-	private static final String PROCESSING_FINAL_DATE = "finalDate";
-	private static final String PROCESSING_INPUT_GATHERING_TAG = "inputGatheringTag";
-	private static final String PROCESSING_INPUT_PREPROCESSING_TAG = "inputPreprocessingTag";
-	private static final String PROCESSING_ALGORITHM_EXECUTION_TAG = "algorithmExecutionTag";
 	private static final int LATITUDE_INDEX = 0;
 	private static final int LONGITUDE_INDEX = 1;
 
@@ -87,22 +81,22 @@ public class BaseResource extends ServerResource {
 		Date initDate;
 		Date endDate;
 		try {
-			initDate = extractDate(form, PROCESSING_INIT_DATE);
-			endDate = extractDate(form, PROCESSING_FINAL_DATE);
+			initDate = extractDate(form, INIT_DATE);
+			endDate = extractDate(form, FINAL_DATE);
 		} catch (Throwable t) {
 			LOGGER.error("Failed to parse dates.", t);
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "All dates must be informed.");
 		}
 
-		String inputGathering = form.getFirstValue(PROCESSING_INPUT_GATHERING_TAG);
+		String inputGathering = form.getFirstValue(INPUT_GATHERING_TAG);
 		if (inputGathering.isEmpty()) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Input Gathering must be informed.");
 		}
-		String inputPreprocessing = form.getFirstValue(PROCESSING_INPUT_PREPROCESSING_TAG);
+		String inputPreprocessing = form.getFirstValue(INPUT_PRE_PROCESSING_TAG);
 		if (inputPreprocessing.isEmpty()) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Input Preprocessing must be informed.");
 		}
-		String algorithmExecution = form.getFirstValue(PROCESSING_ALGORITHM_EXECUTION_TAG);
+		String algorithmExecution = form.getFirstValue(ALGORITHM_EXECUTION_TAG);
 		if (algorithmExecution.isEmpty()) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Algorithm Execution must be informed.");
 		}
@@ -121,14 +115,13 @@ public class BaseResource extends ServerResource {
 	}
 
 	String extractCoordinate(Form form, String name, int index) {
-		String data[] = form.getValuesArray(name + "[]");
+		String data[] = form.getValuesArray(name + FORM_URL_ENCODED_MULTI_VALUE_SUFFIX);
 		return data[index];
 	}
 
 	Date extractDate(Form form, String name) throws ParseException {
 		String data = form.getFirstValue(name);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		return dateFormat.parse(data);
+		return DATE_FORMATTER.parse(data);
 	}
 
 	/**

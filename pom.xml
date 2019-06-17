@@ -144,11 +144,11 @@
 			</exclusions>
 		</dependency>
 		
-		<dependency>
+		<!--<dependency>
 			<groupId>blowout</groupId>
 			<artifactId>blowout</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.json</groupId>
