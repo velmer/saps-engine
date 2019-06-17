@@ -30,9 +30,9 @@ public class ImagesEmailResource extends BaseResource {
 
     public static final Logger LOGGER = Logger.getLogger(ImagesEmailResource.class);
 
-    private static final int JSONARRAY_TO_STRING_FACTOR = 2;
+    private static final int JSON_ARRAY_TO_STRING_FACTOR = 2;
     private static final String REQUEST_ATTR_PROCESSED_IMAGES = "images_id[]";
-    private static final String PROCESSED_TASKS_URN = "/archivedTask";
+    private static final String PROCESSED_TASKS_URN = "/archivedTasks";
     private static final String PROCESSED_IMAGES_EMAIL_TITLE = "[SAPS] Filter results";
     private static final String SUCCESSFUL_EMAIL_SENDING_FEEDBACK =
             "Email será enviado em breve.";
@@ -81,7 +81,7 @@ public class ImagesEmailResource extends BaseResource {
     private String generateEmailMessage(List<ImageTaskFileList> imageTasksFileLists) throws JSONException {
         JSONArray emailMessageJSON = generateEmailMessageJSON(imageTasksFileLists);
         try {
-            return emailMessageJSON.toString(JSONARRAY_TO_STRING_FACTOR);
+            return emailMessageJSON.toString(JSON_ARRAY_TO_STRING_FACTOR);
         } catch (JSONException e) {
             LOGGER.error("Error while generating String email message from JSON", e);
             throw e;
@@ -172,7 +172,7 @@ public class ImagesEmailResource extends BaseResource {
 
     /**
      * Returns a list of {@link ImageTaskFileList} for SAPS neighbor that had
-     * it URL specified.
+     * its URL specified.
      *
      * @param SAPSNeighborAndImageTasks {@link Map.Entry} that have a SAPS
      *                                  neighbor URL as key and a list of
