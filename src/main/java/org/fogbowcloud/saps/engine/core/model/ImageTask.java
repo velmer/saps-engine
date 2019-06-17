@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class ImageTask implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
 	private static final DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
 	public static final String AVAILABLE = "available";
@@ -73,7 +73,7 @@ public class ImageTask implements Serializable {
 				imageTaskJsonObject.getString("taskId"),
 				imageTaskJsonObject.getString("dataset"),
 				imageTaskJsonObject.getString("region"),
-				DATE_FORMATER.parse(imageTaskJsonObject.getString("imageDate")),
+				DATE_FORMATTER.parse(imageTaskJsonObject.getString("imageDate")),
 				imageTaskJsonObject.getString("downloadLink"),
 				ImageTaskState.getStateFromStr(imageTaskJsonObject.getString("state")),
 				imageTaskJsonObject.getString("federationMember"),
@@ -84,11 +84,15 @@ public class ImageTask implements Serializable {
 				imageTaskJsonObject.getString("algorithmExecutionTag"),
 				imageTaskJsonObject.getString("archiverVersion"),
 				imageTaskJsonObject.getString("blowoutVersion"),
-				new Timestamp(TIMESTAMP_FORMATTER.parse(imageTaskJsonObject.getString("creationTime")).getTime()),
-				new Timestamp(TIMESTAMP_FORMATTER.parse(imageTaskJsonObject.getString("updateTime")).getTime()),
+				toTimestamp(imageTaskJsonObject.getString("creationTime")),
+				toTimestamp(imageTaskJsonObject.getString("updateTime")),
 				imageTaskJsonObject.getString("status"),
 				imageTaskJsonObject.getString("error")
 		);
+	}
+
+	private static Timestamp toTimestamp(String timestampString) throws ParseException {
+		return new Timestamp(TIMESTAMP_FORMATTER.parse(timestampString).getTime());
 	}
 
 	public String getTaskId() {
@@ -257,7 +261,7 @@ public class ImageTask implements Serializable {
 		json.put("collectionTierName", getCollectionTierName());
 		json.put("dataset", dataset);
 		json.put("region", region);
-		json.put("imageDate", DATE_FORMATER.format(imageDate));
+		json.put("imageDate", DATE_FORMATTER.format(imageDate));
 		json.put("downloadLink", downloadLink);
 		json.put("state", state.getValue());
 		json.put("federationMember", federationMember);
@@ -279,7 +283,7 @@ public class ImageTask implements Serializable {
 	@Override
 	public String toString() {
 		return "ImageTask{" + "taskId='" + taskId + '\'' + ", dataset='" + dataset + '\''
-				+ ", region='" + region + '\'' + ", imageDate=" + DATE_FORMATER.format(imageDate)
+				+ ", region='" + region + '\'' + ", imageDate=" + DATE_FORMATTER.format(imageDate)
 				+ ", downloadLink='" + downloadLink + '\'' + ", state=" + state
 				+ ", federationMember='" + federationMember + '\'' + ", priority=" + priority
 				+ ", stationId='" + stationId + '\'' + ", inputGatheringTag='" + inputGatheringTag
