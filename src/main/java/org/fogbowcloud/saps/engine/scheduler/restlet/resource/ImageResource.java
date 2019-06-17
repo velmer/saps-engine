@@ -30,14 +30,6 @@ public class ImageResource extends BaseResource {
 
 	private static final Logger LOGGER = Logger.getLogger(ImageResource.class);
 
-	private static final String LOWER_LEFT = "lowerLeft";
-	private static final String UPPER_RIGHT = "upperRight";
-	private static final String PROCESSING_INIT_DATE = "initialDate";
-	private static final String PROCESSING_FINAL_DATE = "finalDate";
-	private static final String PROCESSING_INPUT_GATHERING_TAG = "inputGatheringTag";
-	private static final String PROCESSING_INPUT_PREPROCESSING_TAG = "inputPreprocessingTag";
-	private static final String PROCESSING_ALGORITHM_EXECUTION_TAG = "algorithmExecutionTag";
-
 	private static final String ADD_IMAGES_MESSAGE_OK = "Tasks successfully added";
 	private static final String PURGE_MESSAGE_OK = "Tasks purged from database";
 	private static final String DAY = "day";

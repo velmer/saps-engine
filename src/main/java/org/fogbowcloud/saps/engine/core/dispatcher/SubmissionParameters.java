@@ -9,24 +9,27 @@ import java.util.Date;
  */
 public class SubmissionParameters {
 
-    private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+
+    private static final String FORM_URL_ENCODED_PARAM_FORMAT = "%s=%s&";
+    public static final String FORM_URL_ENCODED_MULTI_VALUE_SUFFIX = "[]";
+
+    public static final String LOWER_LEFT = "lowerLeft";
+    public static final String UPPER_RIGHT = "upperRight";
+    public static final String INIT_DATE = "initialDate";
+    public static final String FINAL_DATE = "finalDate";
+    public static final String INPUT_GATHERING_TAG = "inputGatheringTag";
+    public static final String ALGORITHM_EXECUTION_TAG = "algorithmExecutionTag";
+    public static final String INPUT_PRE_PROCESSING_TAG = "inputPreprocessingTag";
 
     private final String lowerLeftLatitude;
-
     private final String lowerLeftLongitude;
-
     private final String upperRightLatitude;
-
     private final String upperRightLongitude;
-
     private final Date initDate;
-
     private final Date endDate;
-
     private final String inputGathering;
-
     private final String inputPreprocessing;
-
     private final String algorithmExecution;
 
     public SubmissionParameters(String lowerLeftLatitude, String lowerLeftLongitude,
@@ -111,15 +114,24 @@ public class SubmissionParameters {
      * @return the Form URL Encoded representation of this SubmissionParameters.
      */
     public String toFormUrlEncoded() {
-        return String.format("%s=%s&", "lowerLeft[]", lowerLeftLatitude) +
-                String.format("%s=%s&", "lowerLeft[]", lowerLeftLongitude) +
-                String.format("%s=%s&", "upperRight[]", upperRightLatitude) +
-                String.format("%s=%s&", "upperRight[]", upperRightLongitude) +
-                String.format("%s=%s&", "initialDate", DATE_FORMATER.format(initDate)) +
-                String.format("%s=%s&", "finalDate", DATE_FORMATER.format(endDate)) +
-                String.format("%s=%s&", "inputGatheringTag", inputGathering) +
-                String.format("%s=%s&", "inputPreprocessingTag", inputPreprocessing) +
-                String.format("%s=%s", "algorithmExecutionTag", algorithmExecution);
+        return String.format(FORM_URL_ENCODED_PARAM_FORMAT, LOWER_LEFT + FORM_URL_ENCODED_MULTI_VALUE_SUFFIX,
+                        lowerLeftLatitude) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, LOWER_LEFT + FORM_URL_ENCODED_MULTI_VALUE_SUFFIX,
+                        lowerLeftLongitude) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, UPPER_RIGHT + FORM_URL_ENCODED_MULTI_VALUE_SUFFIX,
+                        upperRightLatitude) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, UPPER_RIGHT + FORM_URL_ENCODED_MULTI_VALUE_SUFFIX,
+                        upperRightLongitude) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, INIT_DATE,
+                        DATE_FORMATTER.format(initDate)) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, FINAL_DATE,
+                        DATE_FORMATTER.format(endDate)) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, INPUT_GATHERING_TAG,
+                        inputGathering) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, INPUT_PRE_PROCESSING_TAG,
+                        inputPreprocessing) +
+                String.format(FORM_URL_ENCODED_PARAM_FORMAT, ALGORITHM_EXECUTION_TAG,
+                        algorithmExecution);
     }
 
     @Override
