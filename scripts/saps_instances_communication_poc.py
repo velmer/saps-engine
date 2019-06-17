@@ -8,14 +8,14 @@ HTTP_SCHEME = 'http://'
 # SAPS instances' server port
 SERVER_PORT = 8091
 
-# IP of SAPS instance 1
+# IP of Instance 1
 SAPS_INSTANCE_1_IP = '10.11.4.94'
-# IP of SAPS instance 2
+# IP of Instance 2
 SAPS_INSTANCE_2_IP = '10.11.4.116'
 
-# URL of SAPS instance 1
+# URL of Instance 1
 SAPS_INSTANCE_1_URL = HTTP_SCHEME + SAPS_INSTANCE_1_IP + ':' + str(SERVER_PORT)
-# URL of SAPS instance 2
+# URL of Instance 2
 SAPS_INSTANCE_2_URL = HTTP_SCHEME + SAPS_INSTANCE_2_IP + ':' + str(SERVER_PORT)
 
 # URN (API route) of submissions
@@ -23,6 +23,7 @@ PROCESSING_TASKS_URN = '/processings'
 
 # Initial quantity of ImageTasks stored in catalog of instance 1, which must
 # have 3 ImageTasks, one for each satellite (Landsat 5, Landsat 7 e Landsat 8)
+# and for date 2014-06-12
 QTY_IMAGE_TASKS_INSTANCE_1 = 3
 # Initial quantity of ImageTasks stored in catalog of instance 2, which must
 # have 0 ImageTasks
@@ -122,13 +123,13 @@ def get_default_submission_parameters():
 
 
 def main():
-    # Preconditions
+    # Test preconditions
     image_tasks_instance_1 = get_all_image_tasks(SAPS_INSTANCE_1_URL)
     image_tasks_instance_2 = get_all_image_tasks(SAPS_INSTANCE_2_URL)
     assert len(image_tasks_instance_1) == QTY_IMAGE_TASKS_INSTANCE_1
     assert len(image_tasks_instance_2) == QTY_NO_IMAGE_TASKS
 
-    # Submits processing to SAPS instance 2
+    # Submits processing to Instance 2
     assert submit_processing(SAPS_INSTANCE_2_URL) == SUBMIT_PROCESSING_SUCCESSFUL
 
     # Instance 2 must have inserted each ImageTask stored in Instance 1
@@ -137,7 +138,7 @@ def main():
     assert len(image_tasks_instance_1) == QTY_IMAGE_TASKS_INSTANCE_1
     assert len(image_tasks_instance_2) == QTY_IMAGE_TASKS_INSTANCE_1
 
-    # Sorts lists of two instances to compare them as pairs
+    # Sorts lists of two instances to compare their elements as pairs
     sorted(image_tasks_instance_1, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
     sorted(image_tasks_instance_2, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
 
@@ -145,11 +146,11 @@ def main():
         image_task_instance_1 = image_tasks_instance_1[i]
         image_task_instance_2 = image_tasks_instance_2[i]
 
-        # Reused ImageTasks must have the 'Remotely Archived' state
+        # Reused ImageTasks must have the 'remotely_archived' state
         assert image_task_instance_1[STATE_KEY] == ARCHIVED
         assert image_task_instance_2[STATE_KEY] == REMOTELY_ARCHIVED
 
-        # Except for the State, every other attributes of reused ImageTasks
+        # Except for the State, every other attribute of reused ImageTasks
         # must be equal to processed ImageTasks, including the ID
         for key in list(image_task_instance_1.keys()):
             if key != STATE_KEY:
