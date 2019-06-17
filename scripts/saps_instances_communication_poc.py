@@ -22,17 +22,17 @@ SAPS_INSTANCE_2_URL = HTTP_SCHEME + SAPS_INSTANCE_2_IP + ':' + str(SERVER_PORT)
 PROCESSING_TASKS_URN = '/processings'
 
 # Initial quantity of ImageTasks stored in catalog of instance 1, which must
-# have 3 ImageTasks, one for each satellite (Landsat 5, Landsat 7 e Landsat 8)
-# and for date 2014-06-12
+# have 3 ImageTasks, all of them for date 2014-06-12 and one for each satellite
+# (Landsat 5, Landsat 7 e Landsat 8)
 QTY_IMAGE_TASKS_INSTANCE_1 = 3
 # Initial quantity of ImageTasks stored in catalog of instance 2, which must
 # have 0 ImageTasks
 QTY_NO_IMAGE_TASKS = 0
 
-# Key of ID property of ImageTask
-IMAGE_TASK_ID_KEY = 'taskId'
-# Key of State property of ImageTask
-STATE_KEY = 'state'
+# Key of ID attribute of ImageTask
+ID_ATTR_KEY = 'taskId'
+# Key of State attribute of ImageTask
+STATE_ATTR_KEY = 'state'
 
 # Values of ImageTask's State property
 ARCHIVED = 'archived'
@@ -75,7 +75,7 @@ def get_all_image_tasks(saps_instance_url):
     Returns all ImageTasks stored in SAPS instance that had its URL specified.
 
     :param saps_instance_url: URL of SAPS instance.
-    :return: List of all ImageTasks in SAPS instance catalog.
+    :return: List of all ImageTasks in SAPS instance's catalog.
     """
     get_all_image_tasks_url = saps_instance_url + PROCESSING_TASKS_URN
     headers = {**get_admin_credentials()}
@@ -139,22 +139,22 @@ def main():
     assert len(image_tasks_instance_2) == QTY_IMAGE_TASKS_INSTANCE_1
 
     # Sorts lists of two instances to compare their elements as pairs
-    sorted(image_tasks_instance_1, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
-    sorted(image_tasks_instance_2, key=lambda image_task: image_task[IMAGE_TASK_ID_KEY])
+    sorted(image_tasks_instance_1, key=lambda image_task: image_task[ID_ATTR_KEY])
+    sorted(image_tasks_instance_2, key=lambda image_task: image_task[ID_ATTR_KEY])
 
     for i in range(QTY_IMAGE_TASKS_INSTANCE_1):
         image_task_instance_1 = image_tasks_instance_1[i]
         image_task_instance_2 = image_tasks_instance_2[i]
 
         # Reused ImageTasks must have the 'remotely_archived' state
-        assert image_task_instance_1[STATE_KEY] == ARCHIVED
-        assert image_task_instance_2[STATE_KEY] == REMOTELY_ARCHIVED
+        assert image_task_instance_1[STATE_ATTR_KEY] == ARCHIVED
+        assert image_task_instance_2[STATE_ATTR_KEY] == REMOTELY_ARCHIVED
 
         # Except for the State, every other attribute of reused ImageTasks
         # must be equal to processed ImageTasks, including the ID
-        for key in list(image_task_instance_1.keys()):
-            if key != STATE_KEY:
-                assert image_task_instance_1[key] == image_task_instance_2[key]
+        for attr_key in list(image_task_instance_1.keys()):
+            if attr_key != STATE_ATTR_KEY:
+                assert image_task_instance_1[attr_key] == image_task_instance_2[attr_key]
 
 
 if __name__ == "__main__":
