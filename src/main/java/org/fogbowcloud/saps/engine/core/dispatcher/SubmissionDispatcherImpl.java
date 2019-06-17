@@ -156,7 +156,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
 
     @Override
     public List<Task> addTasks(SubmissionParameters submissionParameters,
-                               Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
+                               Map<Date, List<ImageTask>> processedImageTasksGroupedByDate) {
         Set<String> regions = repository.getRegionsFromArea(
                 submissionParameters.getLowerLeftLatitude(),
                 submissionParameters.getLowerLeftLongitude(),
@@ -171,7 +171,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
                         currentDate,
                         submissionParameters,
                         regions,
-                        imageTasksProcessedGroupedByDate))
+                        processedImageTasksGroupedByDate))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         return createdTasks;
@@ -184,13 +184,13 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
      * @param date                             Date of processing.
      * @param submissionParameters             Submission parameters specified by user.
      * @param regions                          Regions to be processed.
-     * @param imageTasksProcessedGroupedByDate Lists of processed ImageTasks grouped
+     * @param processedImageTasksGroupedByDate Lists of processed ImageTasks grouped
      *                                         by date.
      * @return List of added tasks.
      */
     private List<Task> addTasksForDate(Date date,
                                        SubmissionParameters submissionParameters,
-                                       Set<String> regions, Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
+                                       Set<String> regions, Map<Date, List<ImageTask>> processedImageTasksGroupedByDate) {
         LOGGER.debug("Adding tasks for date: " + date);
         int startingYear = DateUtil.calendarFromDate(date).get(Calendar.YEAR);
         List<String> satellitesInOperation = DatasetUtil.getSatsInOperationByYear(startingYear);
@@ -198,7 +198,7 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
         for (String satellite : satellitesInOperation) {
             for (String region : regions) {
                 try {
-                    if (!haveAlreadyBeenProcessed(date, satellite, region, imageTasksProcessedGroupedByDate)) {
+                    if (!haveAlreadyBeenProcessed(date, satellite, region, processedImageTasksGroupedByDate)) {
                         ImageTask imageTask = addImageTask(date, submissionParameters, region, satellite);
                         Task task = new Task(UUID.randomUUID().toString());
                         task.setImageTask(imageTask);
@@ -221,18 +221,19 @@ public class SubmissionDispatcherImpl implements SubmissionDispatcher {
      * @param date                             Date to be processed.
      * @param satellite                        Satellite to be processed.
      * @param region                           Region to be processed.
-     * @param imageTasksProcessedGroupedByDate Lists of processed ImageTasks grouped
+     * @param processedImageTasksGroupedByDate Lists of processed ImageTasks grouped
      *                                         by date.
-     * @return {@code true} if there's a ImageTask in {@param imageTasksProcessedGroupedByDate}
-     * that were processed in the specified date with specified satellite and region.
+     * @return {@code true} if there's a ImageTask in {@param processedImageTasksGroupedByDate}
+     * that were processed in the specified date with specified satellite and region. {@code
+     * false} otherwise.
      */
     private boolean haveAlreadyBeenProcessed(Date date, String satellite, String region,
-                                             Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate) {
-        List<ImageTask> imageTasksProcessedInDate = imageTasksProcessedGroupedByDate.get(date);
-        if (Objects.isNull(imageTasksProcessedInDate) || imageTasksProcessedInDate.isEmpty()) {
+                                             Map<Date, List<ImageTask>> processedImageTasksGroupedByDate) {
+        List<ImageTask> processedImageTasksInDate = processedImageTasksGroupedByDate.get(date);
+        if (Objects.isNull(processedImageTasksInDate) || processedImageTasksInDate.isEmpty()) {
             return false;
         }
-        return imageTasksProcessedInDate.stream()
+        return processedImageTasksInDate.stream()
                 .anyMatch(imageTask -> imageTask.getDataset().equals(satellite)
                         && imageTask.getRegion().equals(region));
     }

@@ -21,7 +21,8 @@ public interface SubmissionDispatcher {
 	void addTaskNotificationIntoDB(String submissionId, String taskId, String userEmail)
 			throws SQLException;
 
-	List<Task> addTasks(SubmissionParameters submissionParameters, Map<Date, List<ImageTask>> imageTasksProcessedGroupedByDate);
+	List<Task> addTasks(SubmissionParameters submissionParameters,
+						Map<Date, List<ImageTask>> processedImageTasksGroupedByDate);
 
 	List<Task> addImageTasks(Collection<ImageTask> imageTasks);
 
