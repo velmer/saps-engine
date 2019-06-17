@@ -175,7 +175,7 @@ public class TestProcessedImagesEmailBuilder {
                     if (name.equals("FAIL_TASK")) {
                         Assert.assertEquals(UNAVAILABLE, status);
                     } else {
-//                        Assert.assertNotEquals(UNAVAILABLE, status);
+                        Assert.assertNotEquals(UNAVAILABLE, status);
                     }
                     missing = false;
                     break;
@@ -258,7 +258,7 @@ public class TestProcessedImagesEmailBuilder {
     }
 
     private void checkUrlAvailable(Properties properties, String name, String url) {
-//        Assert.assertNotEquals(UNAVAILABLE, url);
+        Assert.assertNotEquals(UNAVAILABLE, url);
         Assert.assertTrue(url.contains(properties.getProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_HOST)));
         Assert.assertTrue(url.contains(properties.getProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_PATH)));
         Assert.assertTrue(url.contains(properties.getProperty(SapsPropertiesConstants.SWIFT_OBJECT_STORE_CONTAINER)));
