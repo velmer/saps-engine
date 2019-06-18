@@ -1,17 +1,14 @@
 package org.fogbowcloud.saps.engine.core.database;
 
+import java.sql.Array;
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -1013,6 +1010,27 @@ public class JDBCImageDataStore implements ImageDataStore {
 			statement.setQueryTimeout(300);
 
 			statement.execute(SELECT_ALL_IMAGES_SQL);
+			ResultSet rs = statement.getResultSet();
+			return extractImageTaskFrom(rs);
+		} finally {
+			close(statement, conn);
+		}
+	}
+
+	private static final String SELECT_IMAGES_IN_ID_LIST_SQL = "SELECT * FROM " + IMAGE_TABLE_NAME
+			+ " WHERE " + TASK_ID_COL + " IN (?)";
+
+	@Override
+	public List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException {
+		PreparedStatement statement = null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			statement = conn.prepareStatement(SELECT_IMAGES_IN_ID_LIST_SQL);
+			Array imageTasksIdsArray = conn.createArrayOf(JDBCType.VARCHAR.getName(), imageTasksIds);
+			statement.setArray(1, imageTasksIdsArray);
+			statement.setQueryTimeout(300);
+			statement.execute();
 			ResultSet rs = statement.getResultSet();
 			return extractImageTaskFrom(rs);
 		} finally {

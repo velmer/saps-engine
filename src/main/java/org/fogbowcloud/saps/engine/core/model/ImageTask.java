@@ -89,7 +89,13 @@ public class ImageTask implements Serializable {
 		);
 	}
 
-	public String getTaskId() {
+    public ImageTask(String taskId, String region, Date imageDate) {
+		this.taskId = taskId;
+		this.region = region;
+		this.imageDate = imageDate;
+    }
+
+    public String getTaskId() {
 		return taskId;
 	}
 

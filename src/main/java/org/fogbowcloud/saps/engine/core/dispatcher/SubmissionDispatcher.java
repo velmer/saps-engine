@@ -41,4 +41,6 @@ public interface SubmissionDispatcher {
 	boolean isUserNotifiable(String userEmail) throws SQLException;
 
 	List<ImageTask> searchProcessedTasks(SubmissionParameters submissionParameters);
+
+	List<ImageTask> getImageTasks(String[] imageTasksIds) throws SQLException;
 }
